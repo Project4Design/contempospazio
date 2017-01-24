@@ -1,0 +1,16 @@
+
+[Tue, 24 Jan 2017 18:02:55 -0430] #0 C:\xampp\htdocs\contempospazio\funciones\conex.php(89): mysqli_stmt->execute()
+#1 C:\xampp\htdocs\contempospazio\funciones\class.usuarios.php(74): Query::prun('INSERT INTO usu...', Array)
+#2 C:\xampp\htdocs\contempospazio\funciones\class.usuarios.php(278): Usuarios->add('C', 'I', 'Nombres', 'Apellidos', 'Ascas@asc.com', '$2y$10$VaIHpitK...', '231312')
+#3 {main}
+No data supplied for parameters in prepared statement
+[Tue, 24 Jan 2017 18:04:13 -0430] #0 C:\xampp\htdocs\contempospazio\funciones\conex.php(89): mysqli_stmt->execute()
+#1 C:\xampp\htdocs\contempospazio\funciones\class.usuarios.php(74): Query::prun('INSERT INTO usu...', Array)
+#2 C:\xampp\htdocs\contempospazio\funciones\class.usuarios.php(278): Usuarios->add('C', 'I', 'Nombres', 'Apellidos', 'Ascas@asc.com', '$2y$10$2wmJ/twt...', '231312')
+#3 {main}
+No data supplied for parameters in prepared statement
+[Tue, 24 Jan 2017 18:04:59 -0430] #0 C:\xampp\htdocs\contempospazio\funciones\conex.php(89): mysqli_stmt->execute()
+#1 C:\xampp\htdocs\contempospazio\funciones\class.usuarios.php(74): Query::prun('INSERT INTO usu...', Array)
+#2 C:\xampp\htdocs\contempospazio\funciones\class.usuarios.php(278): Usuarios->add('C', 'I', 'Nombres', 'Apellidos', 'Ascas@asc.com', '$2y$10$IzeCXk8U...', '231312')
+#3 {main}
+No data supplied for parameters in prepared statement
