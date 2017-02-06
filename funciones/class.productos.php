@@ -219,7 +219,7 @@ class Productos{
 	}//consulta
 
 	//Agregar un Item a un gabinete especifico
-	public function add_item($gabinete,$codigo,$gs,$mgc,$rbs,$esms,$ws,$miw)
+	public function add_item($labor,$gabinete,$codigo,$gs,$mgc,$rbs,$esms,$ws,$miw)
 	{
 		$query = Query::prun("SELECT id_gabi FROM gabinetes WHERE id_gabi = ? LIMIT 1",array("i",$gabinete));
 
@@ -229,8 +229,8 @@ class Productos{
 			if($query->result->num_rows>0){
 				$this->rh->setResponse(false,"Este codigo de Item ya existe.");
 			}else{
-				$query = Query::prun("INSERT INTO gabinetes_prod (id_gabi,gp_codigo,gp_gs,gp_mgc,gp_rbs,gp_esms,gp_ws,gp_miw)
-																			VALUES (?,?,?,?,?,?,?,?)",array("isdddddd",$gabinete,$codigo,$gs,$mgc,$rbs,$esms,$ws,$miw));
+				$query = Query::prun("INSERT INTO gabinetes_prod (id_gabi,gp_labor,gp_codigo,gp_gs,gp_mgc,gp_rbs,gp_esms,gp_ws,gp_miw)
+																			VALUES (?,?,?,?,?,?,?,?,?)",array("iisdddddd",$gabinete,$labor,$codigo,$gs,$mgc,$rbs,$esms,$ws,$miw));
 				if($query->response){
 					$this->rh->setResponse(true,"Item deleted.");
 				}else{
@@ -245,7 +245,7 @@ class Productos{
 	}//add_item
 
 	//==============================================|| Edit Methods ||==========================================================
-	public function edit_item($id,$codigo,$gs,$mgc,$rbs,$esms,$ws,$miw)
+	public function edit_item($id,$labor,$codigo,$gs,$mgc,$rbs,$esms,$ws,$miw)
 	{
 		$query = Query::prun("SELECT id_gp FROM gabinetes_prod WHERE id_gp = ? LIMIT 1",array("i",$id));
 
@@ -256,6 +256,7 @@ class Productos{
 				$this->rh->setResponse(false,"Este codigo de Item ya existe.");
 			}else{
 				$query = Query::prun("UPDATE gabinetes_prod SET
+																			gp_labor  = ?,
 																			gp_codigo = ?,
 																			gp_gs     = ?,
 																			gp_mgc    = ?,
@@ -263,7 +264,7 @@ class Productos{
 																			gp_esms   = ?,
 																			gp_ws     = ?,
 																			gp_miw    = ?
-															WHERE id_gp = ? LIMIT 1",array("sddddddi",$codigo,$gs,$mgc,$rbs,$esms,$ws,$miw,$id));
+															WHERE id_gp = ? LIMIT 1",array("isddddddi",$labor,$codigo,$gs,$mgc,$rbs,$esms,$ws,$miw,$id));
 
 				if($query->response){
 					$this->rh->setResponse(true,"Changes has been saved.");
@@ -327,8 +328,8 @@ class Productos{
 		$data = "";
 
 		if($query->result->num_rows>0){
+			$config = new Configuracion();
 			$i = 1;
-
 			while ($row = $query->result->fetch_array(MYSQLI_ASSOC)){
 				if(!isset($row["gp_gs"]) || $row["gp_gs"]==0){$gs ="<span style=\"color:red\">N/A</span>"; }else{ $gs=$row["gp_gs"]; }
 				if(!isset($row["gp_mgc"]) || $row["gp_mgc"]==0){$mgc ="<span style=\"color:red\">N/A</span>"; }else{ $mgc=$row["gp_mgc"]; }
@@ -336,8 +337,10 @@ class Productos{
 				if(!isset($row["gp_esms"]) || $row["gp_esms"]==0){$esms ="<span style=\"color:red\">N/A</span>"; }else{ $esms=$row["gp_esms"]; }
 				if(!isset($row["gp_ws"]) || $row["gp_ws"]==0){$ws ="<span style=\"color:red\">N/A</span>"; }else{ $ws=$row["gp_ws"]; }
 				if(!isset($row["gp_miw"]) || $row["gp_miw"]==0){$miw ="<span style=\"color:red\">N/A</span>"; }else{ $miw=$row["gp_miw"]; }
+				$labor = $config->labor($row['gp_labor']);
 				$data .= "<tr>
                   <td class=\"text-center\">{$i}</td>
+                  <td class=\"text-center\">{$labor}</td>
                   <td class=\"text-right\">{$row['gp_codigo']}</td>
                   <td class=\"text-right\">{$gs}</td>
                   <td class=\"text-right\">{$mgc}</td>
@@ -694,6 +697,7 @@ class Productos{
 														array("s",$search));
 
 				if($query->result->num_rows>0){
+					$labor = new Configuracion();
 					$prod = (object) $query->result->fetch_array(MYSQLI_ASSOC);
 					$tr ="
 						<tr class=\"item-list\">
@@ -704,7 +708,7 @@ class Productos{
 							<td>{$prod->gp_ws}</td>
 							<td>{$prod->gp_miw}</td> 
 					";
-					$array = array("type"=>$type,"item"=>$prod->gp_codigo,"desc"=>$prod->gabi_descripcion,"tr"=>$tr,"foto"=>$prod->gabi_foto);
+					$array = array("type"=>$type,"item"=>$prod->gp_codigo,"labor"=>$labor->labor($prod->gp_labor),"desc"=>$prod->gabi_descripcion,"tr"=>$tr,"foto"=>$prod->gabi_foto);
 					$this->rh->setResponse(true);
 				}else{
 					$this->rh->setResponse(false);
@@ -796,6 +800,7 @@ if(Base::IsAjax()):
 				$modelProductos->edit_sink($id,$name,$shape,$material,$color,$price);
 			break;
 			case 'add_item':
+				$labor   = $_POST['labor'];
 				$gabinete = $_POST['gabinete'];
 				$codigo   = $_POST['codigo'];
 				$gs       = $_POST['gs'];
@@ -805,10 +810,11 @@ if(Base::IsAjax()):
 				$ws       = $_POST['ws'];
 				$miw      = $_POST['miw'];
 
-				$modelProductos->add_item($gabinete,$codigo,$gs,$mgc,$rbs,$esms,$ws,$miw);
+				$modelProductos->add_item($labor,$gabinete,$codigo,$gs,$mgc,$rbs,$esms,$ws,$miw);
 			break;
 			case 'edit_item':
 				$id     = $_POST['item'];
+				$labor  = $_POST['labor'];
 				$codigo = $_POST['codigo'];
 				$gs     = $_POST['gs'];
 				$mgc    = $_POST['mgc'];
@@ -817,7 +823,7 @@ if(Base::IsAjax()):
 				$ws     = $_POST['ws'];
 				$miw    = $_POST['miw'];
 
-				$modelProductos->edit_item($id,$codigo,$gs,$mgc,$rbs,$esms,$ws,$miw);
+				$modelProductos->edit_item($id,$labor,$codigo,$gs,$mgc,$rbs,$esms,$ws,$miw);
 			break;
 			case 'get_item':
 				$id = $_POST["id"];

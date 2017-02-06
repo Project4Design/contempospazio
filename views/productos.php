@@ -18,6 +18,9 @@ switch($opc):
   case 'gabi':
     $gabi  = $productos->obtener_gabi($id);
     $items = $productos->items($id);
+    
+    $configuration = new Configuracion();
+    $labor         = $configuration->get_labor();
   ?>
     <section>
       <a class="btn btn-flat btn-default" href="?ver=productos"><i class="fa fa-reply" aria-hidden="true"></i> Back</a>
@@ -55,6 +58,7 @@ switch($opc):
               <thead>
                 <tr>
                   <th>#</th>
+                  <th>Labor</th>
                   <th>Item</th>
                   <th>GS</th>
                   <th>MGC</th>
@@ -72,15 +76,24 @@ switch($opc):
                   <td></td>
                   <td>
                     <div class="form-group" style="margin:0">
+                      <select id="gp_labor" class="form-control" type="text" name="labor" required>
+                        <option value="">-</option>
+                        <option value="0"><?=$labor->config_regular_work?></option>
+                        <option value="1"><?=$labor->config_big_work?></option>
+                      </select>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="form-group" style="margin:0">
                       <input id="gp_codigo" class="form-control" type="text" name="codigo" placeholder="Item" required>
                     </div>
                   </td>
-                  <td><input id="gp_gs" class="form-control" type="text" name="gs" placeholder="0.00"></td>
-                  <td><input id="gp_mgc" class="form-control" type="text" name="mgc" placeholder="0.00"></td>
-                  <td><input id="gp_rbs" class="form-control" type="text" name="rbs" placeholder="0.00"></td>
-                  <td><input id="gp_esms" class="form-control" type="text" name="esms" placeholder="0.00"></td>
-                  <td><input id="gp_ws" class="form-control" type="text" name="ws" placeholder="0.00"></td>
-                  <td><input id="gp_miw" class="form-control" type="text" name="miw" placeholder="0.00"></td>
+                  <td><input id="gp_gs" class="form-control" type="text" name="gs" placeholder="0.00" maxlength="3"></td>
+                  <td><input id="gp_mgc" class="form-control" type="text" name="mgc" placeholder="0.00" maxlength="3"></td>
+                  <td><input id="gp_rbs" class="form-control" type="text" name="rbs" placeholder="0.00" maxlength="3"></td>
+                  <td><input id="gp_esms" class="form-control" type="text" name="esms" placeholder="0.00" maxlength="3"></td>
+                  <td><input id="gp_ws" class="form-control" type="text" name="ws" placeholder="0.00" maxlength="3"></td>
+                  <td><input id="gp_miw" class="form-control" type="text" name="miw" placeholder="0.00" maxlength="3"></td>
                   <td class="text-center">
                     <button id="b-items" class="btn btn-sm btn-primary btn-flat" type="submit">
                       <i class="fa fa-save" aria-hidden="true"></i>
@@ -281,24 +294,33 @@ switch($opc):
         //Guardar o Editar Item
         $('#b-items').click(function(e){
           e.preventDefault();
-          var codigo = $('#gp_codigo').val().replace(/\s+/g, '');
+          //var codigo = $('#gp_codigo').val().replace(/\s+/g, '');
+          var form = $('#fitems');
 
-          if(codigo==""){
-            $('#gp_codigo').closest('.form-group').addClass('has-error');
+          var fields = form.find('input,select').filter('[required]').length;
+          form.find('input,select').filter('[required]').each(function(){
+            var val   = $(this).val();
+            if(val == ""){
+              $(this).closest('.form-group').addClass('has-error');
+            }
+            else{
+              $(this).closest('.form-group').removeClass('has-error');
+              fields = fields-1;
+            }
+          });
+          
+          if(fields!=0){
             $('#fitems .alert').removeClass('alert-success').addClass('alert-danger');
-            $('#fitems .alert #msj').text('You must complete all fields.');
+            $('#fitems .alert #msj').text('You must complete all required fields.');
+            $('#fitems .progress').hide();
+            $('#b-items').button('reset');
             $('#fitems .alert').show().delay(7000).hide('slow');
           }else{
-            $('#gp_codigo').closest('.form-group').removeClass('has-error');
-            $('#b-items').button('loading');
-            $('#fitems .alert').hide('fast');
-            $('#fitems .progress').show();
-
             $.ajax({
               type: 'POST',
               cache: false,
               url: 'funciones/class.productos.php',
-              data: $('#fitems').serialize(),
+              data: form.serialize(),
               dataType: 'json',
               success: function(r){
                 if(r.response){
@@ -660,37 +682,37 @@ switch($opc):
             alert.show().delay(7000).hide('slow');
           }else{
             $.ajax({
-            type: 'POST',
-            cache: false,
-            url: 'funciones/class.productos.php',
-            data: formdata,
-            processData: false,
-            contentType: false,
-            dataType: 'json',
-            success: function(r){
-              if(r.response){
-                alert.removeClass('alert-danger').addClass('alert-success');
-                $('#name').text($('#freg_name').val());
-                $('#shape').text($('#freg_shape option[value='+$("#freg_shape").val()+']').text());
-                $('#material').text($('#freg_material option[value='+$("#freg_material").val()+']').text());
-                $('#color').text($('#freg_color option[value='+$("#freg_color").val()+']').text());
-                $('#price').text($('#freg_price').val());
-                disableForm(r.data);
-              }else{
+              type: 'POST',
+              cache: false,
+              url: 'funciones/class.productos.php',
+              data: formdata,
+              processData: false,
+              contentType: false,
+              dataType: 'json',
+              success: function(r){
+                if(r.response){
+                  alert.removeClass('alert-danger').addClass('alert-success');
+                  $('#name').text($('#freg_name').val());
+                  $('#shape').text($('#freg_shape option[value='+$("#freg_shape").val()+']').text());
+                  $('#material').text($('#freg_material option[value='+$("#freg_material").val()+']').text());
+                  $('#color').text($('#freg_color option[value='+$("#freg_color").val()+']').text());
+                  $('#price').text($('#freg_price').val());
+                  disableForm(r.data);
+                }else{
+                  alert.removeClass('alert-success').addClass('alert-danger');
+                }
+                alert.find('#msj').text(r.msj);
+              },
+              error: function(){
                 alert.removeClass('alert-success').addClass('alert-danger');
+                alert.find('#msj').text('An error has occurred.');
+              },
+              complete: function(){
+                btn.button('reset');
+                bar.hide();
+                alert.show().delay(7000).hide('slow');
               }
-              alert.find('#msj').text(r.msj);
-            },
-            error: function(){
-              alert.removeClass('alert-success').addClass('alert-danger');
-              alert.find('#msj').text('An error has occurred.');
-            },
-            complete: function(){
-              btn.button('reset');
-              bar.hide();
-              alert.show().delay(7000).hide('slow');
-            }
-          });
+            });
           }
         });
       });
@@ -877,6 +899,7 @@ switch($opc):
                       <textarea id="descripcion" class="form-control" name="descripcion" rows="2" required></textarea>
                     </div>
                   </fieldset>
+
                   <fieldset id="fieldsTopes" style="display:none" disabled>
                     <div class="form-group">
                       <label class="control-label" for="tope_nombre">Name: *</label>

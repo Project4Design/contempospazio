@@ -21,6 +21,13 @@ class Configuracion{
 		return $return;
 	}
 
+	public function get_labor(){
+		$query = Query::run("SELECT config_regular_work,config_big_work FROM configuracion WHERE id_config = 1");
+		$data = (object) $query->fetch_array(MYSQLI_ASSOC);
+
+		return $data;
+	}
+
 	public function edit($tax,$earnings,$rwork,$bwork,$discount,$delivery,$shipment)
 	{
 		if($this->nivel=="A"){
@@ -45,6 +52,21 @@ class Configuracion{
 		}
 
 		echo json_encode($this->rh);
+	}
+
+	public function labor($val)
+	{
+		$labor = $this->get_labor();
+		switch ($val){
+			case '0':
+				$return = $labor->config_regular_work;	
+			break;
+			case '1':
+				$return = $labor->config_big_work;
+			break;
+		}
+
+		return $return;
 	}
 }//Class Configuracion
 

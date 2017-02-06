@@ -60,10 +60,11 @@ $config = $configuration->consulta();
 						          <p id="shape"><b>Forma:</b> <span id="other-shape"></span></p>
 						          <p><b>Meterial:</b> <span id="other-mat">-</span></p>
 						          <p><b>Color:</b> <span id="other-color">-</span></p>
-						          <p><b>Costo:</b> $<span id="other-price">-</span></p>
+						          <p><b>Price:</b> $<span id="other-price">-</span></p>
 		              	</div>
 		              	<div id="box-gabi" style="display:none">
 			              	<p><b>Item: </b> <span id="gabi-item"></span></p>
+			              	<p><b>Labor: </b> $<span id="gabi-labor"></span></p>
 			              	<p><b>Description: </b> <span id="gabi-desc"></span></p>
 		                	<table id="table-items" class="table table-bordered table-condensed">
 					              <thead>
@@ -198,7 +199,7 @@ $config = $configuration->consulta();
 		$('#type').change(function(){
 			var val = $(this).val();
 			$('#search').val('');
-			$('#other-price,#other-color,#other-mat,#other-shape,#other-name,#gabi-desc,#gabi-item,#p-type').text(' - ');
+			$('#other-price,#other-color,#other-mat,#other-shape,#other-name,#gabi-desc,#gabi-item,#gabi-labor,#p-type').text(' - ');
 			$('#foto').attr('src','images/no-image.png');
 			$('#tbody-item').empty();$('#tbody-item').append("<tr><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>");
 			clean();
@@ -237,6 +238,7 @@ $config = $configuration->consulta();
 								if(r.data.type=="1"){
 									//Asignar los datos a los campos de gabinete.
 									$('#gabi-item').text(r.data.item);
+									$('#gabi-labor').text(r.data.labor);
 									$('#gabi-desc').text(r.data.desc);
 									$('#tbody-item').empty(); $('#tbody-item').append(r.data.tr);
 								}else if(r.data.type=="2"||r.data.type=="3"){
@@ -307,11 +309,12 @@ $config = $configuration->consulta();
 
 		if(type=="1"){
 			var item  = $('#gabi-item').text();
+			var labor = $('#gabi-labor').text();
 			var desc  = $('#gabi-desc').text();
 			var cost  = $('#tbody-item td.item-active').text();
 			var price = Math.ceil((cost*discount)/100);
 			var sub   = (price*qty);
-			$('#tbody-list').append('<tr><td><button class="btn btn-flat btn-sm btn-danger delRow" type="button"><i class="fa fa-trash"></i></button></td><td>'+(rows)+'</td><td>-</td><td>'+desc+'</td><td>'+item+'</td><td>$'+cost+'</td><td>'+discount+'%</td><td>$'+price+'</td><td>'+qty+'</td><td>$<span ptype="1">'+sub+'</td>');
+			$('#tbody-list').append('<tr><td><button class="btn btn-flat btn-sm btn-danger delRow" type="button"><i class="fa fa-trash"></i></button></td><td>'+(rows)+'</td><td>-</td><td>'+desc+'</td><td>'+item+'</td><td>$'+cost+'</td><td>'+discount+'%</td><td>$'+price+'</td><td>'+qty+'</td><td>$<span ptype="1" labor='+labor+' qty='+qty+'>'+sub+'</td>');
 		}else if(type=="2"||type=="3"){
 			if(type=="2"){var shape = '<b>Shape:</b> '+$('#other-shape').text()+" | ";}else{var shape = "";}
 			var name  = $('#other-name').text();
@@ -370,7 +373,9 @@ $config = $configuration->consulta();
 			var x = $(this).find('td span');
 			var y = (x.text()*1);
 			var type = x.attr('ptype');
-			if(type=="1"){ deliv += ((y*delivery)/100); labor+=50; }
+			var qty = x.attr('qty');
+			var lab = x.attr('labor');
+			if(type=="1"){ deliv += ((y*delivery)/100); labor+= (qty*lab); }
 			sub += y;
 		});
 
