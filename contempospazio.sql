@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 25, 2017 at 12:07 AM
+-- Generation Time: Feb 06, 2017 at 05:09 AM
 -- Server version: 10.1.13-MariaDB
 -- PHP Version: 5.6.23
 
@@ -21,6 +21,103 @@ SET time_zone = "+00:00";
 --
 CREATE DATABASE IF NOT EXISTS `contempospazio` DEFAULT CHARACTER SET utf8 COLLATE utf8_spanish_ci;
 USE `contempospazio`;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `configuracion`
+--
+
+CREATE TABLE `configuracion` (
+  `id_config` int(10) UNSIGNED NOT NULL,
+  `config_tax` float(5,2) NOT NULL DEFAULT '0.00' COMMENT 'Impuesto',
+  `config_earnings` float(5,2) NOT NULL DEFAULT '0.00',
+  `config_regular_work` float(5,2) NOT NULL DEFAULT '0.00',
+  `config_big_work` float(5,2) NOT NULL DEFAULT '0.00' COMMENT 'Mano de obra',
+  `config_delivery` float(5,2) UNSIGNED NOT NULL DEFAULT '0.00',
+  `config_shipment` float(5,2) NOT NULL DEFAULT '0.00',
+  `config_discount` float(5,2) UNSIGNED NOT NULL DEFAULT '0.00'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci COMMENT='Variables de configuracion global del sistema';
+
+--
+-- Dumping data for table `configuracion`
+--
+
+INSERT INTO `configuracion` (`id_config`, `config_tax`, `config_earnings`, `config_regular_work`, `config_big_work`, `config_delivery`, `config_shipment`, `config_discount`) VALUES
+(1, 7.00, 50.00, 50.00, 60.00, 10.00, 5.00, 50.00);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `fregaderos`
+--
+
+CREATE TABLE `fregaderos` (
+  `id_fregadero` int(2) UNSIGNED NOT NULL,
+  `id_fc` int(1) UNSIGNED NOT NULL,
+  `id_fm` int(1) NOT NULL,
+  `freg_nombre` varchar(50) COLLATE utf8_spanish_ci NOT NULL,
+  `freg_forma` tinyint(1) NOT NULL,
+  `freg_costo` float(7,2) UNSIGNED NOT NULL,
+  `freg_foto` varchar(45) COLLATE utf8_spanish_ci DEFAULT NULL,
+  `freg_fecha_reg` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+--
+-- Dumping data for table `fregaderos`
+--
+
+INSERT INTO `fregaderos` (`id_fregadero`, `id_fc`, `id_fm`, `freg_nombre`, `freg_forma`, `freg_costo`, `freg_foto`, `freg_fecha_reg`) VALUES
+(1, 3, 4, 'Fregadero', 2, 20.00, '9194be35616cc644d1a409a323196517c7928af5.png', '2017-02-03 03:36:06');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `fregaderos_colores`
+--
+
+CREATE TABLE `fregaderos_colores` (
+  `id_fc` int(1) UNSIGNED NOT NULL,
+  `fc_nombre` varchar(30) COLLATE utf8_spanish_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+--
+-- Dumping data for table `fregaderos_colores`
+--
+
+INSERT INTO `fregaderos_colores` (`id_fc`, `fc_nombre`) VALUES
+(1, 'Azul'),
+(3, 'Rojo'),
+(4, 'Verde'),
+(5, 'Negro'),
+(6, 'Violeta'),
+(7, 'Cyan'),
+(8, 'Nuevo'),
+(9, 'New'),
+(10, 'Otro');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `fregaderos_materiales`
+--
+
+CREATE TABLE `fregaderos_materiales` (
+  `id_fm` int(1) UNSIGNED NOT NULL,
+  `fm_nombre` varchar(30) COLLATE utf8_spanish_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+--
+-- Dumping data for table `fregaderos_materiales`
+--
+
+INSERT INTO `fregaderos_materiales` (`id_fm`, `fm_nombre`) VALUES
+(1, 'Porcelana'),
+(2, 'Vidrio'),
+(3, 'Ceramica'),
+(4, 'Otro'),
+(5, 'C'),
+(6, 'Cascasc');
 
 -- --------------------------------------------------------
 
@@ -78,12 +175,17 @@ INSERT INTO `gabinetes_prod` (`id_gp`, `id_gabi`, `gp_codigo`, `gp_gs`, `gp_mgc`
 -- --------------------------------------------------------
 
 --
--- Table structure for table `gp_colores`
+-- Table structure for table `productos`
 --
 
-CREATE TABLE `gp_colores` (
-  `id_gpc` int(10) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci COMMENT='Colores y precios de los gabinetes';
+CREATE TABLE `productos` (
+  `id_producto` int(2) NOT NULL,
+  `prod_categoria` tinyint(1) UNSIGNED NOT NULL,
+  `prod_nombre` varchar(50) COLLATE utf8_spanish_ci NOT NULL,
+  `prod_costo` float(6,2) NOT NULL,
+  `prod_foto` varchar(45) COLLATE utf8_spanish_ci DEFAULT NULL,
+  `prod_fecha_reg` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 -- --------------------------------------------------------
 
@@ -137,6 +239,67 @@ INSERT INTO `prov_colores` (`id_pcolor`, `id_prov`, `color_nombre`, `color_abrev
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `topes`
+--
+
+CREATE TABLE `topes` (
+  `id_tope` int(2) UNSIGNED NOT NULL,
+  `id_tc` int(1) UNSIGNED NOT NULL,
+  `id_tm` int(1) UNSIGNED NOT NULL,
+  `tope_nombre` varchar(50) COLLATE utf8_spanish_ci NOT NULL,
+  `tope_costo` float(7,2) UNSIGNED NOT NULL,
+  `tope_foto` varchar(45) COLLATE utf8_spanish_ci DEFAULT NULL,
+  `tope_fecha_reg` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+--
+-- Dumping data for table `topes`
+--
+
+INSERT INTO `topes` (`id_tope`, `id_tc`, `id_tm`, `tope_nombre`, `tope_costo`, `tope_foto`, `tope_fecha_reg`) VALUES
+(3, 5, 6, 'top', 15.00, NULL, '2017-02-06 03:06:38');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `topes_colores`
+--
+
+CREATE TABLE `topes_colores` (
+  `id_tc` int(1) UNSIGNED NOT NULL,
+  `tc_nombre` varchar(30) COLLATE utf8_spanish_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+--
+-- Dumping data for table `topes_colores`
+--
+
+INSERT INTO `topes_colores` (`id_tc`, `tc_nombre`) VALUES
+(5, 'Crimson'),
+(6, 'White');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `topes_materiales`
+--
+
+CREATE TABLE `topes_materiales` (
+  `id_tm` int(1) UNSIGNED NOT NULL,
+  `tm_nombre` varchar(30) COLLATE utf8_spanish_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+--
+-- Dumping data for table `topes_materiales`
+--
+
+INSERT INTO `topes_materiales` (`id_tm`, `tm_nombre`) VALUES
+(6, 'Marbel'),
+(7, 'Granite');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `usuarios`
 --
 
@@ -166,6 +329,30 @@ INSERT INTO `usuarios` (`id_user`, `user_eliminado`, `user_nivel`, `user_estado`
 --
 
 --
+-- Indexes for table `configuracion`
+--
+ALTER TABLE `configuracion`
+  ADD PRIMARY KEY (`id_config`);
+
+--
+-- Indexes for table `fregaderos`
+--
+ALTER TABLE `fregaderos`
+  ADD PRIMARY KEY (`id_fregadero`);
+
+--
+-- Indexes for table `fregaderos_colores`
+--
+ALTER TABLE `fregaderos_colores`
+  ADD PRIMARY KEY (`id_fc`);
+
+--
+-- Indexes for table `fregaderos_materiales`
+--
+ALTER TABLE `fregaderos_materiales`
+  ADD PRIMARY KEY (`id_fm`);
+
+--
 -- Indexes for table `gabinetes`
 --
 ALTER TABLE `gabinetes`
@@ -178,10 +365,10 @@ ALTER TABLE `gabinetes_prod`
   ADD PRIMARY KEY (`id_gp`);
 
 --
--- Indexes for table `gp_colores`
+-- Indexes for table `productos`
 --
-ALTER TABLE `gp_colores`
-  ADD PRIMARY KEY (`id_gpc`);
+ALTER TABLE `productos`
+  ADD PRIMARY KEY (`id_producto`);
 
 --
 -- Indexes for table `proveedores`
@@ -196,6 +383,24 @@ ALTER TABLE `prov_colores`
   ADD PRIMARY KEY (`id_pcolor`);
 
 --
+-- Indexes for table `topes`
+--
+ALTER TABLE `topes`
+  ADD PRIMARY KEY (`id_tope`);
+
+--
+-- Indexes for table `topes_colores`
+--
+ALTER TABLE `topes_colores`
+  ADD PRIMARY KEY (`id_tc`);
+
+--
+-- Indexes for table `topes_materiales`
+--
+ALTER TABLE `topes_materiales`
+  ADD PRIMARY KEY (`id_tm`);
+
+--
 -- Indexes for table `usuarios`
 --
 ALTER TABLE `usuarios`
@@ -206,20 +411,40 @@ ALTER TABLE `usuarios`
 --
 
 --
+-- AUTO_INCREMENT for table `configuracion`
+--
+ALTER TABLE `configuracion`
+  MODIFY `id_config` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+--
+-- AUTO_INCREMENT for table `fregaderos`
+--
+ALTER TABLE `fregaderos`
+  MODIFY `id_fregadero` int(2) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+--
+-- AUTO_INCREMENT for table `fregaderos_colores`
+--
+ALTER TABLE `fregaderos_colores`
+  MODIFY `id_fc` int(1) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+--
+-- AUTO_INCREMENT for table `fregaderos_materiales`
+--
+ALTER TABLE `fregaderos_materiales`
+  MODIFY `id_fm` int(1) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+--
 -- AUTO_INCREMENT for table `gabinetes`
 --
 ALTER TABLE `gabinetes`
-  MODIFY `id_gabi` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_gabi` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 --
 -- AUTO_INCREMENT for table `gabinetes_prod`
 --
 ALTER TABLE `gabinetes_prod`
-  MODIFY `id_gp` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id_gp` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 --
--- AUTO_INCREMENT for table `gp_colores`
+-- AUTO_INCREMENT for table `productos`
 --
-ALTER TABLE `gp_colores`
-  MODIFY `id_gpc` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE `productos`
+  MODIFY `id_producto` int(2) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `proveedores`
 --
@@ -230,6 +455,21 @@ ALTER TABLE `proveedores`
 --
 ALTER TABLE `prov_colores`
   MODIFY `id_pcolor` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+--
+-- AUTO_INCREMENT for table `topes`
+--
+ALTER TABLE `topes`
+  MODIFY `id_tope` int(2) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+--
+-- AUTO_INCREMENT for table `topes_colores`
+--
+ALTER TABLE `topes_colores`
+  MODIFY `id_tc` int(1) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+--
+-- AUTO_INCREMENT for table `topes_materiales`
+--
+ALTER TABLE `topes_materiales`
+  MODIFY `id_tm` int(1) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 --
 -- AUTO_INCREMENT for table `usuarios`
 --

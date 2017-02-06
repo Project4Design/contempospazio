@@ -1,9 +1,7 @@
 <?
 require_once 'config/config.php';
 
-$a = ($_FILES['foto']['name'])? "s" : "n";
-
-echo $a;
+echo base64_decode("OTgy");
 
 ?>
 

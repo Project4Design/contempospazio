@@ -70,16 +70,19 @@ $(document).ready(function() {
 
   $('.b-submit').click(function(e){
     e.preventDefault();
-    var bid = this.id;
-    $('#'+bid).button('loading');
-    var form = $(this).closest('form');
+    var btn    = $(this);
+    var form   = btn.closest('form');
     var action = form.attr('action');
-    var fid = form.attr('id');
-    $('#'+fid+' .progress').show();
-    $('#'+fid+' .alert').hide('fast');
+    var bar    = form.find('.progress');
+    var alert  = form.find('.alert');
+
+    alert.hide();
+    btn.button('loading');
+    bar.show();
+
     //Validacion
-    var fields = $('#'+fid+' input,#'+fid+' select').filter('[required]').length;
-    $('#'+fid+' input,#'+fid+' select').filter('[required]').each(function(){
+    var fields = form.find('input,select').filter('[required]').length;
+    form.find('input,select').filter('[required]').each(function(){
       var regex = $(this).attr('pattern');
       var val   = $(this).val();
       if(val == ""){
@@ -99,11 +102,11 @@ $(document).ready(function() {
     });
 
     if(fields!=0){
-      $('#'+fid+' .alert').removeClass('alert-success').addClass('alert-danger');
-      $('#'+fid+' .alert #msj').html('Debe completar todos los campos requeridos');
-      $('#'+fid+' .progress').hide();
-      $('#'+bid).button('reset');
-      $('#'+fid+' .alert').show().delay(7000).hide('slow');
+      alert.removeClass('alert-success').addClass('alert-danger');
+      alert.find('#msj').text('You must complete all required fields.');
+      bar.hide();
+      btn.button('reset');
+      alert.show().delay(7000).hide('slow');
     }else{
       $.ajax({
         type: 'POST',
@@ -112,28 +115,27 @@ $(document).ready(function() {
         data: form.serialize(),
         dataType: 'json',
         success: function(r){
-          if(r.response){
-            $('#'+fid+' .alert').removeClass('alert-danger').addClass('alert-success');
+          if(r.response==true){
+            alert.removeClass('alert-danger').addClass('alert-success');
             form[0].reset();
-            console.log("reset?");
           }else if(r.response=="mod"){
-            $('#'+fid+' .alert').removeClass('alert-danger').addClass('alert-success');
+            alert.removeClass('alert-danger').addClass('alert-success');
           }else{
-            $('#'+fid+' .alert').removeClass('alert-info alert-success').addClass('alert-danger');
+            alert.removeClass('alert-info alert-success').addClass('alert-danger');
           }
-          $('#'+fid+' .alert #msj').html(r.msj);
+          alert.find('#msj').html(r.msj);
           if(r.reload){
             location.replace(r.redirect);
           }
         },
         error: function(){
-          $('#'+fid+' .alert').removeClass('alert-info alert-success').addClass('alert-danger');
-          $('#'+fid+' .alert #msj').text('Ah ocurrido un error inesperado');
+          alert.removeClass('alert-info alert-success').addClass('alert-danger');
+          alert.find('#msj').text('Ah ocurrido un error inesperado');
         },
         complete: function(r){
-          $('#'+fid+' .progress').hide();
-          $('#'+bid).button('reset');
-          $('#'+fid+' .alert').show().delay(7000).hide('slow');
+          bar.hide();
+          btn.button('reset');
+          alert.show().delay(7000).hide('slow');
         }
       })
     }
@@ -175,4 +177,16 @@ function loadBasic(){
       'url':'includes/js/spanish.json',
     },
   });
+}
+
+function addCommas(nStr){
+  nStr += '';
+  x = nStr.split('.');
+  x1 = x[0];
+  x2 = x.length > 1 ? '.' + x[1] : '';
+  var rgx = /(\d+)(\d{3})/;
+  while (rgx.test(x1)) {
+    x1 = x1.replace(rgx, '$1' + ',' + '$2');
+  }
+  return x1 + x2;
 }

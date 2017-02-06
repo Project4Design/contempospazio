@@ -57,7 +57,7 @@ if(isset($_GET['id'])){ $id = $_GET['id']; }else{ $id = 0; }
     <?=Base::Js("includes/js/jquery.easing.min.js")?>
   </head>
 
-  <body class="hold-transition skin-blue sidebar-mini">
+  <body id="main-body" class="hold-transition skin-blue sidebar-mini">
     <div class="wrapper">
       <header class="main-header">
         <!-- Logo -->
@@ -66,7 +66,7 @@ if(isset($_GET['id'])){ $id = $_GET['id']; }else{ $id = 0; }
           <span class="logo-mini"><b>P</b>TILLA</span>
           -->
           <!-- logo for regular state and mobile devices -->
-          <span class="logo-lg"><b>SIPRE</b></span>
+          <span class="logo-lg"><b>CONTEMPOSPAZIO</b></span>
         </a>
 
         <!-- Header Navbar: style can be found in header.less -->
@@ -81,30 +81,30 @@ if(isset($_GET['id'])){ $id = $_GET['id']; }else{ $id = 0; }
               <!-- Messages: style can be found in dropdown.less-->
               <!-- User Account: style can be found in dropdown.less -->
               <li class="dropdown user user-menu">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <!-- <img src="dist/img/user2-160x160.jpg" class="user-image" alt="User Image"> -->
-              <span><?=$_SESSION['nombre']?></span>
-            </a>
-            <ul class="dropdown-menu">
-              <!-- User image -->
-              <li class="user-header">
-                <!--<img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">-->
-                <p>
-                  <?=$_SESSION['email']?><br>
-                </p>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                  <!-- <img src="dist/img/user2-160x160.jpg" class="user-image" alt="User Image"> -->
+                  <span><?=$_SESSION['nombre']?></span>
+                </a>
+                <ul class="dropdown-menu">
+                  <!-- User image -->
+                  <li class="user-header">
+                    <!--<img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">-->
+                    <p>
+                      <?=$_SESSION['email']?><br>
+                    </p>
+                  </li>
+                  <!-- Menu Footer-->
+                  <li class="user-footer">
+                    <div class="pull-left">
+                      <a href="?ver=perfil" class="btn btn-default btn-flat"><i class="fa fa-user" aria-hidden="true"></i> Mi Profile</a>
+                    </div>
+                    <div class="pull-right">
+                      <a id="b-logout" href="#" class="btn btn-default btn-flat"><i class="fa fa-sign-out" aria-hidden="true"></i> Logout</a>
+                    </div>
+                  </li>
+                </ul>
               </li>
-              <!-- Menu Footer-->
-              <li class="user-footer">
-                <div class="pull-left">
-                  <a href="?ver=perfil" class="btn btn-default btn-flat"><i class="fa fa-user" aria-hidden="true"></i> Mi Perfil</a>
-                </div>
-                <div class="pull-right">
-                  <a id="b-logout" href="#" class="btn btn-default btn-flat"><i class="fa fa-sign-out" aria-hidden="true"></i> Salir</a>
-                </div>
-              </li>
-            </ul>
-          </li>
-          <!-- Control Sidebar Toggle Button -->
+              <!-- Control Sidebar Toggle Button -->
             </ul>
           </div>
         </nav>
@@ -126,16 +126,23 @@ if(isset($_GET['id'])){ $id = $_GET['id']; }else{ $id = 0; }
               </a>
             </li>
 
+            <li class="<?=($inicio=='cotizacion')?'active':''?>">
+              <a href="?ver=cotizacion">
+                <i class="glyphicon glyphicon-list-alt" aria-hidden="true"></i>
+                <span>Quotation</span>
+              </a>
+            </li>
+
             <? if($_SESSION['nivel'] == "A"): ?>
             <li class="treeview <?=($inicio=="usuarios")?'active':'';?>">
               <a href="#">
                 <i class="fa fa-users"></i>
-                <span>Usuarios</span>
+                <span>Users</span>
                 <i class="fa fa-angle-left pull-right"></i>
               </a>
-              <ul class="treeview-menu">
-                <li><a href="?ver=usuarios"><i class="fa fa-circle-o"></i>Ver Usuarios</a></li>
-                <li><a href="?ver=usuarios&opc=add"><i class="fa fa-circle-o"></i>Agregar Usuario</a></li>
+              <ul class="treeview-menu <?=($inicio=='usuarios')?'active':'';?>">
+                <li><a href="?ver=usuarios"><i class="fa fa-circle-o"></i>Users</a></li>
+                <li><a href="?ver=usuarios&opc=add"><i class="fa fa-circle-o"></i>Add User</a></li>
               </ul>
             </li>
             <? endif; ?>
@@ -152,31 +159,37 @@ if(isset($_GET['id'])){ $id = $_GET['id']; }else{ $id = 0; }
               </ul>
             </li>
 -->
-            <li>
-              <a href="?ver=productos">
-                <i class="fa fa-columns" aria-hidden="true"></i>
-                <span>Productos</span>
+
+            <li class="treeview <?=($inicio=="productos")?'active':'';?>">
+              <a href="#">
+                <i class="fa fa-columns"></i>
+                <span>Products</span>
+                <i class="fa fa-angle-left pull-right"></i>
               </a>
+              <ul class="treeview-menu <?=($inicio=='productos')?'active':'';?>">
+                <li><a href="?ver=productos"><i class="fa fa-circle-o"></i>Products</a></li>
+                <li><a href="?ver=productos&opc=add"><i class="fa fa-circle-o"></i>Add product</a></li>
+              </ul>
             </li>
 
             <li>
               <a href="#">
                 <i class="fa fa-cubes" aria-hidden="true"></i>
-                <span>Materiales</span>
+                <span>Materials</span>
               </a>
             </li>
 
-            <li>
+            <li class="<?=($inicio=='estadisticas')?'active':''?>">
               <a href="#">
                 <i class="fa fa-area-chart" aria-hidden="true"></i>
-                <span>Estadisticas</span>
+                <span>Statistics</span>
               </a>
             </li>
 
-            <li>
+            <li class="<?=($inicio=='configuracion')?'active':''?>">
               <a href="?ver=configuracion">
                 <i class="fa fa-cogs" aria-hidden="true"></i>
-                <span>Configuraci&oacute;n</span>
+                <span>Configuration</span>
               </a>
             </li>
 

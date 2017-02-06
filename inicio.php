@@ -15,11 +15,14 @@ else:
 				require_once 'views/prohibido.php';
 			endif;
 		break;
-		case 'proveedores':
-			require_once 'views/proveedores.php';
+		case 'configuracion':
+			require_once 'views/configuracion.php';
 		break;
 		case 'productos':
 			require_once 'views/productos.php';
+		break;
+		case 'cotizacion':
+			require_once 'views/cotizacion.php';
 		break;
 		default:
 			$usuarios  = new Usuarios();
@@ -28,14 +31,16 @@ else:
 
 			$productos = new Productos();
 			//Total de productos
-			$totalp    = count($productos->consulta());
+			$totalg = count($productos->consulta_gabinetes());
+			$totalf = count($productos->consulta_fregaderos());
+			$totalt = count($productos->consulta_topes());
 		?>
 	    <section class="content-header">
 	      <h1 class="text-center">
 	        CONTEMPOSPAZIO
 	      </h1>
 	      <ol class="breadcrumb">
-	        <li><a href="#"><i class="fa fa-dashboard"></i> Inicio</a></li>
+	        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
 	      </ol>
 	    </section>
 
@@ -48,13 +53,13 @@ else:
 		          <div class="inner">
 		            <h3><?=$totaluser?></h3>
 
-		            <p>Usuarios</p>
+		            <p>Users</p>
 		          </div>
 		          <div class="icon">
 		            <i class="fa fa-user-plus"></i>
 		          </div>
 		          <a href="?ver=usuarios" class="small-box-footer">
-		            Mas informacion <i class="fa fa-arrow-circle-right"></i>
+		            More info <i class="fa fa-arrow-circle-right"></i>
 		          </a>
 		        </div>
 		      </div>
@@ -62,15 +67,15 @@ else:
 					<div class="col-md-3 col-sm-6 col-xs-12">
 		        <div class="small-box bg-red">
 	            <div class="inner">
-	              <h3><?=$totalp?></h3>
+	              <h3><?=($totalg+$totalf+$totalt)?></h3>
 
-	              <p>Productos</p>
+	              <p>Products</p>
 	            </div>
 	            <div class="icon">
 	              <i class="fa fa-columns"></i>
 	            </div>
 	            <a href="?ver=productos" class="small-box-footer">
-	              Mas informacion <i class="fa fa-arrow-circle-right"></i>
+	              More info <i class="fa fa-arrow-circle-right"></i>
 	            </a>
 	          </div>
 	        </div>
@@ -80,13 +85,13 @@ else:
 	            <div class="inner">
 	              <h3>0</h3>
 
-	              <p>Materiales</p>
+	              <p>Materials</p>
 	            </div>
 	            <div class="icon">
 	              <i class="fa fa-cubes"></i>
 	            </div>
 	            <a href="#" class="small-box-footer">
-	              Mas informacion <i class="fa fa-arrow-circle-right"></i>
+	              More info <i class="fa fa-arrow-circle-right"></i>
 	            </a>
 	          </div>
 	        </div>
