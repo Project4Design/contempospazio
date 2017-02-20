@@ -1,6 +1,6 @@
 <?
 require_once 'config/config.php';
-if(isset($_GET['ver'])){ $inicio = $_GET['ver']; }else{ $inicio = ""; }
+if(isset($_GET['ver'])){ $inicio = $_GET['ver']; }else{ $inicio = "index"; }
 if(isset($_GET['opc'])){ $opc = $_GET['opc']; }else{ $opc = ""; }
 if(isset($_GET['id'])){ $id = $_GET['id']; }else{ $id = 0; }
 
@@ -12,6 +12,8 @@ if(isset($_GET['id'])){ $id = $_GET['id']; }else{ $id = 0; }
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
       <!-- Tell the browser to be responsive to screen width -->
+    <link rel="icon" href="images/favicon.ico" sizes="16x16 32x32" type="image/pico">
+
     <?=Base::Meta("viewport","width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no")?>
 
     <!-- Bootstrap 3.3.5 -->
@@ -34,15 +36,14 @@ if(isset($_GET['id'])){ $id = $_GET['id']; }else{ $id = 0; }
     <?=Base::Css("includes/css/AdminLTE.min.css")?>
 
     <!-- Datatable -->
-    <?=Base::Css("plugins/datatables/dataTables.bootstrap.css")?>
+    <?=Base::Css("includes/css/datatables.min.css")?>
 
     <?=Base::Js("includes/js/jquery-2.2.1.min.js")?>
     <?=Base::Js("includes/js/bootstrap.js")?>
     <?=Base::Js("includes/js/bootstrap-switch.min.js")?>
 
     <!-- Datatable -->
-    <?=Base::Js("plugins/datatables/jquery.dataTables.min.js")?>
-    <?=Base::Js("plugins/datatables/dataTables.bootstrap.min.js")?>
+    <?=Base::Js("includes/js/datatables.min.js")?>
 
     <?=Base::Js("includes/js/highcharts.js")?>
     <!-- AdminLTE App -->
@@ -57,14 +58,14 @@ if(isset($_GET['id'])){ $id = $_GET['id']; }else{ $id = 0; }
     <?=Base::Js("includes/js/jquery.easing.min.js")?>
   </head>
 
-  <body id="main-body" class="hold-transition skin-blue sidebar-mini">
+  <body id="main-body" class="hold-transition skin-red sidebar-mini">
     <div class="wrapper">
       <header class="main-header">
         <!-- Logo -->
         <a href="inicio.php" class="logo">
-          <!-- mini logo for sidebar mini 50x50 pixels --><!--
-          <span class="logo-mini"><b>P</b>TILLA</span>
-          -->
+          <!-- mini logo for sidebar mini 50x50 pixels -->
+          <span class="logo-mini"><img class="img-responsive" src="images/logo.jpg" alt="Logo Contempospazio"/ style="height: 50px"></span>
+          
           <!-- logo for regular state and mobile devices -->
           <span class="logo-lg"><b>CONTEMPOSPAZIO</b></span>
         </a>
@@ -96,7 +97,7 @@ if(isset($_GET['id'])){ $id = $_GET['id']; }else{ $id = 0; }
                   <!-- Menu Footer-->
                   <li class="user-footer">
                     <div class="pull-left">
-                      <a href="?ver=perfil" class="btn btn-default btn-flat"><i class="fa fa-user" aria-hidden="true"></i> Mi Profile</a>
+                      <a href="?ver=profile" class="btn btn-default btn-flat"><i class="fa fa-user" aria-hidden="true"></i> My Profile</a>
                     </div>
                     <div class="pull-right">
                       <a id="b-logout" href="#" class="btn btn-default btn-flat"><i class="fa fa-sign-out" aria-hidden="true"></i> Logout</a>
@@ -127,9 +128,16 @@ if(isset($_GET['id'])){ $id = $_GET['id']; }else{ $id = 0; }
             </li>
 
             <li class="<?=($inicio=='cotizacion')?'active':''?>">
-              <a href="?ver=cotizacion">
-                <i class="glyphicon glyphicon-list-alt" aria-hidden="true"></i>
+              <a href="?ver=quotation">
+                <i class="fa fa-calculator" aria-hidden="true"></i>
                 <span>Quotation</span>
+              </a>
+            </li>
+
+            <li class="<?=($inicio=='orders')?'active':''?>">
+              <a href="?ver=orders">
+                <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                <span>Orders</span>
               </a>
             </li>
 
@@ -141,53 +149,54 @@ if(isset($_GET['id'])){ $id = $_GET['id']; }else{ $id = 0; }
                 <i class="fa fa-angle-left pull-right"></i>
               </a>
               <ul class="treeview-menu <?=($inicio=='usuarios')?'active':'';?>">
-                <li><a href="?ver=usuarios"><i class="fa fa-circle-o"></i>Users</a></li>
-                <li><a href="?ver=usuarios&opc=add"><i class="fa fa-circle-o"></i>Add User</a></li>
+                <li><a href="?ver=users"><i class="fa fa-circle-o"></i>Users</a></li>
+                <li><a href="?ver=users&opc=add"><i class="fa fa-circle-o"></i>Add User</a></li>
               </ul>
             </li>
             <? endif; ?>
-<!--
-            <li class="treeview <?=($inicio=="proveedores")?'active':'';?>">
+
+            <? if($_SESSION['nivel'] == "A"): ?>
+            <li class="treeview <?=($inicio=="clients")?'active':'';?>">
               <a href="#">
-                <i class="fa fa-truck"></i>
-                <span>Proveedores</span>
+                <i class="fa fa-address-book-o"></i>
+                <span>Clients</span>
                 <i class="fa fa-angle-left pull-right"></i>
               </a>
-              <ul class="treeview-menu">
-                <li><a href="?ver=proveedores"><i class="fa fa-circle-o"></i>Ver Proveedores</a></li>
-                <li><a href="?ver=proveedores&opc=add"><i class="fa fa-circle-o"></i>Agregar Proveedor</a></li>
+              <ul class="treeview-menu <?=($inicio=='clients')?'active':'';?>">
+                <li><a href="?ver=clients"><i class="fa fa-circle-o"></i>Clients</a></li>
+                <li><a href="?ver=clients&opc=add"><i class="fa fa-circle-o"></i>Add Client</a></li>
               </ul>
             </li>
--->
+            <? endif; ?>
 
-            <li class="treeview <?=($inicio=="productos")?'active':'';?>">
+            <li class="treeview <?=($inicio=="products")?'active':'';?>">
               <a href="#">
-                <i class="fa fa-columns"></i>
+                <i class="fa fa-cubes"></i>
                 <span>Products</span>
                 <i class="fa fa-angle-left pull-right"></i>
               </a>
-              <ul class="treeview-menu <?=($inicio=='productos')?'active':'';?>">
-                <li><a href="?ver=productos"><i class="fa fa-circle-o"></i>Products</a></li>
-                <li><a href="?ver=productos&opc=add"><i class="fa fa-circle-o"></i>Add product</a></li>
+              <ul class="treeview-menu <?=($inicio=='products')?'active':'';?>">
+                <li><a href="?ver=products"><i class="fa fa-circle-o"></i>Products</a></li>
+                <li><a href="?ver=products&opc=add"><i class="fa fa-circle-o"></i>Add product</a></li>
               </ul>
             </li>
-
+<!--
             <li>
               <a href="#">
                 <i class="fa fa-cubes" aria-hidden="true"></i>
                 <span>Materials</span>
               </a>
             </li>
-
-            <li class="<?=($inicio=='estadisticas')?'active':''?>">
-              <a href="#">
+-->
+            <li class="<?=($inicio=='statistics')?'active':''?>">
+              <a href="?ver=statistics">
                 <i class="fa fa-area-chart" aria-hidden="true"></i>
                 <span>Statistics</span>
               </a>
             </li>
 
-            <li class="<?=($inicio=='configuracion')?'active':''?>">
-              <a href="?ver=configuracion">
+            <li class="<?=($inicio=='configuration')?'active':''?>">
+              <a href="?ver=configuration">
                 <i class="fa fa-cogs" aria-hidden="true"></i>
                 <span>Configuration</span>
               </a>

@@ -1,10 +1,12 @@
 <?
-require "../funciones/dompdf/dompdf_config.inc.php";
+require_once "../vendor/mpdf/mpdf.php";
+
 class Pdf{
 	private $pdf;
 
 	public function __CONSTRUCT()
 	{
+		$this->pdf = new Mpdf();
 	}
 
 	public function build($content,$header = "",$footer = "")

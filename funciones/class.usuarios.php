@@ -19,7 +19,6 @@ class Usuarios{
 
 	public function consulta()
 	{
-
     $query = Query::run("SELECT * FROM usuarios WHERE user_eliminado = 0");
     $data = array();
 
@@ -62,19 +61,19 @@ class Usuarios{
 			$query = Query::prun("SELECT user_email FROM usuarios WHERE user_eliminado = ? AND user_email = ? LIMIT 1",array("is","0",$email));
 
 			if($query->result->num_rows>0){
-	    	$this->rh->setResponse(false,"Correo ya registrado.");
+	    	$this->rh->setResponse(false,"Email already registered.");
 			}else{
 		  	$query = Query::prun("INSERT INTO usuarios (user_nivel,user_estado,user_nombres,user_apellidos,user_email,user_pass,user_telefono)
 											VALUES(?,?,?,?,?,?,?)",
 											array("sssssss",$nivel,$estado,$nombres,$apellidos,$email,$pass,$telefono));
 		  	if($query->response){
-					$this->rh->setResponse(true,"Registro exitoso! <a href=\"?ver=usuarios&opc=ver&id={$query->id}\">Ver usuario</a>");
+					$this->rh->setResponse(true,"User registered! <a href=\"?ver=users&opc=ver&id={$query->id}\">See details</a>");
 		  	}else{
-					$this->rh->setResponse(false,"Ha ocurrido un error.");
+					$this->rh->setResponse(false,"An error has ocurred.");
 		  	}
 			}
 		}else{
-			$this->sh->setResponse(false,"No tienes permisos para realizar esta accion");
+			$this->sh->setResponse(false,"You don't have permission to make this accion.");
 		}
 
 		echo json_encode($this->rh);
@@ -87,7 +86,7 @@ class Usuarios{
 			$query = Query::prun("SELECT user_email FROM usuarios WHERE user_eliminado = ? AND user_email = ? AND id_user != ? LIMIT 1",array("isi","0",$email,$id));
 
 			if($query->result->num_rows>0){
-			  $this->rh->setResponse(false,"Ya existe un usuario registrado con este email.");
+			  $this->rh->setResponse(false,"Email already registered.");
 			}else{
 		  	$query = Query::prun("UPDATE usuarios SET
 		  												user_nivel     = ?,
@@ -99,13 +98,13 @@ class Usuarios{
 														WHERE id_user = ? LIMIT 1",
 														array("ssssssi",$nivel,$estado,$nombres,$apellidos,$email,$telefono,$id));
 		  	if($query->response){
-					$this->rh->setResponse(true,"Cambios guardados con exito!",true,"inicio.php?ver=usuarios&opc=ver&id=".$id);
+					$this->rh->setResponse(true,"Changes have been saved.",true,"inicio.php?ver=users&opc=ver&id=".$id);
 			  }else{
-			    $this->rh->setResponse(false,"Ha ocurrido un error inesperado.");
+			    $this->rh->setResponse(false,"An error has ocurred.");
 			  }
 			}
 		}else{
-			$this->rh->setResponse(false,"No tienes permisos para realizar esta accion.");
+			$this->sh->setResponse(false,"You don't have permission to make this accion.");
 		}
 
 		echo json_encode($this->rh);
@@ -127,9 +126,9 @@ class Usuarios{
 													WHERE id_user = ? LIMIT 1",
 													array("ssssi",$nombres,$apellidos,$email,$telefono,$this->user));
 	  	if($query->response){
-				$this->rh->setResponse(true,"Cambios guardados con exito!",true,"inicio.php?ver=perfil");
+				$this->rh->setResponse(true,"Changes has been saved!",true,"inicio.php?ver=profile");
 		  }else{
-		    $this->rh->setResponse(false,"Ha ocurrido un error inesperado.");
+		    $this->rh->setResponse(false,"An error has ocurred.");
 		  }
 		}
 		echo json_encode($this->rh);
@@ -148,15 +147,15 @@ class Usuarios{
 				$query = Query::prun("UPDATE usuarios SET user_pass = ? WHERE id_user = ? LIMIT 1",array("si",$nueva,$this->user));
 
 				if($query->response){
-					$this->rh->setResponse(true,"Contraseña actualizada");
+					$this->rh->setResponse(true,"Password changed.");
 				}else{
-					$this->rh->setResponse(false,"Ha ocurrido un error. Intente mas tarde");
+					$this->rh->setResponse(false,"An error has ocurred.");
 				}
 			}else{
-				$this->rh->setResponse(false,"Contraseña incorrecta");
+				$this->rh->setResponse(false,"Wrong password.");
 			}
 		}else{
-			$this->rh->setResponse(false,"Ha ocurrido un error");
+			$this->rh->setResponse(false,"User not found.");
 		}
 
 		echo json_encode($this->rh);
@@ -172,21 +171,21 @@ class Usuarios{
 
 			if($query->response){
 				if($estado == "A"){
-					$a = "Activado";
+					$a = "Enabled";
 					$r = 1;
 					$b = "<button id=\"btn-activar\" class=\"btn btn-flat btn-danger\" data-toggle=\"modal\" data-target=\"#activarModal\" data-title=\"Desactivar\" data-val=\"I\"></i><i class=\"fa fa-close\" aria-hidden=\"true\">&nbsp;Desactivar</button>";
 				}else{
-					$a = "Desactivado";
+					$a = "Disabled";
 					$b = "<button id=\"btn-activar\" class=\"btn btn-flat btn-success\" data-toggle=\"modal\" data-target=\"#activarModal\" data-title=\"Activar\" data-val=\"A\"><i class=\"fa fa-check\" aria-hidden=\"true\"></i>&nbsp;Activar</button>";
 					$r = 0;
 				}
-				$this->rh->setResponse(true,"El usuario ha sido <b>".$a."</b>");
+				$this->rh->setResponse(true,"The user has been <b>".$a."</b>");
 				$this->rh->data = array("e"=>$r,"b"=>$b);
 			}else{
-				$this->rh->setResponse(false,"Ha ocurrido un error inesperado.");
+				$this->rh->setResponse(false,"An error has ocurred.");
 			}
 		}else{
-			$this->rh->setResponse(false,"Usuario no encontrado.");
+			$this->rh->setResponse(false,"User not found.");
 		}
 
 		echo json_encode($this->rh);
@@ -211,16 +210,16 @@ class Usuarios{
 				$done = Query::prun("UPDATE usuarios SET user_pass = ? WHERE id_user = ? LIMIT 1",array("si",$hash,$id));
 
 				if($done->response){
-					$this->rh->setResponse(true,"La contraseña ha sido cambiada.");
+					$this->rh->setResponse(true,"Password has been changed.");
 					$this->rh->data = $pass;
 				}else{
-					$this->rh->setResponse(false,"Ha ocurrido un error inesperado.");
+					$this->rh->setResponse(false,"An error has ocurred.");
 				}
 			}else{
-				$this->rh->setResponse(false,"Usuario no encontrao.");
+				$this->rh->setResponse(false,"User not found.");
 			}
 		}else{
-			$this->rh->setResponse(false,"No tienes permisos para realizar esta accion.");
+			$this->sh->setResponse(false,"You don't have permission to make this accion.");
 		}
 
 		echo json_encode($this->rh);
@@ -235,16 +234,16 @@ class Usuarios{
 				$query = Query::prun("UPDATE usuarios SET user_eliminado = ? WHERE id_user = ?",array("ii","1",$usuario));
 
 				if($query->response){
-					$this->rh->setResponse(false,"Usuario eliminado!",true,"inicio.php?ver=usuarios");
+					$this->rh->setResponse(false,"User deleted.",true,"inicio.php?ver=users");
 				}else{
-					$this->rh->setResponse(false,"Ah ocurrido un error.");
+					$this->rh->setResponse(false,"An error has ocurred.");
 				}
 
 			}else{
-				$this->rh->setResponse(false,"Usuario no encontrado");
+				$this->rh->setResponse(false,"User not found.");
 			}
 		}else{
-			$this->rh->setResponse(false,"No puedes realiza esta accion");
+			$this->sh->setResponse(false,"You don't have permission to make this accion.");
 		}
 
 		echo json_encode($this->rh);

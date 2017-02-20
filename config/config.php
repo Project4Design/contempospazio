@@ -27,7 +27,7 @@ if (!defined('BASE_URL')) {
   );
 
   if(!in_array($_SERVER['REMOTE_ADDR'], $whitelist)){
-    $base = $_SERVER['HTTP_HOST'].DS;
+    $base = $_SERVER['HTTP_HOST'].DS.APP_DIR;
   }else{
     $base = $_SERVER['HTTP_HOST'].DS.APP_DIR;
   }
@@ -58,6 +58,21 @@ if (!defined('DB_TABLE')) {
 
 //Definir zona horaria por defecto
 date_default_timezone_set("America/Caracas");
+
+/*set_error_handler("errors",E_WARNING);
+set_error_handler("errors",E_ERROR);
+if(!function_exists('errors')){
+  function errors($errno, $errstr, $errfile, $errline, array $errcontext) {
+    // error was suppressed with the @-operator
+    if (0 === error_reporting()) {
+        return false;
+    }
+
+    throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
+  }
+}
+/*set_error_handler("errors",E_NOTICE);*/
+
 
 //Helper de resupestas.
 require_once ROOT.APP_DIR."helper/responsehelper.php";

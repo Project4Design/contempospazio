@@ -24,15 +24,15 @@ class Sesiones{
 					$_SESSION['nivel']  = $user->user_nivel;
 
 
-					$this->rh->setResponse(true,"Iniciando sesion",true,"inicio.php");
+					$this->rh->setResponse(true,"Loggin in...",true,"inicio.php");
 				}else{
-					$this->rh->setResponse(false,"Cuenta desactivada. Comuniquese con el administrador.");
+					$this->rh->setResponse(false,"Account deactivated. Call the administrator.");
 				}
 			}else{
-				$this->rh->setResponse(false,"Usuario y/o clave incorrectos");
+				$this->rh->setResponse(false,"User and password does not match.");
 			}
 		}else{
-			$this->rh->setResponse(false,"Usuario y/o clave incorrectos");
+			$this->rh->setResponse(false,"User and password does not match.");
 		}
 		echo json_encode($this->rh);
 	}//Login

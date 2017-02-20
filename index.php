@@ -25,10 +25,11 @@ isset($_SESSION['id']) ? session_destroy() : '';
 <body class="hold-transition login-page">
   <div class="login-box">
     <div class="login-logo">
-      <a href="../../index2.html"><b>CONTEMPOSPAZIO</b></a>
+      <center><img class="img-responsive" src="images/logo.JPG" alt="Logo" style="height:50px"></center>
+      <b>CONTEMPOSPAZIO</b>
     </div><!-- /.login-logo -->
     <div class="login-box-body">
-      <p class="login-box-msg">- Solo personal autorizado -<br>Ingrese sus datos de Acceso</p>
+      <p class="login-box-msg">- Only authorized personnel -<br>Sign in to start your session</p>
       <form id="form-login" action="funciones/class.sesiones.php" method="post">
         <input type="hidden" name="action" value="login">
 
@@ -52,24 +53,15 @@ isset($_SESSION['id']) ? session_destroy() : '';
         </div>
         <div class="row">
           <div class="col-xs-4">
-            <button id="b-login" type="submit" class="btn btn-primary btn-block btn-flat">Ingresar</button>
+            <button id="b-login" type="submit" class="btn btn-primary btn-block btn-flat">Sign in</button>
           </div><!-- /.col -->
         </div>
       </form>
 
-      
-      <a href="#">Olvidé mi contraseña</a><br>
     </div><!-- /.login-box-body -->
   </div><!-- /.login-box -->
 
   <script type="text/javascript">
-    $(function () {
-      $('input').iCheck({
-        checkboxClass: 'icheckbox_square-blue',
-        radioClass: 'iradio_square-blue',
-        increaseArea: '20%' // optional
-      });
-    });
 
     $(document).ready(function() {
       $('#b-login').click(function(e){
@@ -85,7 +77,6 @@ isset($_SESSION['id']) ? session_destroy() : '';
           data: $('#form-login').serialize(),
           dataType: 'json',
           success: function(r){
-            console.log(r);
             if(r.response){
               $('.alert').removeClass('alert-danger').addClass('alert-success');
               window.location.replace(r.redirect);

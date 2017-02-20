@@ -1,0 +1,11 @@
+
+[Sun, 19 Feb 2017 22:39:38 -0430] #0 C:\xampp\htdocs\contempospazio\funciones\conex.php(89): mysqli_stmt->execute()
+#1 C:\xampp\htdocs\contempospazio\funciones\class.quotation.php(166): Query::prun('UPDATE orders S...', Array)
+#2 C:\xampp\htdocs\contempospazio\funciones\class.quotation.php(232): Quotation->add('0', 'aaaa', '{"0":{"type":"1...', 'Aaa', 'seee', 'cd@ged.com', '2453354345', 'xcdc', NULL)
+#3 {main}
+No data supplied for parameters in prepared statement
+[Sun, 19 Feb 2017 22:40:25 -0430] #0 C:\xampp\htdocs\contempospazio\funciones\conex.php(89): mysqli_stmt->execute()
+#1 C:\xampp\htdocs\contempospazio\funciones\class.quotation.php(166): Query::prun('UPDATE orders S...', Array)
+#2 C:\xampp\htdocs\contempospazio\funciones\class.quotation.php(232): Quotation->add('0', 'dddd', '{"0":{"type":"1...', 'Csac', 'dd', 'd', 'd', 'd', NULL)
+#3 {main}
+No data supplied for parameters in prepared statement

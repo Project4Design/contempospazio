@@ -1,6 +1,28 @@
 <?php
 class Base
 {
+	//Cargar la vista
+	public static function LoadView($view,$access = false){
+		if(is_readable('views' . DS . $view . '.php')){
+			if($access!==false){
+				if(is_array($access)){
+					$granted = (in_array($_SESSION['nivel'], $access));
+				}else{
+					$granted = ($_SESSION['nivel'] == $access);
+				}
+			}else{
+				$granted = true;
+			}
+			if($granted){
+				return 'views' . DS . $view . '.php';
+			}else{
+				return 'views' . DS . 'forbidden.php';
+			}
+		}else{
+			return 'views' . DS . '404.php';
+		}
+	}
+	
 	//Mostrar error de forma mas legible
 	public static function Debug($data)
 	{
@@ -50,9 +72,9 @@ class Base
 	}
 
 	//Completar un numero con ceros a la izquierda
-	public static function Complete($data)
+	public static function Complete($data,$qty=5)
 	{
-		return str_pad($data,6,"0",STR_PAD_LEFT);
+		return str_pad($data,5,"0",STR_PAD_LEFT);
 	}
 
 	//Transformar fecha formato ingles a español
@@ -68,6 +90,21 @@ class Base
 		$x = explode(" ", $data);
 		$y = explode("-",$x[0]);
 		return $y[2]."-".$y[1]."-".$y[0]." ".$x[1];
+	}
+
+	public static function removeTS($data)
+	{
+		$x = explode(" ", $data);
+		$y = explode("-",$x[0]);
+		return $y[1]."-".$y[2]."-".$y[0];
+
+	}
+
+	public static function ConvertTS2($data)
+	{
+		$x = explode(" ", $data);
+		$y = explode("-",$x[0]);
+		return $y[1]."-".$y[2]."-".$y[0]." ".$x[1];
 	}
 
 	//Transformar numero a Dia

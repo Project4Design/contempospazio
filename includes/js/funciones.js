@@ -160,10 +160,8 @@ $(document).ready(function() {
 
 function loadTable(){
   $('.data-table').DataTable({
-    'language':{
-      'url':'includes/js/spanish.json',
-    },
-    responsive: true
+    responsive: true,
+    "aaSorting": []
   });
 }
 
@@ -171,11 +169,10 @@ function loadBasic(){
   $('.table-basic').DataTable({
     "paging": true,
     "lengthChange": false,
+    responsive:true,
     "searching": false,
     "ordering": true,
-    'language':{
-      'url':'includes/js/spanish.json',
-    },
+    "aaSorting": []
   });
 }
 

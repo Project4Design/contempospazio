@@ -15,32 +15,35 @@ class Configuracion{
 
 	public function consulta()
 	{
-		$query = Query::run("SELECT * FROM configuracion");
+		$query = Query::run("SELECT * FROM configuracion WHERE id_config = 1 LIMIT 1");
 		$return = (object)$query->fetch_array(MYSQLI_ASSOC);
 
 		return $return;
 	}
 
 	public function get_labor(){
-		$query = Query::run("SELECT config_regular_work,config_big_work FROM configuracion WHERE id_config = 1");
+		$query = Query::run("SELECT config_regular_work,config_big_work FROM configuracion WHERE id_config = 1 LIMIT 1");
 		$data = (object) $query->fetch_array(MYSQLI_ASSOC);
 
 		return $data;
 	}
 
-	public function edit($tax,$earnings,$rwork,$bwork,$discount,$delivery,$shipment)
+	public function edit($tax,$earnings_cab,$rwork,$bwork,$discount,$delivery,$earnings_tops,$earnings_sinks,$manufacturer,$shipment)
 	{
 		if($this->nivel=="A"){
 			$query = Query::prun("UPDATE configuracion SET
-															config_tax          = ?,
-															config_earnings     = ?,
-															config_regular_work = ?,
-															config_big_work     = ?,
-															config_discount     = ?,
-															config_delivery     = ?,
-															config_shipment     = ?
+															config_tax            = ?,
+															config_earnings_cab   = ?,
+															config_regular_work   = ?,
+															config_big_work       = ?,
+															config_discount       = ?,
+															config_delivery       = ?,
+															config_earnings_sinks = ?,
+															config_earnings_tops  = ?,
+															config_shipment       = ?,
+															config_manufacturer   = ?
 														WHERE id_config = ?",
-														array("sssssssi",$tax,$earnings,$rwork,$bwork,$discount,$delivery,$shipment,1));
+														array("ddddddddddi",$tax,$earnings_cab,$rwork,$bwork,$discount,$delivery,$earnings_sinks,$earnings_tops,$shipment,$manufacturer,1));
 
 			if($query->response){
 				$this->rh->setResponse("mod","CHanges has been saved.");
@@ -78,14 +81,17 @@ if(Base::IsAjax()):
 	  switch ($_POST['action']):
 			case 'configuracion':
 				$tax      = $_POST['tax'];
-				$earnings = $_POST['earnings'];
+				$earnings_cab = $_POST['earnings_cab'];
 				$rwork     = $_POST['regular_work'];
 				$bwork    = $_POST['big_work'];
 				$discount = $_POST['discount'];
 				$delivery = $_POST['delivery'];
+				$earnings_sinks = $_POST['earnings_sinks'];
+				$earnings_tops = $_POST['earnings_tops'];
+				$manufacturer = $_POST['manufacturer'];
 				$shipment = $_POST['shipment'];
 
-				$modelConfiguracion->edit($tax,$earnings,$rwork,$bwork,$discount,$delivery,$shipment);
+				$modelConfiguracion->edit($tax,$earnings_cab,$rwork,$bwork,$discount,$delivery,$earnings_tops,$earnings_sinks,$manufacturer,$shipment);
 			break;
 		endswitch;
 	endif;

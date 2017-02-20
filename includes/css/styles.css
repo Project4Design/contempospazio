@@ -83,26 +83,26 @@ html,body{
 
 .btn-poison {
   color: #fff;
-  background-color: #AE2ECA;
-  border-color: #831C99;
+  background-color: #605CA8;
+  border-color: #555299;
 }
 .btn-poison:focus,
 .btn-poison.focus {
   color: #fff;
-  background-color: #8C16A6;
-  border-color: #6E0984;
+  background-color: #4B4982;
+  border-color: #3D3B68;
 }
 .btn-poison:hover {
   color: #fff;
-  background-color: #8C16A6;
-  border-color: #6E0984;
+  background-color: #4B4982;
+  border-color: #3D3B68;
 }
 .btn-poison:active,
 .btn-poison.active,
 .open > .dropdown-toggle.btn-poison {
   color: #fff;
-  background-color: #8C16A6;
-  border-color: #6E0984;
+  background-color: #4B4982;
+  border-color: #3D3B68;
 }
 .btn-poison:active:hover,
 .btn-poison.active:hover,
@@ -114,8 +114,8 @@ html,body{
 .btn-poison.active.focus,
 .open > .dropdown-toggle.btn-poison.focus {
   color: #fff;
-  background-color: #8C16A6;
-  border-color: #6E0984;
+  background-color: #4B4982;
+  border-color: #3D3B68;
 }
 .btn-poison:active,
 .btn-poison.active,
@@ -342,6 +342,21 @@ td.success.item-active{
 }
 /*=================================*/
 
+/*==================|| QUOTATION PRODUCTS LIST ||===============================*/
+.quotation-list .box{
+  margin-bottom:5px;
+}
+.quotation-list .box-header{
+  padding:5px;
+}
+.quotation-list .btn.btn-sm{
+  padding: 0 5px;
+}
+.quotation-list .box-body{
+  padding:2px;
+}
+/**/
+
 .scrolltop a{
   display:none;
   background-color: rgba(0,0,0,0.5);
@@ -362,7 +377,9 @@ td.success.item-active{
   color: #fff;
 }
 
-
+.box.box-poison{
+  border-top-color: #524E8F;
+}
 
 .hide{
   display: none;

@@ -3,9 +3,9 @@
 	    <!--Fin-Contenido-->
 	    <footer class="main-footer">
 	      <div class="pull-right hidden-xs">
-	        <b>Version</b> 1.0.0
+	        <b>Version</b> Beta 0.3.0
 	      </div>
-	      <strong>Copyright &copy;  <a href="www.p4d.com.ve">Project 4 Design</a>.</strong> Todos los derechos reservados.
+	      <strong>Copyright &copy;  <a href="http://p4d.com.ve">Project 4 Design</a>.</strong>
 	    </footer>
     </div>
   </body>
