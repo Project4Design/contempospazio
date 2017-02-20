@@ -263,6 +263,18 @@ input[type="file"]{
   vertical-align:middle;
 }
 
+@media (max-width: 768px) {
+  .prod-info-text{
+    width: 80%;
+  }
+  .prod-opc{
+    width: 20%;
+  }
+  .prod-title{
+    font-size: 12px !important;
+  }
+}
+
 /*Glow effec*/
 .glow{
   -webkit-transition: box-shadow .5s linear;
@@ -384,6 +396,17 @@ td.success.item-active{
 .hide{
   display: none;
 }
+/*Eliminar las flechas en input type number*/
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+input[type="number"]{
+    -moz-appearance:textfield !important; /*Hacer que parezca un campo de texto en firefox*/
+}
+
 /*Eliminar la validacion de campos por defecto en navegadores*/
 :invalid {
   box-shadow: none;

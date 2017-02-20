@@ -173,10 +173,10 @@ class Usuarios{
 				if($estado == "A"){
 					$a = "Enabled";
 					$r = 1;
-					$b = "<button id=\"btn-activar\" class=\"btn btn-flat btn-danger\" data-toggle=\"modal\" data-target=\"#activarModal\" data-title=\"Desactivar\" data-val=\"I\"></i><i class=\"fa fa-close\" aria-hidden=\"true\">&nbsp;Desactivar</button>";
+					$b = "<button id=\"btn-activar\" class=\"btn btn-flat btn-poison\" data-toggle=\"modal\" data-target=\"#activarModal\" data-title=\"Disable\" data-val=\"I\"></i><i class=\"fa fa-close\" aria-hidden=\"true\">&nbsp;Desable</button>";
 				}else{
 					$a = "Disabled";
-					$b = "<button id=\"btn-activar\" class=\"btn btn-flat btn-success\" data-toggle=\"modal\" data-target=\"#activarModal\" data-title=\"Activar\" data-val=\"A\"><i class=\"fa fa-check\" aria-hidden=\"true\"></i>&nbsp;Activar</button>";
+					$b = "<button id=\"btn-activar\" class=\"btn btn-flat btn-poison\" data-toggle=\"modal\" data-target=\"#activarModal\" data-title=\"Enable\" data-val=\"A\"><i class=\"fa fa-check\" aria-hidden=\"true\"></i>&nbsp;Enable</button>";
 					$r = 0;
 				}
 				$this->rh->setResponse(true,"The user has been <b>".$a."</b>");

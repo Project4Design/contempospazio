@@ -157,6 +157,7 @@ switch($opc):
               </div>
 
               <div class="form-group">
+                <a class="btn btn-flat btn-default" href="?ver=clients"><i class="fa fa-reply"></i> Back</a>
                 <button type="submit" class="btn btn-danger btn-flat b-submit">Save &nbsp;<i class="fa fa-send" aria-hidden="true"></i></button>
               </div>    
             </form>
@@ -170,7 +171,7 @@ switch($opc):
     $client = $clients->consulta();
   ?>
     <div class="row">
-      <div class="col-md-3">
+      <div class="col-md-3 col-sm-6 col-xs-12">
         <div class="info-box">
           <span class="info-box-icon bg-green"><i class="fa fa-address-book-o"></i></span>
           <div class="info-box-content">
@@ -198,7 +199,7 @@ switch($opc):
               <th class="text-center">Phone</th>
               <th class="text-center">Email</th>
               <th class="text-center">Address</th>
-              <th class="text-center">Accion</th>
+              <th class="text-center">Action</th>
             </tr>
           </thead>
           <tbody>

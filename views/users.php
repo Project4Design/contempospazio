@@ -31,9 +31,9 @@ switch($opc):
       <?if($_SESSION['id']!=$id){?>
         <span id="botones">
         <?if($user->user_estado == "A"){?>
-          <button id="btn-activar" class="btn btn-flat btn-danger" data-toggle="modal" data-target="#activarModal" data-title="Disable" data-val="I"><i class="fa fa-close" aria-hidden="true"></i>&nbsp;Disable</button>
+          <button id="btn-activar" class="btn btn-flat btn-poison" data-toggle="modal" data-target="#activarModal" data-title="Disable" data-val="I"><i class="fa fa-close" aria-hidden="true"></i>&nbsp;Disable</button>
         <?}else{?>
-          <button id="btn-activar" class="btn btn-flat btn-success" data-toggle="modal" data-target="#activarModal" data-title="Enable" data-val="A"><i class="fa fa-check" aria-hidden="true"></i>&nbsp;Enable</button>
+          <button id="btn-activar" class="btn btn-flat btn-poison" data-toggle="modal" data-target="#activarModal" data-title="Enable" data-val="A"><i class="fa fa-check" aria-hidden="true"></i>&nbsp;Enable</button>
         <?}?>
         </span>
       <?}?>
@@ -187,13 +187,8 @@ switch($opc):
     <script type="text/javascript">
       $(document).ready(function(){
         $(".switch").bootstrapSwitch({
-          state: false,
-          size: 'small',
-          onText: 'Sí',
-          offText: 'No',
-          onSwitchChange: function(event,state){
-            activate(event,state);
-          }
+          state: false, size: 'small', onText: 'Sí', offText: 'No',
+          onSwitchChange: function(event,state){ activate(event,state); }
         });
       });
 
@@ -243,9 +238,9 @@ switch($opc):
             }
             if(r.data != null){
               if(parseInt(r.data.e)){
-                $('#estado').html('Activo').css('color','green');
+                $('#estado').html('Enabled').css('color','green');
               }else{
-                $('#estado').html('Inactivo').css('color','red');
+                $('#estado').html('Disabled').css('color','red');
               }
               $('#botones').html('');
               $('#botones').html(r.data.b);
@@ -460,7 +455,7 @@ switch($opc):
     $user = $usuarios->consulta();
   ?>
     <div class="row">
-      <div class="col-md-3">
+      <div class="col-md-3 col-sm-6 col-xs-12">
         <div class="info-box">
           <span class="info-box-icon bg-yellow"><i class="fa fa-address-book-o"></i></span>
           <div class="info-box-content">
@@ -499,7 +494,7 @@ switch($opc):
               <td><?=$d->user_nombres?></td>
               <td><?=$d->user_apellidos?></td>
               <td><?=$d->user_email?></td>
-              <td class="text-center"><?=($d->user_nivel == "A")?'Administrador':'Colaborador'?></td>
+              <td class="text-center"><?=($d->user_nivel == "A")?'Admin':'User'?></td>
               <td class="text-center">
                 <a class="btn btn-flat btn-primary btn-sm" href="?ver=users&opc=ver&id=<?=$d->id_user?>"><i class="fa fa-search"></i></a>
                 <a class="btn btn-flat btn-success btn-sm" href="?ver=users&opc=edit&id=<?=$d->id_user?>"><i class="fa fa-pencil"></i></a>

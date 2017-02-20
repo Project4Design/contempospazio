@@ -1499,11 +1499,11 @@ switch($opc):
                   ?>
                     <div class="row prod-box">
                       <a href="?ver=products&opc=cabi&id=<?=$d->id_gabi?>">
-                        <div class="col-md-2 prod-img">
+                        <div class="col-md-2 col-sm-3 col-xs-3 prod-img">
                           <img class="img-responsive" src="<?=Base::Img("images/productos/".$d->gabi_foto)?>" alt="<?=Base::Img("images/productos/".$d->gabi_foto)?>">
                         </div>
                       </a>
-                      <div class="col-md-10 prod-content">
+                      <div class="col-md-10 col-sm-9 col-xs-9 prod-content">
                         <div class="prod-info-text">
                           <span class="prod-title"><?=$d->gabi_descripcion?></span>
                           <span class="prod-extras">Registered: <?=$d->gabi_fecha_reg?></span>
@@ -1546,11 +1546,11 @@ switch($opc):
                   ?>
                     <div class="row prod-box">
                       <a href="?ver=products&opc=sink&id=<?=$d->id_fregadero?>">
-                      <div class="col-md-2 prod-img">
+                      <div class="col-md-2 col-sm-3 col-xs-3 prod-img">
                         <img class="img-responsive" src="<?=Base::Img("images/productos/".$d->freg_foto)?>" alt="<?=Base::Img("images/productos/".$d->freg_foto)?>">
                       </div>
                       </a>
-                      <div class="col-md-10 prod-content">
+                      <div class="col-md-10 col-sm-9 col-xs-9 prod-content">
                         <div class="prod-info-text">
                           <span class="prod-title"><?=$d->freg_nombre?></span>
                           <span class="prod-extras">Registered: <?=$d->freg_fecha_reg?></span>
@@ -1592,12 +1592,12 @@ switch($opc):
                   ?>
                     <div class="row prod-box">
                       <a href="?ver=products&opc=top&id=<?=$d->id_tope?>">
-                        <div class="col-md-2 prod-img">
+                        <div class="col-md-2 col-sm-3 col-xs-3 prod-img">
                           <img class="img-responsive" src="<?=Base::Img("images/productos/".$d->tope_foto)?>" alt="<?=Base::Img("images/productos/".$d->tope_foto)?>">
                         
                         </div>
                       </a>
-                      <div class="col-md-10 prod-content">
+                      <div class="col-md-10 col-sm-9 col-xs-9 prod-content">
                         <div class="prod-info-text">
                           <span class="prod-title"><?=$d->tope_nombre?></span>
                           <span class="prod-extras">Registered: <?=$d->tope_fecha_reg?></span>
@@ -1639,7 +1639,7 @@ switch($opc):
                 <div class="col-md-10 col-md-offset-1">
                   <div class="alert" role="alert" style="display:none"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;<span id="msj"></span></div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-4 col-sm-12">
                   <form id="addSinkColor"  action="#" method="post">
                     <input id="sinkColorAtion" type="hidden" name="action" value="add_color">
                     <input id="sinkColor" type="hidden" name="id" value="0">
@@ -1660,7 +1660,7 @@ switch($opc):
                     </div>
                   </form>
                 </div>
-                <div class="col-md-8">
+                <div class="col-md-8 col-sm-12 col-xs-12">
                   <table id="tSinkColors" class="table table-basic table-condensed table-bordered">
                     <thead>
                       <tr>
@@ -1708,7 +1708,7 @@ switch($opc):
                     </div>
                   </form>
                 </div>
-                <div class="col-md-8">
+                <div class="col-md-8 col-sm-12 col-xs-12">
                   <table id="tTopColors" class="table table-basic table-condensed table-bordered">
                     <thead>
                       <tr>

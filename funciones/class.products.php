@@ -253,7 +253,7 @@ class Products{
 			$query = Query::prun("SELECT id_gp FROM cabinets_items WHERE gp_codigo = ? AND id_gp != ? LIMIT 1",array("si",$codigo,$id));
 
 			if($query->result->num_rows>0){
-				$this->rh->setResponse(false,"Este codigo de Item ya existe.");
+				$this->rh->setResponse(false,"This item already exist.");
 			}else{
 				$query = Query::prun("UPDATE cabinets_items SET
 																			gp_labor  = ?,
@@ -273,7 +273,7 @@ class Products{
 				}	
 			}
 		}else{
-			$this->rh->setResponse(false,"Item no encontrado.");
+			$this->rh->setResponse(false,"Item not found.");
 		}
 
 		echo json_encode($this->rh);
@@ -369,7 +369,7 @@ class Products{
 	//Consultar todo hacerca de un item especifico
 	public function get_item($item)
 	{
-		$query = Query::prun("SELECT * FROM cabinets_prod WHERE id_gp = ? LIMIT 1",array("i",$item));
+		$query = Query::prun("SELECT * FROM cabinets_items WHERE id_gp = ? LIMIT 1",array("i",$item));
 		$data = (object) $query->result->fetch_array(MYSQLI_ASSOC);
 
 		$this->rh->setResponse(true);

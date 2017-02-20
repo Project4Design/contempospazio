@@ -119,7 +119,7 @@ $config = $configuration->consulta();
 		                	<form id="faddRow" class="form-inline" action="#">
 			                	<div class="form-group">
 			                		<label class="control-label">Qty:</label>
-			                		<input id="qty" type="numer" class="form-control numeros" name="qty" style="width:45px" maxlength="2"/>
+			                		<input id="qty" type="number" class="form-control numeros" name="qty" style="width:45px" maxlength="2"/>
 			                		<button id="b-add" class="btn btn-flat btn-success" type="submit"><i class="fa fa-plus"></i></button>
 			                	</div>
 			                </form>

@@ -76,7 +76,7 @@ switch($opc):
       </div>
       <!-- info row -->
       <div class="row invoice-info">
-        <div class="col-sm-4 invoice-col">
+        <div class="col-md-4 col-sm-12 invoice-col">
           <h4>Client details <small><a href="?ver=clients&opc=ver&id=<?=$order->id_client?>" target="_blank">(See client)</a></small></h4>
           # <?=$order->client_number?><br>
           <address>
@@ -88,7 +88,7 @@ switch($opc):
           
         </div>
         <!-- /.col -->
-        <div class="col-sm-4 invoice-col">
+        <div class="col-md-4 col-sm-12 invoice-col">
           <h4>Contact information</h4>
           Contact: <?=($order->client_contact)?$order->client_contact:'N/A';?><br>
           Address:
@@ -97,7 +97,7 @@ switch($opc):
           </address>
         </div>
         <!-- /.col -->
-        <div class="col-sm-4 invoice-col">
+        <div class="col-md-4 col-sm-12 invoice-col">
           <h4>Order details</h4>
           <b>Order ID:</b> <?=$order->order_order?><br>
           <b>Status: </b> <span id="status"><?=$status?></span><br>
@@ -422,7 +422,7 @@ switch($opc):
   ?>
 
 	  <div class="row">
-	    <div class="col-md-3">
+	    <div class="col-md-3 col-sm-6 col-xs-12">
 	      <div class="info-box">
 	        <span class="info-box-icon bg-red"><i class="fa fa-file-text-o"></i></span>
 	        <div class="info-box-content">
@@ -431,7 +431,7 @@ switch($opc):
 	        </div><!-- /.info-box-content -->
 	      </div><!-- /.info-box -->
 	    </div>
-      <div class="col-sm-3 col-xs-12">
+      <div class="col-md-3 col-sm-6 col-xs-12">
         <div class="info-box">
           <span class="info-box-icon bg-green"><i class="fa fa-usd"></i></span>
           <div class="info-box-content">
