@@ -109,11 +109,12 @@ class Pdf_orders{
     
     $header = "
               <div class='col-3'>
-                <center><img src='../images/logo.jpg' width='75px'></center>
+                <center><img src='../images/logo.JPG' width='75px'></center>
               </div>
               <div class='col-6 text-center'>
                 <h4>CONTEMPOSPAZIO</h4>
                 10728 Windsor Ct Orlando FL 32821<br>
+                www.contempospazio.com<br>
                 Tlf: +1 (407) 5908881<br>
               </div>";
     $footer = "

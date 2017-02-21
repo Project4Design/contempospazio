@@ -25,7 +25,7 @@ isset($_SESSION['id']) ? session_destroy() : '';
 <body class="hold-transition login-page">
   <div class="login-box">
     <div class="login-logo">
-      <center><img class="img-responsive" src="images/logo.JPG" alt="Logo" style="height:50px"></center>
+      <center><img class="img-responsive" src="images/logo.JPG" alt="Logo"></center>
       <b>CONTEMPOSPAZIO</b>
     </div><!-- /.login-logo -->
     <div class="login-box-body">
@@ -49,7 +49,7 @@ isset($_SESSION['id']) ? session_destroy() : '';
         </div>
         <div class="alert alert-danger" role="alert" style="display:none">
           <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;
-          <span id="msj">Datos incorrectos</span>
+          <span id="msj"></span>
         </div>
         <div class="row">
           <div class="col-xs-4">

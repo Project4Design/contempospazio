@@ -300,7 +300,7 @@ $config = $configuration->consulta();
 										</div>
 									</div>
 									<div class="form-group">
-										<label class="col-md-3 control-label" for="client_address2">Address: </label>
+										<label class="col-md-3 control-label" for="client_address2">Project address: </label>
 										<div class="col-md-9">
 											<input id="client_address2" class="form-control" type="text" name="client_address2"/>
 										</div>

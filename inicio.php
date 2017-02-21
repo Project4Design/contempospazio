@@ -48,7 +48,7 @@ else:
 		?>
 	    <section class="content-header">
 	      <h1 class="text-center">
-	        CONTEMPOSPAZIO
+	        <img src="<?=Base::Img("images/logo.JPG")?>" alt="logo" width="50px">&nbsp;CONTEMPOSPAZIO
 	      </h1>
 	      <ol class="breadcrumb">
 	        <li><a href="#"><i class="fa fa-dashboard" aria-hidden="true"></i> Home</a></li>

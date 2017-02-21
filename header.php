@@ -64,10 +64,12 @@ if(isset($_GET['id'])){ $id = $_GET['id']; }else{ $id = 0; }
         <!-- Logo -->
         <a href="inicio.php" class="logo">
           <!-- mini logo for sidebar mini 50x50 pixels -->
-          <span class="logo-mini"><img class="img-responsive" src="images/logo.jpg" alt="Logo Contempospazio"/ style="height: 50px"></span>
+          <span class="logo-mini"><img class="img-responsive" src="images/logo.JPG" alt="Logo Contempospazio"/ style="height: 50px"></span>
           
           <!-- logo for regular state and mobile devices -->
-          <span class="logo-lg"><b>CONTEMPOSPAZIO</b></span>
+          <span class="logo-lg">
+          <b style="font-size:18px;">
+          <img src="<?=Base::Img("images/logo.JPG")?>" alt="logo" width="20px">&nbsp;CONTEMPOSPAZIO</b></span>
         </a>
 
         <!-- Header Navbar: style can be found in header.less -->
