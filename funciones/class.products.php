@@ -56,6 +56,19 @@ class Products{
     return $data;
 	}//Topes
 
+	//Consultar todos los topes
+	public function consulta_accessories()
+	{
+    $query = Query::run("SELECT * FROM accessories");
+    $data = array();
+
+    while($registro = $query->fetch_array(MYSQLI_ASSOC)){
+    	$data[] = (object)$registro;
+    }
+
+    return $data;
+	}//Topes
+
 	//Obtener toda la informacion de un cabinet especifico
 	public function obtener_gabi($cabinet)
 	{
@@ -83,6 +96,12 @@ class Products{
 		return $data;
 	}
 
+	public function obtener_accessory($id){
+		$query = Query::prun("SELECT * FROM accessories WHERE id_accessory = ?",array("i",$id));
+
+		return (object) $query->result->fetch_array(MYSQLI_ASSOC);
+	}
+
 	//Agregar los products
 	public function add($tipo,$prod,$foto)
 	{
@@ -99,10 +118,13 @@ class Products{
 					$result = $this->add_cabinet($prod->descripcion,$foto);
 				break;
 				case 2:
-					$result = $this->add_fregadero($prod->color,$prod->material,$prod->nombre,$prod->forma,$prod->costo,$foto);
+					$result = $this->add_sink($prod->color,$prod->material,$prod->name,$prod->forma,$prod->price,$foto);
 				break;
 				case 3:
-					$result = $this->add_tope($prod->color,$prod->material,$prod->nombre,$prod->costo,$foto);
+					$result = $this->add_top($prod->color,$prod->material,$prod->name,$prod->manufacture,$prod->price,$foto);
+				break;
+				case 4:
+					$result = $this->add_accessory($prod->name,$prod->price,$foto);
 				break;
 			}
 			$this->rh->setResponse($result->response,$result->msj);
@@ -121,7 +143,7 @@ class Products{
 		if($query->response){
 			$response = true;
 			$msj = "Product added.";
-			$data = "?ver=products&opc=gabi&id=".$query->id;
+			$data = "?ver=products&opc=cabi&id=".$query->id;
 		}else{
 			$response=false;
 			$msj = "An error has occcurred.";
@@ -132,13 +154,13 @@ class Products{
 	}//=======================================================================================================================
 
 	//Agregar Fregadero
-	public function add_fregadero($color,$material,$nombre,$forma,$costo,$foto){
+	public function add_sink($color,$material,$name,$forma,$price,$foto){
 		$query = Query::prun("INSERT INTO fregaderos (id_fc,id_fm,freg_nombre,freg_forma,freg_costo,freg_foto) VALUES (?,?,?,?,?,?)",
-																array("iisids",$color,$material,$nombre,$forma,$costo,$foto));
+																array("iisids",$color,$material,$nombre,$forma,$price,$foto));
 		if($query->response){
 			$response = true;
 			$msj = "Product added.";
-			$data = "?ver=products&opc=freg&id=".$query->id;
+			$data = "?ver=products&opc=sink&id=".$query->id;
 		}else{
 			$response=false;
 			$msj = "An error has occcurred.";
@@ -149,13 +171,30 @@ class Products{
 	}
 
 	//Agregar Tope
-	public function add_tope($color,$material,$nombre,$costo,$foto){
-		$query = Query::prun("INSERT INTO topes (id_tc,id_tm,tope_nombre,tope_costo,tope_foto) VALUES (?,?,?,?,?)",
-																array("iisds",$color,$material,$nombre,$costo,$foto));
+	public function add_top($color,$material,$name,$manufacture,$price,$foto){
+		$query = Query::prun("INSERT INTO topes (id_tc,id_tm,tope_nombre,tope_manufacture,tope_costo,tope_foto) VALUES (?,?,?,?,?,?)",
+																array("iisdds",$color,$material,$name,$manufacture,$price,$foto));
 		if($query->response){
 			$response = true;
 			$msj = "Product added.";
-			$data = "?ver=products&opc=tope&id=".$query->id;
+			$data = "?ver=products&opc=top&id=".$query->id;
+		}else{
+			$response=false;
+			$msj = "An error has occcurred.";
+			$data = NULL;
+		}
+
+		return (object)array("response"=>$response,"msj"=>$msj,"data"=>$data);
+	}
+
+	//Agregar Tope
+	public function add_accessory($name,$price,$foto){
+		$query = Query::prun("INSERT INTO accessories (acce_name,acce_price,acce_foto) VALUES (?,?,?)",
+																array("sds",$name,$price,$foto));
+		if($query->response){
+			$response = true;
+			$msj = "Product added.";
+			$data = "?ver=products&opc=acce&id=".$query->id;
 		}else{
 			$response=false;
 			$msj = "An error has occcurred.";
@@ -190,7 +229,7 @@ class Products{
 
 				if($query->response){
 					$this->rh->setResponse(true,"Changes has been saved.");
-					if(!$cambia){unlink("../images/productos/".$old);}
+					if($cambia === false && $old != ""){unlink("../images/productos/".$old);}
 					$this->rh->data = $cambia;
 				}else{
 					$this->rh->setResponse(false,"An error has occcurred.");
@@ -232,7 +271,7 @@ class Products{
 				$query = Query::prun("INSERT INTO cabinets_items (id_gabi,gp_labor,gp_codigo,gp_gs,gp_mgc,gp_rbs,gp_esms,gp_ws,gp_miw)
 																			VALUES (?,?,?,?,?,?,?,?,?)",array("iisdddddd",$cabinet,$labor,$codigo,$gs,$mgc,$rbs,$esms,$ws,$miw));
 				if($query->response){
-					$this->rh->setResponse(true,"Item deleted.");
+					$this->rh->setResponse(true,"Item added.");
 				}else{
 					$this->rh->setResponse(false,"An error has occcurred.");
 				}
@@ -323,7 +362,7 @@ class Products{
 		echo json_encode($this->rh);
 	}
 	//Edit_top
-	public function edit_top($id,$name,$material,$color,$price,$foto)
+	public function edit_top($id,$name,$material,$color,$manufacture,$price,$foto)
 	{
 		if($this->nivel=="A"){
 			$query = Query::prun("SELECT tope_foto FROM topes WHERE id_tope = ?",array("i",$id));
@@ -341,13 +380,14 @@ class Products{
 				}else{ $foto = $old; $cambia=true; }
 
 				$query = Query::prun("UPDATE topes SET
-																		id_tc       = ?,
-																		id_tm       = ?,
-																		tope_nombre = ?,
-																		tope_costo  = ?,
-																		tope_foto   = ?
-																	WHERE id_tope = ?",
-																	array("iisdsi",$color,$material,$name,$price,$foto,$id));
+																		id_tc            = ?,
+																		id_tm            = ?,
+																		tope_nombre      = ?,
+																		tope_manufacture = ?,
+																		tope_costo       = ?,
+																		tope_foto        = ?
+																	WHERE id_tope      = ?",
+																	array("iisddsi",$color,$material,$name,$manufacture,$price,$foto,$id));
 				if($query->response){
 					if(!$cambia){unlink("../images/productos/".$old);}
 					$this->rh->setResponse(true,"Changes has been saved.");
@@ -364,6 +404,47 @@ class Products{
 
 		echo json_encode($this->rh);
 	}//Edit_top
+
+	//Edit_top
+	public function edit_accessory($id,$name,$price,$foto)
+	{
+		if($this->nivel=="A"){
+			$query = Query::prun("SELECT acce_foto FROM accessories WHERE id_accessory = ?",array("i",$id));
+
+			if($query->result->num_rows>0){
+				$old = $query->result->fetch_array(MYSQLI_ASSOC);
+				$old = $old['acce_foto'];
+
+				if($foto){
+					$img = new img();
+					$tmp = $img->load($foto['foto']['tmp_name'],$foto['foto']['name'],"../images/productos");
+					$foto = $tmp->name;
+					
+					$cambia = false; //Cambiar foto
+				}else{ $foto = $old; $cambia=true; }
+
+				$query = Query::prun("UPDATE accessories SET
+																		acce_name  = ?,
+																		acce_price = ?,
+																		acce_foto  = ?
+																	WHERE id_accessory = ?",
+																	array("sdsi",$name,$price,$foto,$id));
+				if($query->response){
+					if(!$cambia && $old!=""){unlink("../images/productos/".$old);}
+					$this->rh->setResponse(true,"Changes has been saved.");
+					$this->rh->data = $cambia;
+				}else{
+					$this->rh->setResponse(false,"An error has occcurred.");
+				}
+			}else{
+				$this->rh->setResponse(false,"Accessory not found.");	
+			}
+		}else{
+			$this->rh->setResponse(false,"You don't have permission to make this action.");
+		}
+
+		echo json_encode($this->rh);
+	}//Edit_accessories
 	//==========================================================================================================================
 
 	//Consultar todo hacerca de un item especifico
@@ -517,7 +598,31 @@ class Products{
 					$this->rh->setResponse(false,"An error has occcurred.");
 				}
 			}else{
-				$this->rh->setResponse(false,"Top not found.");	
+				$this->rh->setResponse(false,"Sink not found.");	
+			}
+		}else{
+			$this->rh->setResponse(false,"You don't have permission to make this action.");
+		}
+
+		echo json_encode($this->rh);
+	}
+
+	public function del_accessory($id){
+		if($this->nivel=="A"){
+			$query = Query::prun("SELECT acce_foto FROM accessories WHERE id_accessory = ? LIMIT 1",array("i",$id));
+
+			if($query->result->num_rows>0){
+				$prod  = (object) $query->result->fetch_array(MYSQLI_ASSOC);
+				$query = Query::prun("DELETE FROM accessories WHERE id_accessory = ? LIMIT 1",array("i",$id));
+
+				if($query->response){
+					if(!is_null($prod->acce_foto)){unlink("../images/productos/".$prod->freg_foto);}
+					$this->rh->setResponse(true,"Accessory deleted.",true,"inicio.php?ver=products");
+				}else{
+					$this->rh->setResponse(false,"An error has occcurred.");
+				}
+			}else{
+				$this->rh->setResponse(false,"Accessory not found.");	
 			}
 		}else{
 			$this->rh->setResponse(false,"You don't have permission to make this action.");
@@ -797,8 +902,8 @@ class Products{
 																INNER JOIN topes_colores AS tc ON tc.id_tc = t.id_tc
 																WHERE t.tope_nombre = ? LIMIT 1",array("s",$search));
 				if($query->result->num_rows>0){
-					$prod = (object)$query->result->fetch_array(MYSQLI_ASSOC);
-					$other = array("other-name"=>$prod->tope_nombre,"other-mat"=>$prod->tm_nombre,"other-color"=>$prod->tc_nombre,"other-price"=>$prod->tope_costo);
+					$prod = (object) $query->result->fetch_array(MYSQLI_ASSOC);
+					$other = array("other-name"=>$prod->tope_nombre,"other-mat"=>$prod->tm_nombre,"other-color"=>$prod->tc_nombre,"other-manu"=>$prod->tope_manufacture,"other-price"=>$prod->tope_costo);
 					$array = array("id"=>$prod->id_tope,"type"=>$type,"s"=>$other,"foto"=>$prod->tope_foto);
 					$this->rh->setResponse(true);
 				}else{	
@@ -1113,11 +1218,16 @@ if(Base::IsAjax()):
 					case 2:
 					case 3:
 						//Fregaderos o Topes
-						$prod->forma    = isset($_POST['forma'])?$_POST['forma']:NULL; //Solo los fregaderos
-						$prod->nombre   = $_POST['nombre'];
-						$prod->material = $_POST['material'];
-						$prod->color    = $_POST['color'];
-						$prod->costo    = $_POST['costo'];
+						$prod->forma       = isset($_POST['forma'])?$_POST['forma']:NULL; //Solo los fregaderos
+						$prod->name      = $_POST['name'];
+						$prod->material    = $_POST['material'];
+						$prod->color       = $_POST['color'];
+						$prod->manufacture = isset($_POST['manufacture'])?$_POST['manufacture']:NULL; //Solo los fregaderos
+						$prod->price       = $_POST['price'];
+					break;
+					case 4:
+						$prod->name  = $_POST['name'];
+						$prod->price = $_POST['price'];
 					break;
 				}
 
@@ -1142,14 +1252,23 @@ if(Base::IsAjax()):
 				$modelProducts->edit_sink($id,$name,$shape,$material,$color,$price,$foto);
 			break;
 			case 'edit_top':
-				$id       = $_POST['top'];
-				$foto     = ($_FILES['foto']["name"])?$_FILES:NULL;
-				$name     = $_POST['top_name'];
-				$material = $_POST['top_material'];
-				$color    = $_POST['top_color'];
-				$price    = $_POST['top_price'];
+				$id         = $_POST['top'];
+				$foto       = ($_FILES['foto']["name"])?$_FILES:NULL;
+				$name       = $_POST['top_name'];
+				$material   = $_POST['top_material'];
+				$manufacure = $_POST['top_manufacure'];
+				$color      = $_POST['top_color'];
+				$price      = $_POST['top_price'];
 
-				$modelProducts->edit_top($id,$name,$material,$color,$price,$foto);
+				$modelProducts->edit_top($id,$name,$material,$color,$manufacture,$price,$foto);
+			break;
+			case 'edit_acce':
+				$id    = $_POST['accessory'];
+				$foto  = ($_FILES['foto']["name"])?$_FILES:NULL;
+				$name  = $_POST['acce_name'];
+				$price = $_POST['acce_price'];
+
+				$modelProducts->edit_accessory($id,$name,$price,$foto);
 			break;
 			case 'add_item':
 				$labor   = $_POST['labor'];
@@ -1189,23 +1308,23 @@ if(Base::IsAjax()):
 			break;
 			case 'del_cabi':
 				$id = $_POST["cabi"];
-
 				$modelProducts->del_cabi($id);
 			break;
 			case 'del_item':
 				$id = $_POST["item"];
-
 				$modelProducts->del_item($id);
 			break;
 			case 'del_top':
 				$id = $_POST['top'];
-
 				$modelProducts->del_top($id);
 			break;
 			case 'del_sink':
 				$id = $_POST['sink'];
-
 				$modelProducts->del_sink($id);
+			break;
+			case 'del_acce':
+				$id = $_POST['accessory'];
+				$modelProducts->del_accessory($id);
 			break;
 			case 'tope_list_mat':
 				$modelProducts->tope_list_mat();

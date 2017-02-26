@@ -28,7 +28,7 @@ class Configuracion{
 		return $data;
 	}
 
-	public function edit($tax,$earnings_cab,$rwork,$bwork,$discount,$delivery,$earnings_tops,$earnings_sinks,$manufacturer,$shipment)
+	public function edit($tax,$earnings_cab,$rwork,$bwork,$discount,$delivery,$earnings_tops,$earnings_sinks,$shipment)
 	{
 		if($this->nivel=="A"){
 			$query = Query::prun("UPDATE configuracion SET
@@ -40,10 +40,9 @@ class Configuracion{
 															config_delivery       = ?,
 															config_earnings_sinks = ?,
 															config_earnings_tops  = ?,
-															config_shipment       = ?,
-															config_manufacturer   = ?
+															config_shipment       = ?
 														WHERE id_config = ?",
-														array("ddddddddddi",$tax,$earnings_cab,$rwork,$bwork,$discount,$delivery,$earnings_sinks,$earnings_tops,$shipment,$manufacturer,1));
+														array("dddddddddi",$tax,$earnings_cab,$rwork,$bwork,$discount,$delivery,$earnings_sinks,$earnings_tops,$shipment,1));
 
 			if($query->response){
 				$this->rh->setResponse("mod","CHanges has been saved.");
@@ -67,6 +66,9 @@ class Configuracion{
 			case '1':
 				$return = $labor->config_big_work;
 			break;
+			case '2':
+				$return = 0;
+			break;
 		}
 
 		return $return;
@@ -88,10 +90,9 @@ if(Base::IsAjax()):
 				$delivery = $_POST['delivery'];
 				$earnings_sinks = $_POST['earnings_sinks'];
 				$earnings_tops = $_POST['earnings_tops'];
-				$manufacturer = $_POST['manufacturer'];
 				$shipment = $_POST['shipment'];
 
-				$modelConfiguracion->edit($tax,$earnings_cab,$rwork,$bwork,$discount,$delivery,$earnings_tops,$earnings_sinks,$manufacturer,$shipment);
+				$modelConfiguracion->edit($tax,$earnings_cab,$rwork,$bwork,$discount,$delivery,$earnings_tops,$earnings_sinks,$shipment);
 			break;
 		endswitch;
 	endif;

@@ -36,6 +36,7 @@ switch($opc):
             <i class="fa fa-columns" aria-hidden="true"></i> Cabinet
             <small class="pull-right">Registered: <?=$gabi->gabi_fecha_reg?></small>
           </h2>
+          <div class="clearfix"></div>
         </div>
         <div id="areaForm" class="col-md-3">
           <span id="backup" class="hide"></span>
@@ -49,70 +50,72 @@ switch($opc):
           </form>
         </div>
         <div class="col-md-9">
-          <h3>Items added to this product</h3>
-          <form id="fitems" class="" method="post" action="funciones/class.products.php">
-            <input id="action" type="hidden" name="action" value="add_item">
-            <input id="gabinete" type="hidden" name="gabinete" value="<?=$id?>">
-            <input id="id_gp" type="hidden" name="item" value="0">
-            <table id="table-items" class="table table-bordered table-striped table-condensed">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Labor</th>
-                  <th>Item</th>
-                  <th>GS</th>
-                  <th>MGC</th>
-                  <th>RBS</th>
-                  <th>ES & MS</th>
-                  <th>WS</th>
-                  <th>MIW</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody id="tbody">
-              </tbody>
-              <tfoot>
-                <tr>
-                  <td></td>
-                  <td>
-                    <div class="form-group" style="margin:0">
-                      <select id="gp_labor" class="form-control" type="text" name="labor" required>
-                        <option value="">-</option>
-                        <option value="0"><?=$labor->config_regular_work?></option>
-                        <option value="1"><?=$labor->config_big_work?></option>
-                      </select>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="form-group" style="margin:0">
-                      <input id="gp_codigo" class="form-control" type="text" name="codigo" placeholder="Item" required>
-                    </div>
-                  </td>
-                  <td><input id="gp_gs" class="form-control" type="text" name="gs" placeholder="0.00" maxlength="3"></td>
-                  <td><input id="gp_mgc" class="form-control" type="text" name="mgc" placeholder="0.00" maxlength="3"></td>
-                  <td><input id="gp_rbs" class="form-control" type="text" name="rbs" placeholder="0.00" maxlength="3"></td>
-                  <td><input id="gp_esms" class="form-control" type="text" name="esms" placeholder="0.00" maxlength="3"></td>
-                  <td><input id="gp_ws" class="form-control" type="text" name="ws" placeholder="0.00" maxlength="3"></td>
-                  <td><input id="gp_miw" class="form-control" type="text" name="miw" placeholder="0.00" maxlength="3"></td>
-                  <td class="text-center">
-                    <button id="b-items" class="btn btn-sm btn-primary btn-flat" type="submit">
-                      <i class="fa fa-save" aria-hidden="true"></i>
-                    </button>
-                  </td>
-                </tr>
-              </tfoot>
-            </table>
-            <div class="alert alert-dismissible" role="alert" style="display:none">
-              <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-              <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;<span id="msj"></span>
-            </div>
-
-            <div class="progress progress-sm active" style="display:none">
-              <div class="progress-bar progress-bar-primary progress-bar-striped" role="progressbar" aria-valuenow="100" aria-valuemin="100" aria-valuemax="100" style="width:100%">
-                <span class="sr-only">100% Complete</span>
+          <div class="table-responsive"
+            <h3>Items added to this product</h3>
+            <form id="fitems" class="" method="post" action="funciones/class.products.php">
+              <input id="action" type="hidden" name="action" value="add_item">
+              <input id="gabinete" type="hidden" name="gabinete" value="<?=$id?>">
+              <input id="id_gp" type="hidden" name="item" value="0">
+              <table id="table-items" class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Labor</th>
+                    <th>Item</th>
+                    <th>GS</th>
+                    <th>MGC</th>
+                    <th>RBS</th>
+                    <th>ES & MS</th>
+                    <th>WS</th>
+                    <th>MIW</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody">
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td></td>
+                    <td>
+                      <div class="form-group" style="margin:0">
+                        <select id="gp_labor" class="form-control" type="text" name="labor" required>
+                          <option value="2">-</option>
+                          <option value="0"><?=$labor->config_regular_work?></option>
+                          <option value="1"><?=$labor->config_big_work?></option>
+                        </select>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="form-group" style="margin:0">
+                        <input id="gp_codigo" class="form-control" type="text" name="codigo" placeholder="Item" required>
+                      </div>
+                    </td>
+                    <td><input id="gp_gs" class="form-control" type="text" name="gs" placeholder="0.00" maxlength="3"></td>
+                    <td><input id="gp_mgc" class="form-control" type="text" name="mgc" placeholder="0.00" maxlength="3"></td>
+                    <td><input id="gp_rbs" class="form-control" type="text" name="rbs" placeholder="0.00" maxlength="3"></td>
+                    <td><input id="gp_esms" class="form-control" type="text" name="esms" placeholder="0.00" maxlength="3"></td>
+                    <td><input id="gp_ws" class="form-control" type="text" name="ws" placeholder="0.00" maxlength="3"></td>
+                    <td><input id="gp_miw" class="form-control" type="text" name="miw" placeholder="0.00" maxlength="3"></td>
+                    <td class="text-center">
+                      <button id="b-items" class="btn btn-sm btn-primary btn-flat" type="submit">
+                        <i class="fa fa-save" aria-hidden="true"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+              <div class="alert alert-dismissible" role="alert" style="display:none">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;<span id="msj"></span>
               </div>
-            </div>
-          </form>
+
+              <div class="progress progress-sm active" style="display:none">
+                <div class="progress-bar progress-bar-primary progress-bar-striped" role="progressbar" aria-valuenow="100" aria-valuemin="100" aria-valuemax="100" style="width:100%">
+                  <span class="sr-only">100% Complete</span>
+                </div>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </section>
@@ -458,14 +461,14 @@ switch($opc):
             }else{
               $('#action').val('add_item');$('#id_gp').val("0");
               $('.alert').removeClass('alert-success').addClass('alert-danger');
-              $('.alert #msj').text('Ah ocurrido un error.');
+              $('.alert #msj').text('An error has ocurred.');
               $('.alert').show().delay(7000).hide('slow');
             }
           },
           error: function(){
             $('#action').val('add_item');$('#id_gp').val("0");
             $('.alert').removeClass('alert-success').addClass('alert-danger');
-            $('.alert #msj').text('Ah ocurrido un error.');
+            $('.alert #msj').text('An error has ocurred.');
             $('.alert').show().delay(7000).hide('slow');
           }
         })
@@ -486,7 +489,7 @@ switch($opc):
           },
           error: function(){
             $('.alert').removeClass('alert-success').addClass('alert-danger');
-            $('.alert #msj').text('Ah ocurrido un error al cargar los elementos.');
+            $('.alert #msj').text('An error has ocurred trying to load the items.');
             $('.alert').show().delay(7000).hide('slow');
           }
         })
@@ -516,6 +519,7 @@ switch($opc):
             <i class="fa fa-tint" aria-hidden="true"></i> Sink
             <small class="pull-right">Registered: <?=$prod->freg_fecha_reg?></small>
           </h2>
+          <div class="clearfix"></div>
         </div>
         <div class="col-md-12">
           <form id="fregEdit" class="form-horizontal" method="post" action="funciones/class.products.php">
@@ -532,7 +536,7 @@ switch($opc):
                 <p><b>Shape:</b> <span id="shape"><?=$forma?></span></p>
                 <p><b>Material:</b> <span id="material"><?=$prod->fm_nombre?></span></p>
                 <p><b>Color:</b> <span id="color"><?=$prod->fc_nombre?></span></p>
-                <p><b>Price:</b> $ <span id="price"><?=$prod->freg_costo?></span></p>
+                <p><b>Price:</b> $<span id="price"><?=Base::Format($prod->freg_costo,2,".",",")?></span></p>
               </div>
               <div id="inputArea" style="display:none">
                 <div class="form-group">
@@ -785,6 +789,7 @@ switch($opc):
             <i class="fa fa-minus" aria-hidden="true"></i> Top
             <small class="pull-right">Registered: <?=$prod->tope_fecha_reg?></small>
           </h2>
+          <div class="clearfix"></div>
         </div>
         <div class="col-md-12">
           <form id="topEdit" class="form-horizontal" method="post" action="funciones/class.products.php">
@@ -800,19 +805,20 @@ switch($opc):
                 <h3 id="name"><?=$prod->tope_nombre?></h3>
                 <p><b>Material:</b> <span id="material"><?=$prod->tm_nombre?></span></p>
                 <p><b>Color:</b> <span id="color"><?=$prod->tc_nombre?></span></p>
-                <p><b>Price:</b> $ <span id="price"><?=$prod->tope_costo?></span></p>
+                <p><b>Manufacturer:</b> $<span id="manu"><?=Base::Format($prod->tope_manufacture,2,".",",")?></span></p>
+                <p><b>Price:</b> $<span id="price"><?=Base::Format($prod->tope_costo,2,".",",")?></span></p>
               </div>
               <div id="inputArea" style="display:none">
                 <div class="form-group">
-                  <label class="col-md-4 control-label" for="top_name">Name: *</label>
-                  <div class="col-md-6">
+                  <label class="col-md-5 control-label" for="top_name">Name: *</label>
+                  <div class="col-md-7">
                     <input id="top_name" class="form-control" type="text" name="top_name" value="<?=$prod->tope_nombre?>" required>
                   </div>
                 </div>
 
                 <div class="form-group">
-                  <label class="col-md-4 control-label" for="top_material">Material: *</label>
-                  <div class="col-md-6">
+                  <label class="col-md-5 control-label" for="top_material">Material: *</label>
+                  <div class="col-md-7">
                     <select id="top_material" class="form-control" name="top_material" required>
                       <option value="">Select...</option>
                       <?
@@ -828,8 +834,8 @@ switch($opc):
                 </div>
 
                 <div class="form-group">
-                  <label class="col-md-4 control-label" for="top_color">Color: *</label>
-                  <div class="col-md-6">
+                  <label class="col-md-5 control-label" for="top_color">Color: *</label>
+                  <div class="col-md-7">
                     <select id="top_color" class="form-control" name="top_color" required>
                       <option value="">Select...</option>
                       <?
@@ -844,8 +850,14 @@ switch($opc):
                   </div>
                 </div>
                 <div class="form-group">
-                  <label class="col-md-4 control-label" for="top_price">Price: *</label>
-                  <div class="col-md-6">
+                  <label class="col-md-5 control-label" for="top_manufacture">Manufacture: *</label>
+                  <div class="col-md-7">
+                    <input id="top_manufacture" class="form-control" type="number" name="top_manufacture" value="<?=$prod->tope_manufacture?>" required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-md-5 control-label" for="top_price">Price: *</label>
+                  <div class="col-md-7">
                     <input id="top_price" class="form-control" type="number" name="top_price" value="<?=$prod->tope_costo?>" required>
                   </div>
                 </div>
@@ -1025,6 +1037,229 @@ switch($opc):
     </script>
 <?
   break;
+  case 'acce':
+    $prod = $products->obtener_accessory($id);
+  ?>
+    <section>
+      <a class="btn btn-flat btn-default" href="?ver=products"><i class="fa fa-reply" aria-hidden="true"></i> Back</a>
+      <button id="b-activate" class="btn btn-flat btn-warning"><i class="fa fa-pencil" aria-hidden="true"></i> Edit information</button>
+      <?if($_SESSION['nivel']=="A"){?>
+      <button class="btn btn-flat btn-danger" data-toggle="modal" data-target="#deleteModal">Delete</button>
+      <?}?>
+    </section>
+    <section class="perfil">
+      <div class="row">
+        <div class="col-md-12">
+          <h2 class="page-header" style="margin-top:0!important">
+            <i class="fa fa-puzzle-piece" aria-hidden="true"></i> Accessory
+            <small class="pull-right">Registered: <?=$prod->acce_fecha_reg?></small>
+          </h2>
+          <div class="clearfix"></div>
+        </div>
+        <div class="col-md-12">
+          <form id="acceEdit" class="form-horizontal" method="post" action="funciones/class.products.php">
+            <input id="action" type="hidden" name="action" value="edit_acce">
+            <input type="hidden" name="accessory" value="<?=$id?>">
+            <div id="areaForm" class="col-md-3">
+              <div class="form-group">
+                <img id="img" class="img-responsive" src="<?=Base::Img("images/productos/".$prod->acce_foto)?>" alt="<?=Base::Img("images/productos/".$prod->acce_foto)?>" prev="">
+              </div>
+            </div>
+            <div class="col-md-4" style="margin-left: 10px">
+              <div id="infoArea">
+                <h3 id="name"><?=$prod->acce_name?></h3>
+                <p><b>Price:</b> $<span id="price"><?=Base::Format($prod->acce_price,2,".",",")?></span></p>
+              </div>
+              <div id="inputArea" style="display:none">
+                <div class="form-group">
+                  <label class="col-md-5 control-label" for="acce_name">Name: *</label>
+                  <div class="col-md-7">
+                    <input id="acce_name" class="form-control" type="text" name="acce_name" value="<?=$prod->acce_name?>" required>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-md-5 control-label" for="acce_price">Price: *</label>
+                  <div class="col-md-7">
+                    <input id="acce_price" class="form-control" type="number" name="acce_price" value="<?=$prod->acce_price?>" required>
+                  </div>
+                </div>
+
+              </div>
+              <div class="alert alert-dismissible" role="alert" style="display:none">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;<span id="msj"></span>
+              </div>
+
+              <div class="progress progress-sm active" style="display:none">
+                <div class="progress-bar progress-bar-primary progress-bar-striped" role="progressbar" aria-valuenow="100" aria-valuemin="100" aria-valuemax="100" style="width:100%">
+                  <span class="sr-only">100% Complete</span>
+                </div>
+              </div>
+
+              <div id="btn-form-group" class="form-group" style="display:none">
+                <button id='b-edit-form' class='btn btn-primary btn-flat btn-sm' type='submit'>Save</button>
+                <button id='fcancel' class='btn btn-flat btn-sm btn-default pull-right' type='button'>Cancel</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <div id="deleteModal" class="modal fade modal-danger" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <form id="fdelete" action="funciones/class.products.php">
+            <input type="hidden" name="action" value="del_acce">
+            <input id="accessory" type="hidden" name="accessory" value="<?=$id?>">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+              <h4 class="modal-title">Delete Product</h4>
+            </div>
+            <div class="modal-body">
+              <h4 class="text-center">Are you sure you want to <b>delete</b> this product?</h4>
+              <p class="text-center">This action cannot be undone.</p>
+
+              <div class="alert alert-dismissible" role="alert" style="display:none">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;<span id="msj"></span>
+              </div>
+
+              <div class="progress progress-sm active" style="display:none">
+                <div class="progress-bar progress-bar-primary progress-bar-striped" role="progressbar" aria-valuenow="100" aria-valuemin="100" aria-valuemax="100" style="width:100%">
+                  <span class="sr-only">100% Complete</span>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button id="b-del" type="submit" class="btn btn-outline pull-left b-submit">Delete</button>
+              <button type="button" class="btn btn-outline" data-dismiss="modal">Close</button>
+            </div>
+          </form>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+
+    <script type="text/javascript">
+      $(document).ready(function(){
+        $('#b-activate').click(editForm);
+        $('#img,#infoArea').dblclick(editForm);
+        $('#fcancel').click(disableForm);
+
+        $('#acceEdit').submit(function(e){
+          e.preventDefault();
+          var form  = $(this);
+          var formdata = new FormData(form[0]);
+          var btn   = form.find('button[type=submit]');
+          var alert = form.find(".alert");
+          var bar   = form.find(".progress");
+
+          var fields = form.find('input,select').filter('[required]').length;
+          form.find('input,select').filter('[required]').each(function(){
+            var regex = $(this).attr('pattern');
+            var val   = $(this).val();
+            if(val == ""){
+              $(this).closest('.form-group').addClass('has-error');
+            }
+            else{
+              if(val.match(regex)){
+                $(this).closest('.form-group').removeClass('has-error');
+                fields = fields-1;
+              }else{
+                $(this).closest('.form-group').addClass('has-error');
+              }
+            }
+          });
+
+          if(fields!=0){
+            alert.removeClass('alert-success').addClass('alert-danger');
+            alert.find('#msj').text('You must complete all required fields.');
+            bar.hide();
+            btn.button('reset');
+            alert.show().delay(7000).hide('slow');
+          }else{
+            $.ajax({
+              type: 'POST',
+              cache: false,
+              url: 'funciones/class.products.php',
+              data: formdata,
+              processData: false,
+              contentType: false,
+              dataType: 'json',
+              success: function(r){
+                if(r.response){
+                  alert.removeClass('alert-danger').addClass('alert-success');
+                  $('#name').text($('#acce_name').val());
+                  $('#price').text($('#acce_price').val());
+                  disableForm(r.data);
+                }else{
+                  alert.removeClass('alert-success').addClass('alert-danger');
+                }
+                alert.find('#msj').text(r.msj);
+              },
+              error: function(){
+                alert.removeClass('alert-success').addClass('alert-danger');
+                alert.find('#msj').text('An error has occurred.');
+              },
+              complete: function(){
+                btn.button('reset');
+                bar.hide();
+                alert.show().delay(7000).hide('slow');
+              }
+            });
+          }
+        });
+      });
+
+      function editForm(){
+        //Quitar el evento activar formulario
+        $('#b-activate,#img,#infoArea').off();
+        //Quitar los eventos doble click a la imagen y descripcion
+
+        //Crear los contenedores de la imagen y el input
+        var widget  = $('<div class="imageUploadWidget"/>');
+        var imgArea = $('<div class="imageArea"/>');
+        var spinner = $('<img class="spinner-image" src="images/spinner.gif">');
+        var btnArea = $('<div class="btnArea"/>');
+        var input   = $("<input id='file' name='foto' accept='image/jpeg,image/png' type='file'>");
+
+        //Tomar la imagen
+        var img   = $("#img");
+
+        //Meter la imagen dentro de los contenedores
+        //Envolverlo en div.form-group
+        $('#img').wrap(widget).wrap(imgArea).after(spinner);
+        $('.imageUploadWidget').append(btnArea);
+        btnArea.append(input);
+
+        $('#infoArea').hide();
+        $('#btn-form-group,#inputArea').show();
+
+        //Asignar evento al cargar una imagen
+        $('#file').change(preview);
+      }
+
+      //Desactivar formulario
+      function disableForm(change){
+        change = change?true:false;
+        var img = $('#img');
+        var alt = img.attr('alt');
+        var prev = (img.attr('prev')=="")?alt:img.attr('prev');
+        $('.imageUploadWidget').remove();
+        $('#areaForm .form-group').append(img);
+        if(change){img.attr('src',prev);}
+        $('#infoArea').show();
+        $('#btn-form-group,#inputArea').hide();
+        $('#inputArea .form-group,#areaForm .form-control').removeClass('has-error');
+        $('#b-activate').click(editForm);
+        $('#img,#infoArea').dblclick(editForm);
+      }
+    </script>
+<?
+  break;
   case 'add':
     //Topes
     $topesMaterial = $products->topesMateriales();
@@ -1063,22 +1298,23 @@ switch($opc):
                         <option value="1">Cabinets</option>
                         <option value="2">Sinks</option>
                         <option value="3">Tops</option>
+                        <option value="4">Accessories</option>
                       </select>
                     </div>
                     <hr>
                   </fieldset>
 
-                  <fieldset id="fieldsGabinetes"  style="display:none" disabled>
+                  <fieldset id="fieldsCabinets"  style="display:none" disabled>
                     <div class="form-group">
                       <label for="descripcion" class="control-label">Description: *</label>
                       <textarea id="descripcion" class="form-control" name="descripcion" rows="2" required></textarea>
                     </div>
                   </fieldset>
 
-                  <fieldset id="fieldsTopes" style="display:none" disabled>
+                  <fieldset id="fieldsTops" style="display:none" disabled>
                     <div class="form-group">
-                      <label class="control-label" for="tope_nombre">Name: *</label>
-                      <input id="tope_nombre" class="form-control" type="text" name="nombre" required>
+                      <label class="control-label" for="tope_name">Name: *</label>
+                      <input id="tope_name" class="form-control" type="text" name="name" required>
                     </div>
 
                     <div class="form-group">
@@ -1110,15 +1346,19 @@ switch($opc):
                       <button class="btn btn-flat btn-link" type="button" data-toggle="modal" data-target="#addModal" data-title="Tops - Colors" data-action="add_color" data-table="0" data-consult="tope_list_color" data-label="Color:">Add color</button>
                     </div>
                     <div class="form-group">
-                      <label class="control-label" for="tope_costo">Price: *</label>
-                      <input id="tope_costo" class="form-control" type="number" name="costo" placeholder="0.00" required>
+                      <label class="control-label" for="tope_manufacture">Manufacture: *</label>
+                      <input id="tope_manufacture" class="form-control" type="number" name="manufacture" placeholder="0.00" required>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label" for="tope_price">Price: *</label>
+                      <input id="tope_price" class="form-control" type="number" name="price" placeholder="0.00" required>
                     </div>
                   </fieldset>
 
-                  <fieldset id="fieldsFregaderos" style="display:none" disabled>
+                  <fieldset id="fieldsSinks" style="display:none" disabled>
                     <div class="form-group">
-                      <label class="control-label" for="freg_nombre">Name: *</label>
-                      <input id="freg_nombre" class="form-control" type="text" name="nombre" required>
+                      <label class="control-label" for="freg_name">Name: *</label>
+                      <input id="freg_name" class="form-control" type="text" name="name" required>
                     </div>
 
                     <div class="form-group">
@@ -1160,7 +1400,18 @@ switch($opc):
                     </div>
                     <div class="form-group">
                       <label class="control-label" for="freg_costo">Price: *</label>
-                      <input id="freg_costo" class="form-control" type="number" name="costo" placeholder="0.00" required>
+                      <input id="freg_costo" class="form-control" type="number" name="price" placeholder="0.00" required>
+                    </div>
+                  </fieldset>
+
+                  <fieldset id="fieldsAccessories" style="display:none" disabled>
+                    <div class="form-group">
+                      <label class="control-label" for="acc_name">Name: *</label>
+                      <input id="acc_name" class="form-control" type="text" name="name" required>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label" for="acc_costo">Price: *</label>
+                      <input id="prod_costo" class="form-control" type="number" name="price" placeholder="0.00" required>
                     </div>
                   </fieldset>
 
@@ -1324,19 +1575,23 @@ switch($opc):
           console.log(type);
           switch(type){
             case "1":
-              $('#fieldsFregaderos,#fieldsTopes').prop('disabled',true).hide();
-              $('#fieldsGabinetes').prop('disabled',false).show('slow');
+              $('#fieldsSinks,#fieldsTops,#fieldsAccessories').prop('disabled',true).hide();
+              $('#fieldsCabinets').prop('disabled',false).show('slow');
             break;
             case "2":
-              $('#fieldsGabinetes,#fieldsTopes').prop('disabled',true).hide();
-              $('#fieldsFregaderos').prop('disabled',false).show('slow');
+              $('#fieldsCabinets,#fieldsTops,#fieldsAccessories').prop('disabled',true).hide();
+              $('#fieldsSinks').prop('disabled',false).show('slow');
             break;
             case "3":
-              $('#fieldsFregaderos,#fieldsGabinetes').prop('disabled',true).hide();
-              $('#fieldsTopes').prop('disabled',false).show('slow');
+              $('#fieldsSinks,#fieldsCabinets,#fieldsAccessories').prop('disabled',true).hide();
+              $('#fieldsTops').prop('disabled',false).show('slow');
+            break;
+            case "4":
+              $('#fieldsSinks,#fieldsCabinets,#fieldsTops').prop('disabled',true).hide();
+              $('#fieldsAccessories').prop('disabled',false).show('slow');
             break;
             default:
-              $('#fieldsTopes,#fieldsFregaderos,#fieldsGabinetes').prop('disabled',true).hide();
+              $('#fieldsTops,#fieldsSinks,#fieldsCabinets,#fieldsAccessories').prop('disabled',true).hide();
             break;
           }
         });
@@ -1414,9 +1669,10 @@ switch($opc):
   <?
   break;
   default:
-    $gabi = $products->consulta_gabinetes();
+    $gabi  = $products->consulta_gabinetes();
     $sinks = $products->consulta_fregaderos();
-    $tops = $products->consulta_topes();
+    $tops  = $products->consulta_topes();
+    $accessories = $products->consulta_accessories();
   ?>
     <div class="row">
       <div class="col-md-3 col-sm-6 col-xs-12">
@@ -1465,6 +1721,22 @@ switch($opc):
         </a>
       </div>
       <!-- /.col -->  
+
+      <div class="col-md-3 col-sm-6 col-xs-12">
+        <a class="product-link" href="#accessories" style="color:#000">
+          <div class="info-box">
+            <span class="info-box-icon bg-green"><i class="fa fa-puzzle-piece"></i></span>
+
+            <div class="info-box-content">
+              <span class="info-box-text">Accessories</span>
+              <span class="info-box-number"><?=count($accessories)?></span>
+            </div>
+            <!-- /.info-box-content -->
+          </div>
+          <!-- /.info-box -->
+        </a>
+      </div>
+      <!-- /.col -->  
     </div>
 
 
@@ -1506,7 +1778,7 @@ switch($opc):
                       <div class="col-md-10 col-sm-9 col-xs-9 prod-content">
                         <div class="prod-info-text">
                           <span class="prod-title"><?=$d->gabi_descripcion?></span>
-                          <span class="prod-extras">Registered: <?=$d->gabi_fecha_reg?></span>
+                          <span class="prod-extras">Registered: <?=Base::removeTS($d->gabi_fecha_reg)?></span>
                           <span class="prod-extras">Items: <?=count($items)?></span>
                         </div>
                         <div class="prod-opc">
@@ -1553,7 +1825,10 @@ switch($opc):
                       <div class="col-md-10 col-sm-9 col-xs-9 prod-content">
                         <div class="prod-info-text">
                           <span class="prod-title"><?=$d->freg_nombre?></span>
-                          <span class="prod-extras">Registered: <?=$d->freg_fecha_reg?></span>
+                          <span class="prod-extras">
+                            Price: $<?=Base::Format($d->freg_costo,2,".",",")?><br>
+                            Registered: <?=Base::removeTS($d->freg_fecha_reg)?>
+                          </span>
                         </div>
                         <div class="prod-opc">
                           <a class="prod-link btn-primary btn-flat" href="?ver=products&opc=sink&id=<?=$d->id_fregadero?>"><i class="fa fa-search" aria-hidden="true"></i></a>
@@ -1600,7 +1875,10 @@ switch($opc):
                       <div class="col-md-10 col-sm-9 col-xs-9 prod-content">
                         <div class="prod-info-text">
                           <span class="prod-title"><?=$d->tope_nombre?></span>
-                          <span class="prod-extras">Registered: <?=$d->tope_fecha_reg?></span>
+                          <span class="prod-extras">
+                            Price: $<?=Base::Format($d->tope_costo,2,".",",")?><br>
+                            Registered: <?=Base::removeTS($d->tope_fecha_reg)?>
+                          </span>
                         </div>
                         <div class="prod-opc">
                           <a class="prod-link btn-primary btn-flat" href="?ver=products&opc=top&id=<?=$d->id_tope?>"><i class="fa fa-search" aria-hidden="true"></i></a>
@@ -1613,6 +1891,55 @@ switch($opc):
                   }else{
                   ?>
                     <p class="text-center">There are no Tops to show.</p>
+                  <?
+                  }
+                  ?>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="accessories" class="box box-success">
+            <div class="box-header with-border">
+              <h3 class="box-title"><i class="fa fa-puzzle-piece" aria-hidden="true"></i> Accesories</h3>
+              <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+              </div>
+            </div>
+            <div class="box-body">
+              <div class="row">
+                <div class="col-md-10 col-md-offset-1">
+                  <?
+                  if(count($accessories)>0){
+                    $i=0;
+                    foreach ($accessories as $d) {
+                  ?>
+                    <div class="row prod-box">
+                      <a href="?ver=products&opc=acce&id=<?=$d->id_tope?>">
+                        <div class="col-md-2 col-sm-3 col-xs-3 prod-img">
+                          <img class="img-responsive" src="<?=Base::Img("images/productos/".$d->acce_foto)?>" alt="<?=Base::Img("images/productos/".$d->acce_foto)?>">
+                        </div>
+                      </a>
+                      <div class="col-md-10 col-sm-9 col-xs-9 prod-content">
+                        <div class="prod-info-text">
+                          <span class="prod-title"><?=$d->acce_name?></span>
+                          <span class="prod-extras">
+                            Price: $<?=Base::Format($d->acce_price,2,".",",")?><br>
+                            Registered: <?=Base::removeTS($d->acce_fecha_reg)?>
+                          </span>
+                        </div>
+                        <div class="prod-opc">
+                          <a class="prod-link btn-primary btn-flat" href="?ver=products&opc=acce&id=<?=$d->id_accessory?>"><i class="fa fa-search" aria-hidden="true"></i></a>
+                        </div>
+                      </div>
+                    </div>
+                  <?
+                    $i++;
+                    }
+                  }else{
+                  ?>
+                    <p class="text-center">There are no Accessories to show.</p>
                   <?
                   }
                   ?>
@@ -1660,8 +1987,8 @@ switch($opc):
                     </div>
                   </form>
                 </div>
-                <div class="col-md-8 col-sm-12 col-xs-12">
-                  <table id="tSinkColors" class="table table-basic table-condensed table-bordered">
+                <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                  <table id="tSinkColors" class="table table-condensed table-bordered">
                     <thead>
                       <tr>
                         <th>#</th>
@@ -1709,7 +2036,7 @@ switch($opc):
                   </form>
                 </div>
                 <div class="col-md-8 col-sm-12 col-xs-12">
-                  <table id="tTopColors" class="table table-basic table-condensed table-bordered">
+                  <table id="tTopColors" class="table table-condensed table-bordered">
                     <thead>
                       <tr>
                         <th>#</th>
@@ -1767,7 +2094,7 @@ switch($opc):
                   </form>
                 </div>
                 <div class="col-md-8">
-                  <table id="tSinkMaterials" class="table table-basic table-condensed table-bordered">
+                  <table id="tSinkMaterials" class="table table-condensed table-bordered">
                     <thead>
                       <tr>
                         <th>#</th>
@@ -1815,7 +2142,7 @@ switch($opc):
                   </form>
                 </div>
                 <div class="col-md-8">
-                  <table id="tTopMaterials" class="table table-basic table-condensed table-bordered">
+                  <table id="tTopMaterials" class="table table-condensed table-bordered">
                     <thead>
                       <tr>
                         <th>#</th>
@@ -2416,10 +2743,6 @@ switch($opc):
 
       function DTable(table){
         $(table).DataTable({
-          "paging": true,
-          "lengthChange": false,
-          "searching": false,
-          "ordering": true,
         });
       }
     </script>

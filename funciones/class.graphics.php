@@ -68,7 +68,8 @@ class Graphics{
 													FROM topes AS t
                         	  INNER JOIN orders_details AS od ON (od.od_id_product = t.id_tope AND od.od_type = 3)
                           	GROUP BY t.id_tope
-													ORDER BY sells DESC ");	
+													ORDER BY sells DESC
+													LIMIT 10");	
 		$data = array();
 
 		if($query->num_rows>0){

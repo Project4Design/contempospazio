@@ -124,8 +124,19 @@ class Clients{
 			echo json_encode($this->rh);	
 		}else{
 			return $this->rh->data;
+		}	
+	}
+
+	public function list_clients(){
+		$query = Query::run("SELECT client_number,client_name FROM clients");
+		$data = array();
+		if($query->num_rows>0){
+			while($row = $query->fetch_array(MYSQLI_ASSOC)){
+				$data[] = (object) $row;
+			}
 		}
-		
+
+		return $data;
 	}
 
 }//CLients

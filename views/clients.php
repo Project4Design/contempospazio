@@ -19,6 +19,7 @@ switch($opc):
     $orders = new Orders();
     $client = $clients->obtener($id);
     $order  = $orders->obtenerByClient($id);
+    $revenues = $orders->revenuesByClient($id);
   ?>
     <section>
       <a class="btn btn-flat btn-default" href="?ver=clients"><i class="fa fa-reply" aria-hidden="true"></i> Back</a>
@@ -31,6 +32,7 @@ switch($opc):
             <i class="fa fa-address-book-o" aria-hidden="true"></i>
             <?=$client->client_name?>
             <small class="pull-right">Registered: <?=Base::ConvertTS2($client->client_fecha_reg)?></small>
+            <span class="clearfix"></span>
           </h2>
         </div>
         <div class="col-md-4">
@@ -44,6 +46,11 @@ switch($opc):
         <div class="col-md-4">
           <h4>Contact information</h4>
           <p><b>Contact: </b><?=($client->client_contact)?$client->client_contact:'N/A';?></p>
+        </div>
+        <div class="col-md-4">
+          <h4>&nbsp;</h4>
+          <p><b>Orders: </b><?=count($order)?></p>
+          <p><b>Revenues: </b>$<?=Base::Format($revenues,2,".",",")?></p>
         </div>
       </div>
     </section>

@@ -1,6 +1,8 @@
 <?
 $configuration = new Configuracion();
 $config = $configuration->consulta();
+$clients = new Clients();
+$list    = $clients->list_clients();
 ?>
 <section class="content-header">
   <h1> Quotation </h1>
@@ -87,13 +89,13 @@ $config = $configuration->consulta();
 							          <p><b>Meterial:</b> <span id="other-mat">-</span></p>
 							          <p><b>Color:</b> <span id="other-color">-</span></p>
 							          <p><b>Price:</b> $<span id="other-price">-</span></p>
-							          <p id="manufact"><b>Manufacturer:</b> $<span id="other-manu"><?=$config->config_manufacturer?></span></p>
+							          <p id="manufact"><b>Manufacturer:</b> $<span id="other-manu">-</span></p>
 			              	</div>
 			              	<div id="box-gabi">
 			              		<span id="id-item" class="hide"></span>
 				              	<p><b>Item: </b> <span id="gabi-item">-</span></p>
 				              	<p><b>Labor: </b> $<span id="gabi-labor">-</span></p>
-				              	<p><b>Description: </b> <span id="gabi-desc"></span>-</p>
+				              	<p><b>Description: </b> <span id="gabi-desc">-</span></p>
 			                	<table id="table-items" class="table table-bordered table-condensed">
 						              <thead>
 						                <tr class="active">
@@ -133,38 +135,15 @@ $config = $configuration->consulta();
 				  		</div>
 
 				  		<div class="col-md-12 quotation-list" style="background:#ECF0F5;padding:5px">
-				  		<!--
-				  			<div class="table-responsive" >
-							    <table class="table table-striped">
-							    	<thead>
-							    		<tr>
-							    			<th width="5%">&nbsp;</th>
-							    			<th width="5%">#</th>
-							    			<th>Product</th>
-							    			<th>Description</th>
-							    			<th>Item #</th>
-							    			<th>Price</th>
-							    			<th>Discount</th>
-							    			<th>Price disc.</th>
-							    			<th width="5%">Quantity</th>
-							    			<th>Subtotal</th>
-							    		</tr>
-							    	</thead>
-							    	<tbody id="tbody-list">
-							    		<tr><td>&nbsp;</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
-							    	</tbody>
-							    </table>
-							   </div>
-							    -->
 						  </div><!--Table-responsive-->
 						  <div class="col-md-8 col-md-offset-4" style="margin-top:10px">
 			          <div class="table-responsive">
 			            <table class="table table-bordered">
 			            	<thead>
 			            		<tr>
-			            			<th colspan="2">Cabinets</th>
-			            			<th colspan="2">Sinks</th>
-			            			<th colspan="2">Tops</th>
+			            			<th colspan="2">Cabinets (Units): <span id="c-qty">0</span></th>
+			            			<th colspan="2">Sinks (Units): <span id="s-qty">0</span></th>
+			            			<th colspan="2">Tops (ft^2): <span id="t-qty">0</span></th>
 			            		</tr>
 			            	</thead>
 			              <tbody>
@@ -255,17 +234,26 @@ $config = $configuration->consulta();
 									<div class="form-group">
 										<label class="col-md-3 control-label" for="number">Client number: </label>
 										<div class="col-md-7">
-											<input id="number" class="form-control" type="text" name="number"/>
+											<select id="number" class="form-control" type="text" name="number"/>
+												<option value=""></option>
+												<?
+													foreach ($list as $d){
+												?>
+													<option value="<?=$d->client_number?>"><?=$d->client_number." | ".$d->client_name?></option>
+												<?
+													}
+												?>
+											</select>
 										</div>
 										<div class="col-md-2">
-											<button id="s-number" class="btn btn-flat btn-primary" type="button"><i class="fa fa-search" aria-hidden="true"></i></button>
+											<button id="s-reset" class="btn btn-flat btn-default" type="button" title="Clear selection"><i class="fa fa-refresh" aria-hidden="true"></i></button>
 										</div>
 									</div>
 									<hr>
       						<div class="form-group">
-										<label class="col-md-3 control-label" for="client">Project: *</label>
+										<label class="col-md-3 control-label" for="project_name">Project: *</label>
 										<div class="col-md-9">
-											<input class="form-control" type="text" name="project" required/>
+											<input id="project_name" class="form-control" type="text" name="project_name" required/>
 										</div>
 									</div>
 									<hr>
@@ -300,9 +288,9 @@ $config = $configuration->consulta();
 										</div>
 									</div>
 									<div class="form-group">
-										<label class="col-md-3 control-label" for="client_address2">Project address: </label>
+										<label class="col-md-3 control-label" for="project_address">Project address: </label>
 										<div class="col-md-9">
-											<input id="client_address2" class="form-control" type="text" name="client_address2"/>
+											<input id="project_address" class="form-control" type="text" name="project_address"/>
 										</div>
 									</div>
 									<div class="form-group">
@@ -386,8 +374,10 @@ $config = $configuration->consulta();
 
 <script type="text/javascript">
 	$(document).ready(function(){
-		//Filas en la table de productos cotizados
+		//Cantidad cajas de productos agregadas .box
 		rows = 0;
+		//Cantidad totales de cada producto
+		c_qty = 0; s_qty = 0; t_qty = 0;
 		//Variable de impuestos
 		tax = <?=$config->config_tax?>;
 		//Variable de % de envio al cliente
@@ -402,14 +392,16 @@ $config = $configuration->consulta();
 		discount = <?=$config->config_discount?>;
 		//Descuento
 		delivery = <?=$config->config_delivery?>;
-		//Manufacturer
-		manufacturer = <?=$config->config_manufacturer?>;
+
+		$("#number").select2({
+      placeholder: 'Client number'
+    });
 
 		//Activar la seccion correspondiente al cabiar el tipo de busqueda
 		$('#type').change(function(){
 			var val = $(this).val();
 			$('#search').val('');
-			$('#other-price,#other-color,#other-mat,#other-shape,#other-name,#gabi-desc,#gabi-item,#gabi-labor,#p-type').text(' - ');
+			$('#other-price,#other-color,#other-mat,#other-shape,#other-name,#other-manu,#gabi-desc,#gabi-item,#gabi-labor,#p-type').text(' - ');
 			$('#foto').attr('src','images/no-image.png');
 			$('#tbody-item').empty();$('#tbody-item').append("<tr><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>");
 			clean();
@@ -496,9 +488,21 @@ $config = $configuration->consulta();
 			}else{alert.find('#msj').text('Quantity must be greater than 0.');alert.show().delay(7000).hide('slow');}
 		});
 		//Al hacer click sobre un item, resaltarlo.
-		$('#tbody-item').on('click','.item-list td',function(){var item  = $(this);var price = item.text();$('#box-product .alert').hide();$('#tbody-item td').removeClass('success item-active');item.addClass('success item-active');$('#qty').focus();});
+		$('#tbody-item').on('click','.item-list td',function(){
+			var item  = $(this);
+			var price = (item.text()*1);
+			if(price>0){
+				$('#box-product .alert').hide();
+				$('#tbody-item td').removeClass('success item-active');
+				item.addClass('success item-active');
+				$('#qty').focus();
+			}else{
+				$('#tbody-item td').removeClass('success item-active');
+				$('.box-product .alert').find('#msj').text('Item no valid!');
+				$('.box-product .alert').show().delay(3000).hide('slow');
+			}
+		});
 		//Al hacer click sobre la papelera, eliminar esa fila.
-		//$('#tbody-list').on('click','td .delRow',delRow);
 		$('.quotation-list').on('click','.delBox',delBox);
 		//=====================================================================================================
 		//=====================================|| ACTIVAR PASOS ||=============================================
@@ -593,9 +597,7 @@ $config = $configuration->consulta();
 		//=======================================================================================================
 		//======================================================================================================
 
-		$('#s-number').click(function(e){
-			e.preventDefault();
-			var btn = $(this);
+		$('#number').change(function(){
 			var cli = $('#number').val();
 			var alert = $('#client-form .alert');
 			$.ajax({
@@ -614,21 +616,24 @@ $config = $configuration->consulta();
 						$('#client-form input[name*="client_"]:visible').prop('readonly',true);
 					}else{
 						$('#client_number').val(0);
-						$('#client-form input[name*="cli_"]:visible').prop('readonly',false);
+						$('#client-form input[name*="client_"]:visible').prop('readonly',false);
 						alert.removeClass('alert-success').addClass('alert-danger');
 						alert.find('#msj').text('Client # not found.');
 					}
 				},error: function(){
 					$('#client_number').val(0);
-					$('#client-form input[name*="cli_"]:visible').prop('readonly',false);
+					$('#client-form input[name*="client_"]:visible').prop('readonly',false);
 					alert.removeClass('alert-success').addClass('alert-danger');
 					alert.find('#msj').text('An error has occurred.');
-				},complete: function(){
-					btn.button('reset');
-					alert.show().delay(7000).hide('slow');
 				}
 			})
 		});
+
+		$('#s-reset').click(function(){
+			$('#client_number').val(0);
+			$('#client-form input[name*="client_"]:visible').prop('readonly',false).val('');
+			
+		})
 	});//Ready
 
 	//Agregar un producto a la cotizacion.		
@@ -641,7 +646,7 @@ $config = $configuration->consulta();
 		//Activamos el boton para continuar al paso 2
 		$('#activate-step-2').prop('disabled',false);
 
-		if(type=="1"){
+		if(type == "1"){
 			var id_gp = $('#id-item').text();
 			var item  = $('#gabi-item').text();
 			var labor = $('#gabi-labor').text();
@@ -651,8 +656,9 @@ $config = $configuration->consulta();
 			var price = Math.ceil((cost*discount)/100);
 			var sub   = (price*qty);
 			var color = cabinetColor(index);
+			c_qty += (qty*1);
 			//$('#tbody-list').append('<tr><td><button class="btn btn-flat btn-sm btn-danger delRow" type="button"><i class="fa fa-trash"></i></button></td><td>'+rows+'</td><td>-</td><td>'+desc+'</td><td>'+item+'</td><td>$'+cost+'</td><td>'+discount+'%</td><td>$'+price+'</td><td>'+qty+'</td><td>$<span pid="'+id+'" item="'+id_gp+'" index="'+index+'" ptype="1" labor="'+labor+'" qty="'+qty+'">'+sub+'</td>');
-			var box ='<div class="box box-danger" pid="'+id+'" item="'+id_gp+'" index="'+index+'" ptype="1" labor="'+labor+'" qty="'+qty+'"><div class="box-header with-border"><h3 class="box-title">Cabinet</h3><div class="box-tools pull-right"><button class="btn btn-sm btn-flat btn-danger delBox" type="button"><i class="fa fa-times" aria-hidden="true"></i></button></div></div>';
+			var box ='<div class="box box-danger" pid="'+id+'" item="'+id_gp+'" index="'+index+'" ptype="1" labor="'+labor+'" qty="'+qty+'"><div class="box-header with-border"><h3 class="box-title"><span class="row-num">'+rows+'</span> | Cabinet</h3><div class="box-tools pull-right"><button class="btn btn-sm btn-flat btn-danger delBox" type="button"><i class="fa fa-times" aria-hidden="true"></i></button></div></div>';
 			box +='<div class="box-body"><div class="col-md-12">'+desc+' | <b>Color:</b> '+color+'</div>';
 			box +='<div class="col-md-2"><p><b>Item #:</b><span class="pull-right">'+item+'</span></p></div>';
 			box +='<div class="col-md-2"><p><b>Price:</b><span class="pull-right">$'+cost+'</span></p></div>';
@@ -662,16 +668,16 @@ $config = $configuration->consulta();
 			box +='<div class="col-md-2"><p><b>Subtotal:</b><span class="pull-right subotal">$<span class="subtotal">'+sub+'</span></span></p></div></div></div>';
 			$('.quotation-list').append(box);
 		}else if(type=="2"||type=="3"){
-			if(type=="2"){var shape = '<b>Shape:</b> '+$('#other-shape').text()+" | ";}else{var shape = "";}
+			if(type=="2"){s_qty += (qty*1); var shape = '<b>Shape:</b> '+$('#other-shape').text()+" | ";}else{t_qty = (qty*1); var shape = "";}
 			var name  = $('#other-name').text();
 			var color = $('#other-color').text();
 			var price = $('#other-price').text();
 			var mat   = $('#other-mat').text();
+			var manu  = $('#other-manu').text();
 			var sub   = (price*qty);
 			var ft    = (type=="3")?'(ft^2)':'';
 			var desc  = shape+"<b>Mat.:</b> "+mat+" | <b>Color</b>: "+color;
-			//$('#tbody-list').append('<tr><td><button class="btn btn-flat btn-sm btn-danger delRow" type="button"><i class="fa fa-trash"></i></button></td><td>'+rows+'</td><td>'+name+'</td><td>'+desc+'</td><td>-</td><td>$'+price+'</td><td>-</td><td>-</td><td>'+qty+ft+'</td><td>$<span pid="'+id+'" ptype="'+type+'" qty="'+qty+'">'+sub+'</td>');
-			var box ='<div class="box box-danger" pid="'+id+'" ptype="'+type+'" qty="'+qty+'"><div class="box-header with-border"><h3 class="box-title">'+name+'</h3><div class="box-tools pull-right"><button class="btn btn-sm btn-flat btn-danger delBox" type="button"><i class="fa fa-times" aria-hidden="true"></i></button></div></div>';
+			var box ='<div class="box box-danger" pid="'+id+'" ptype="'+type+'" qty="'+qty+'" manu="'+manu+'"><div class="box-header with-border"><h3 class="box-title"><span class="row-num">'+rows+'</span> | '+name+'</h3><div class="box-tools pull-right"><button class="btn btn-sm btn-flat btn-danger delBox" type="button"><i class="fa fa-times" aria-hidden="true"></i></button></div></div>';
 			box +='<div class="box-body"><div class="col-md-12">'+desc+'</div>';
 			box +='<div class="col-md-2"><p><b>Item #:</b><span class="pull-right">-</span></p></div>';
 			box +='<div class="col-md-2"><p><b>Price:</b><span class="pull-right">$'+price+'</span></p></div>';
@@ -685,32 +691,23 @@ $config = $configuration->consulta();
 		total();//Calculamos el total.
 	}//==============================================================================================================
 
-	//Eliminar un producto cotizado.
-	function delRow(){
-		rows--;//Disminuimos la variable global de filas.
-		$(this).closest('tr').remove();//Eliminamos fila.
-		//Si no hay productos en la cotizacion, colocar fila de muestra y los costos en 0.
-		if(rows==0){
-			//Si no hay productos agregados. Desactivamos el boton para continuar
-			$('#activate-step-2').prop('disabled',true);
-			$('#tbody-list').append('<tr><td>&nbsp;</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>');
-			$('#t-sub,#t-tax,#t-shipping,#t-total');
-		}else{
-			//Acomodar el numero de las filas.
-			var i = 1; $('#tbody-list tr').each(function(){ $(this).find('td').eq(1).text(i); i++;});
-		}
-		//Calcular el total.
-		total();
-	}//==============================================================================================================
-
 	function delBox(){
 		rows--;//Disminuimos la variable global de filas.
-		$(this).closest('.box').remove();//Eliminamos fila.
-		//Si no hay productos en la cotizacion, colocar fila de muestra y los costos en 0.
+		var box  = $(this).closest('.box');
+		var del  = (box.attr('qty')*1);
+		var type = (box.attr('ptype')*1);
+		switch(type){
+			case 1: c_qty -= del; break;
+			case 2: s_qty -= del; break;
+			case 3: t_qty -= del; break; 
+		}
+
+		box.remove();//Eliminamos el producto.
 		if(rows==0){
 			//Si no hay productos agregados. Desactivamos el boton para continuar
 			$('#activate-step-2').prop('disabled',true);
-			//$('#tbody-list').append('<tr><td>&nbsp;</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>');
+		}else{
+			var i = 1; $('.quotation-list .box').each(function(){ $(this).find('.row-num').text(i); i++;});
 		}
 		//Calcular el total.
 		total();
@@ -742,6 +739,10 @@ $config = $configuration->consulta();
 		var t_total  = 0; //Tops Total
 		var grand_total = 0;//Grand total
 
+		$('#c-qty').text(c_qty);
+		$('#s-qty').text(s_qty);
+		$('#t-qty').text(t_qty);
+
 		//Calcular el subtotal.
 		$('.quotation-list .box').each(function(){
 			var box = $(this);//Span con todo lo datos
@@ -750,6 +751,8 @@ $config = $configuration->consulta();
 			var type   = box.attr('ptype');//Tipo de producto
 			var qty    = box.attr('qty');//Cantidad
 			var lab    = box.attr('labor');//Labor
+			var manu   = box.attr('manu');//Manufacturer
+
 			switch(type){
 				case '1':
 					labor += (qty*lab); //Labor
@@ -759,7 +762,7 @@ $config = $configuration->consulta();
 					s_sub += tr_sub; //Sinks Subtotal
 				break;
 				case '3':
-					man   += manufacturer*qty; //Manufacturer
+					man   += manu*qty; //Manufacturer
 					t_sub += tr_sub; //Tops subtotal
 				break;
 			}

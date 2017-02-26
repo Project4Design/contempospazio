@@ -20,7 +20,9 @@ class Pdf_orders{
     if($o){
       $name = $o->order_order;
       $paddress =($o->order_address)?$o->order_address:'N/A';
-      $shipping = ($o->order_subtotal*$o->order_shipping)/100;
+      $shipping = Base::Format(($o->order_subtotal*$o->order_shipping)/100,2,".",",");
+      $subtotal = Base::Format($o->order_subtotal,2,".",",");
+      $total    = Base::Format($o->order_total,2,".",",");
 
       $tbody = "";
 
@@ -52,8 +54,7 @@ class Pdf_orders{
               <div class='col-12'> &nbsp; </div>
               <div class='col-12'> &nbsp; </div>
               <div class='col-12'>
-                <b>ORDER #{$o->order_order}</b><br>
-                <b>Status: </b> {$o->order_status}
+                <b>ORDER #{$o->order_order}</b>
               </div>
               <div class='col-6'>
                 <h4>Client details</h4>
@@ -82,15 +83,15 @@ class Pdf_orders{
                   <tfoot>
                     <tr>
                       <th colspan='4' class='text-right'>Subtotal:</th>
-                      <td class='text-left'>{$o->order_subtotal}</td>
+                      <td class='text-right'>$ {$subtotal}</td>
                     </tr>
                     <tr>
                       <th colspan='4' class='text-right'>Shipping:</th>
-                      <td class='text-left'>{$shipping}</td>
+                      <td class='text-right'>$ {$shipping}</td>
                     </tr>
                     <tr>
                       <th colspan='4' class='text-right'>Total:</th>
-                      <td class='text-left'>{$o->order_total}</td>
+                      <td class='text-right'>$ {$total}</td>
                     </tr>
                   </tfoot>
                 </table>
@@ -113,7 +114,7 @@ class Pdf_orders{
               </div>
               <div class='col-6 text-center'>
                 <h4>CONTEMPOSPAZIO</h4>
-                10728 Windsor Ct Orlando FL 32821<br>
+                9773 S. Orange Blossom Trail. ste 29. Orlando, Fl. 32837<br>
                 www.contempospazio.com<br>
                 Tlf: +1 (407) 5908881<br>
               </div>";

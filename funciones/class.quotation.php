@@ -48,7 +48,6 @@ class Quotation{
 			$big = $config->config_big_work;//Trabajo grande
 			$discount = $config->config_discount;//Descuento
 			$delivery = $config->config_delivery;//Descuento
-			$manufacturer = $config->config_manufacturer;//Manufacturer
 			//Totales
 			$error=0;//Errores
 
@@ -57,9 +56,9 @@ class Quotation{
 			//Numero de orden
 			$order = Base::Complete($this->last_order()+1);
 
-			$query = Query::prun("INSERT INTO orders (order_order,order_status,client_number,order_project,order_address,order_tax,order_delivery,order_earnings_cab,order_earnings_sinks,order_earnings_tops,order_manufacturer,order_shipping)
+			$query = Query::prun("INSERT INTO orders (order_order,order_status,client_number,order_project,order_address,order_tax,order_delivery,order_earnings_cab,order_earnings_sinks,order_earnings_tops,order_shipping)
 																VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
-															array("sssssddddddd",$order,'Started',$number,$project,$address2,$tax,$delivery,$earnings_cab,$earnings_sinks,$earnings_tops,$manufacturer,$shipping));
+															array("sssssddddddd",$order,'Started',$number,$project,$address2,$tax,$delivery,$earnings_cab,$earnings_sinks,$earnings_tops,$shipping));
 			if($query->response){
 				$id_order = $query->id;
 				
@@ -125,8 +124,8 @@ class Quotation{
 									$labor = NULL;
 									$ta    = NULL;
 									$disc  = NULL;
-									$man   = $manufacturer;
-									$man2  = $manufacturer * $prod->qty;
+									$man   = $top->tope_manufacture;
+									$man2  = $man * $prod->qty;
 									$sub   = $price * $prod->qty;
 									$t_unit += $prod->qty; //Cantidad de tops - Paso 3
 									

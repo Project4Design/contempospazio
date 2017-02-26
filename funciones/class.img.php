@@ -1,5 +1,5 @@
 <?
-require_once 'abeautifulsite/simpleimage.php';
+require_once 'abeautifulsite/SimpleImage.php';
 
 class Img{
 	public $error = NULL;

@@ -69,7 +69,7 @@ class Query extends DB {
 				if($value == ''){
 					$refs[$key] = NULL;
 				}else{
-					$refs[$key] = &$data[$key];		
+					$refs[$key] = &$data[$key];
 				}
 			}
 		}

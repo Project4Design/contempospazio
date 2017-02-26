@@ -1,6 +1,7 @@
 <?
 /*==========| Archivo de configuracion base - Beta |=========*/
 if(!isset($_SESSION)){
+  session_name("Contempo");
   session_start();
 }
 /*

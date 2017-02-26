@@ -49,6 +49,7 @@ switch($opc):
             <i class="fa fa-user" aria-hidden="true"></i>
             <?=$user->user_nombres?> <?=$user->user_apellidos?>
             <small class="pull-right">Registrado: <?=Base::Convert($user->user_fecha_reg)?></small>
+            <span class="clearfix"></span>
           </h2>
         </div>
         <div class="col-md-4">

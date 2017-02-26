@@ -157,6 +157,7 @@ else:
 				              <td class="text-center"><?=Base::removeTS($d->order_fecha_reg)?></td>
 				              <td class="text-center">
 				                <a class="btn btn-flat btn-primary btn-sm" href="?ver=orders&opc=ver&id=<?=$d->id_order?>"><i class="fa fa-search"></i></a>
+				                <a class="btn btn-sm btn-flat btn-danger btn-print" href="reportes/orders.php?action=order&order=<?=$d->id_order?>" type="button"><i class="fa fa-print"></i></a>
 				              </td>
 				            </tr>
 				          <?

@@ -1,6 +1,6 @@
 <?
 $orders = new Orders();
-if($opc=="add"){$li="Agregar";}elseif($opc=="edit"){$li="Editar";}elseif($opc=="ver"){$li="Invoice";}else{$li="";}
+if($opc=="add"){$li="Agregar";}elseif($opc=="edit"){$li="Editar";}elseif($opc=="ver"){$li="Order";}else{$li="";}
 ?>
 
 <section class="content-header">
@@ -70,6 +70,7 @@ switch($opc):
           <h2 class="page-header">
             <i class="fa fa-file-text-o"></i> <?=$order->order_project?>
             <small class="pull-right">Date: <?=Base::ConvertTS2($order->order_fecha_reg)?></small>
+            <span class="clearfix"></span>
           </h2>
         </div>
         <!-- /.col -->
@@ -140,7 +141,7 @@ switch($opc):
           					$item = $d->od_item;
           					$discount = $d->od_discount."%";
           					$pdisc = $d->od_price - (($d->od_price*$d->od_discount)/100);
-          					$pdisc = "$".ceil($d->od_price - $pdisc);
+          					$pdisc = "$".Base::Format(ceil($d->od_price - $pdisc),2,".",",");
           					$labor += $d->od_labor*$d->od_qty;
           					$qty = $d->od_qty;
           					$c_sub += $d->od_subtotal;
@@ -214,24 +215,24 @@ switch($opc):
               <tbody>
               	<tr>
                 	<th style="text-align:right !important;">Subtotal:</th>
-                	<td>$<?=$c_sub?></td>
+                	<td class="text-right">$<?=Base::Format($c_sub,2,".",",")?></td>
                 	<th style="text-align:right !important;">Subtotal:</th>
-                	<td>$<?=$s_sub?></td>
+                	<td class="text-right">$<?=Base::Format($s_sub,2,".",",")?></td>
                 	<th style="text-align:right !important;">Subtotal:</th>
-                	<td>$<?=$t_sub?></td>
+                	<td class="text-right">$<?=Base::Format($t_sub,2,".",",")?></td>
               	</tr>
               	<tr>
 	                <th style="text-align:right !important">Tax (<?=$order->order_tax?>%):</th>
-	                <td>$<?=$taxes?></td>
+	                <td class="text-right">$<?=Base::Format($taxes,2,".",",")?></td>
 	                <th>&nbsp;</th>
 	                <td>&nbsp;</td>
 	                <th style="text-align:right !important">Manufacturer:</th>
-	                <td>$<?=$manufacturer?></td>
+	                <td class="text-right">$<?=Base::Format($manufacturer,2,".",",")?></td>
 	              </tr>
 	              <tr>
 	                <th style="text-align:right !important">Delivery (<?=$order->order_delivery?>%):
 	                </th>
-	                <td>$<?=$delivery?></td>
+	                <td class="text-right">$<?=Base::Format($delivery,2,".",",")?></td>
 	                <th>&nbsp;</th>
 	                <td>&nbsp;</td>
 	                <th>&nbsp;</th>
@@ -240,7 +241,7 @@ switch($opc):
 	              <tr>
 	                <th style="text-align:right !important">Labor:
 	                </th>
-	                <td>$<?=$labor?></td>
+	                <td class="text-right">$<?=Base::Format($labor,2,".",",")?></td>
 	                <th>&nbsp;</th>
 	                <td>&nbsp;</td>
 	                <th>&nbsp;</th>
@@ -249,33 +250,33 @@ switch($opc):
 	              <tr>
 	              <tr>
 	                <th style="text-align:right !important">Earnings (<?=$order->order_earnings_cab?>%):</th>
-	                <td>$<?=$c_e?></td>
+	                <td class="text-right">$<?=Base::Format($c_e,2,".",",")?></td>
 	                <th style="text-align:right !important">Earnings (<?=$order->order_earnings_sinks?>%):</th>
-	                <td>$<?=$s_e?></td>
+	                <td class="text-right">$<?=Base::Format($s_e,2,".",",")?></td>
 	                <th style="text-align:right !important">Earnings (<?=$order->order_earnings_tops?>%):</th>
-	                <td>$<?=$t_e?></td>
+	                <td class="text-right">$<?=Base::Format($t_e,2,".",",")?></td>
 	              </tr>
 	              <tr>
 	                <th style="text-align:right !important">Total:</th>
-	                <td>$<?=$c_total?></td>
+	                <td class="text-right">$<?=Base::Format($c_total,2,".",",")?></td>
 	                <th style="text-align:right !important">Total:</th>
-	                <td>$<?=$s_total?></td>
+	                <td class="text-right">$<?=Base::Format($s_total,2,".",",")?></td>
 	                <th style="text-align:right !important">Total:</th>
-	                <td>$<?=$t_total?></td>
+	                <td class="text-right">$<?=Base::Format($t_total,2,".",",")?></td>
 	              </tr>
 	            </tbody>
 	            <tfoot>
 	              <tr>
 	                <th colspan="5" style="text-align:right !important">General Subtotal:</th>
-	                <td>$<?=$order->order_subtotal?></td>
+	                <td class="text-right">$<?=Base::Format($order->order_subtotal,2,".",",")?></td>
 	              </tr>
 	              <tr>
 	                <th colspan="5" style="text-align:right !important">Shipping (<?=$order->order_shipping?>%):</th>
-	                <td>$<?=ceil(($order->order_subtotal*$order->order_shipping)/100)?></td>
+	                <td class="text-right">$<?=Base::Format(ceil(($order->order_subtotal*$order->order_shipping)/100),2,".",",")?></td>
 	              </tr>
 	              <tr>
 	                <th colspan="5" style="text-align:right !important">Grand total:</th>
-	                <td>$<?=$order->order_total?></td>
+	                <td class="text-right">$<?=Base::Format($order->order_total,2,".",",")?></td>
 	              </tr>
 	            </tfoot>
 	          </table>

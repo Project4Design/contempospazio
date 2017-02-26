@@ -87,6 +87,20 @@ class Orders{
 		return $data;
 	}
 
+	public function revenuesByClient($id)
+	{
+		$query = Query::prun("SELECT SUM(order_earnings) AS total FROM orders WHERE client_number = (SELECT client_number FROM clients WHERE id_client = ?) AND order_status = ?",array("is",$id,'completed'));
+
+		if($query->response){
+			$order = $query->result->fetch_array(MYSQLI_ASSOC);
+			$data  = $order['total'];
+		}else{
+			$data = 0;
+		}
+
+		return $data;
+	}
+
 	public function setStarted($order){
 		$data = (object)array();
 

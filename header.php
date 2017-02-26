@@ -56,6 +56,8 @@ if(isset($_GET['id'])){ $id = $_GET['id']; }else{ $id = 0; }
     <?=Base::Js("includes/js/funciones.js")?>
 
     <?=Base::Js("includes/js/jquery.easing.min.js")?>
+    
+    <?=Base::Js("plugins/select2/select2.min.js")?>
   </head>
 
   <body id="main-body" class="hold-transition skin-red sidebar-mini">

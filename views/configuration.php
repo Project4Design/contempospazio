@@ -107,15 +107,6 @@ $config = $configuracion->consulta();
                   </div>
                 </div>
               </div>
-              <div class="form-group">
-                <label for="manufacturer" class="col-md-5 control-label">Manufacturing cost:</label>
-                <div class="col-md-7">
-                  <div class="input-group">
-                    <span class="input-group-addon">$</span>
-                    <input type="text" class="form-control numeros" id="manufacturer" name="manufacturer" value="<?=$config->config_manufacturer?>">
-                  </div>
-                </div>
-              </div>
             </div>
 
             <div class="col-md-3">
