@@ -34,7 +34,7 @@ class Graphics{
 	//Amount of products by type
 	public function productsType(){
 		$data = array();
-		$query = Query::run("SELECT COUNT(id_gabi) AS total,1 AS type FROM cabinets UNION SELECT COUNT(id_fregadero),2 FROM fregaderos UNION SELECT COUNT(id_tope),3 FROM topes");
+		$query = Query::run("SELECT COUNT(id_od) AS orders,SUM(od_qty) AS total,od_type AS type FROM orders_details GROUP BY type");
 
 		while($row = $query->fetch_array(MYSQLI_ASSOC)){
 			$row = (object)$row;
@@ -46,7 +46,10 @@ class Graphics{
 					$data[] = sprintf('{name: \'Sinks\',y:%u}',$row->total);
 				break;
 				case 3:
-					$data[] = sprintf('{name: \'Tops\',y:%u}',$row->total);
+					$data[] = sprintf('{name: \'Tops\',y:%u}',$row->total/$row->orders);
+				break;
+				case 4:
+					$data[] = sprintf('{name: \'Accessories\',y:%u}',$row->total);
 				break;
 			}
 		}
@@ -60,14 +63,18 @@ class Graphics{
 													FROM cabinets AS c
 														INNER JOIN orders_details AS od ON (od.od_id_product = c.id_gabi AND od.od_type = 1)
                       	    GROUP BY c.id_gabi
-                          UNION SELECT id_fregadero,'sink','Sink',freg_nombre,freg_foto,SUM(od.od_qty)
-													FROM fregaderos AS f
-                        	  INNER JOIN orders_details AS od ON (od.od_id_product = f.id_fregadero AND od.od_type = 2)
-                          	GROUP BY f.id_fregadero
-                        	UNION SELECT id_tope,'top','Top',tope_nombre,tope_foto,COUNT(od.id_od)
-													FROM topes AS t
-                        	  INNER JOIN orders_details AS od ON (od.od_id_product = t.id_tope AND od.od_type = 3)
-                          	GROUP BY t.id_tope
+                          UNION SELECT id_product,'sink','Sink',prod_name,prod_foto,SUM(od.od_qty)
+													FROM products AS p
+                        	  INNER JOIN orders_details AS od ON (od.od_id_product = p.id_product AND od.od_type = 2)
+                          	GROUP BY p.id_product
+                        	UNION SELECT id_product,'top','Top',prod_name,prod_foto,COUNT(od.id_od)
+													FROM products AS p
+                        	  INNER JOIN orders_details AS od ON (od.od_id_product = p.id_product AND od.od_type = 3)
+                          	GROUP BY p.id_product
+                        	UNION SELECT id_accessory,'acce','Accessory',acce_name,acce_foto,COUNT(od.od_qty)
+													FROM accessories AS a
+                        	  INNER JOIN orders_details AS od ON (od.od_id_product = a.id_accessory AND od.od_type = 4)
+                          	GROUP BY a.id_accessory
 													ORDER BY sells DESC
 													LIMIT 10");	
 		$data = array();

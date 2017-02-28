@@ -19,14 +19,14 @@ switch($opc):
     $gabi  = $products->obtener_gabi($id);
     $items = $products->items($id);
     
-    $configuration = new Configuracion();
+    $configuration = new Configuration();
     $labor         = $configuration->get_labor();
   ?>
     <section>
       <a class="btn btn-flat btn-default" href="?ver=products"><i class="fa fa-reply" aria-hidden="true"></i> Back</a>
       <button id="b-activate" class="btn btn-flat btn-warning"><i class="fa fa-pencil" aria-hidden="true"></i> Edit Information</button>
       <?if($_SESSION['nivel']=="A"){?>
-      <button class="btn btn-flat btn-danger" data-toggle="modal" data-target="#delModal">Delete</button>
+      <button class="btn btn-flat btn-danger" data-toggle="modal" data-target="#delModal"><i class="fa fa-times" aria-hidden="true"></i> Delete</button>
       <?}?>
     </section>
     <section class="perfil">
@@ -499,11 +499,10 @@ switch($opc):
   <?
   break;
   case 'sink':
-    $tipo = ($opc=="sink");
-    $prod = $products->obtener_prod($tipo,$id);
-    $forma = $products->shape($prod->freg_forma);
-    $fregMaterial = $products->fregMateriales();
-    $fregColor    = $products->fregColor();    
+    $prod = $products->obtenerProd($id);
+    $sinkMaterial = $products->selectMaterials(2);
+    $sinkColor    = $products->selectColors(2);
+    $sinkShape    = $products->selectShapes();
   ?>
     <section>
       <a class="btn btn-flat btn-default" href="?ver=products"><i class="fa fa-reply" aria-hidden="true"></i> Back</a>
@@ -517,7 +516,7 @@ switch($opc):
         <div class="col-md-12">
           <h2 class="page-header" style="margin-top:0!important">
             <i class="fa fa-tint" aria-hidden="true"></i> Sink
-            <small class="pull-right">Registered: <?=$prod->freg_fecha_reg?></small>
+            <small class="pull-right">Registered: <?=$prod->prod_fecha_reg?></small>
           </h2>
           <div class="clearfix"></div>
         </div>
@@ -527,31 +526,36 @@ switch($opc):
             <input type="hidden" name="sink" value="<?=$id?>">
             <div id="areaForm" class="col-md-3">
               <div class="form-group">
-                <img id="img" class="img-responsive" src="<?=Base::Img("images/productos/".$prod->freg_foto)?>" alt="<?=Base::Img("images/productos/".$prod->freg_foto)?>" prev="">
+                <img id="img" class="img-responsive" src="<?=Base::Img("images/productos/".$prod->prod_foto)?>" alt="<?=Base::Img("images/productos/".$prod->prod_foto)?>" prev="">
               </div>
             </div>
             <div class="col-md-4">
               <div id="infoArea">
-                <h3 id="name"><?=$prod->freg_nombre?></h3>
-                <p><b>Shape:</b> <span id="shape"><?=$forma?></span></p>
-                <p><b>Material:</b> <span id="material"><?=$prod->fm_nombre?></span></p>
-                <p><b>Color:</b> <span id="color"><?=$prod->fc_nombre?></span></p>
-                <p><b>Price:</b> $<span id="price"><?=Base::Format($prod->freg_costo,2,".",",")?></span></p>
+                <h3 id="name"><?=$prod->prod_name?></h3>
+                <p><b>Shape:</b> <span id="shape"><?=$prod->shape_name?></span></p>
+                <p><b>Material:</b> <span id="material"><?=$prod->mate_name?></span></p>
+                <p><b>Color:</b> <span id="color"><?=$prod->color_name?></span></p>
+                <p><b>Price:</b> $<span id="price"><?=Base::Format($prod->prod_price,2,".",",")?></span></p>
               </div>
               <div id="inputArea" style="display:none">
                 <div class="form-group">
                   <label class="col-md-4 control-label" for="sink_name">Name: *</label>
                   <div class="col-md-8">
-                    <input id="sink_name" class="form-control" type="text" name="sink_name" value="<?=$prod->freg_nombre?>" required/>
+                    <input id="sink_name" class="form-control" type="text" name="sink_name" value="<?=$prod->prod_name?>" required/>
                   </div>
                 </div>
                 <div class="form-group">
                   <label class="col-md-4 control-label" for="sink_shape">Shape: *</label>
                   <div class="col-md-6">
                     <select id="sink_shape" class="form-control" name="sink_shape" required>
-                      <option value="1" <?=($prod->freg_forma=="1")?'selected':'';?>>Oval</option>
-                      <option value="2" <?=($prod->freg_forma=="2")?'selected':'';?>>Rectangular</option>
-                      <option value="3" <?=($prod->freg_forma=="3")?'selected':'';?>>Square</option>
+                      <?
+                        foreach ($sinkShape as $d) {
+                          $selected = ($prod->id_shape==$d->id_shape)?'selected':'';
+                      ?>
+                        <option value="<?=$d->id_shape?>" <?=$selected?>><?=$d->shape_name?></option>
+                      <?
+                        }
+                      ?>
                     </select>
                   </div>
                 </div>
@@ -560,10 +564,10 @@ switch($opc):
                     <div class="col-md-6">
                     <select id="sink_material" class="form-control" name="sink_material" required>
                       <?
-                        foreach ($fregMaterial as $d) {
-                          $selected = ($prod->id_fm==$d->id_fm)?'selected':'';
+                        foreach ($sinkMaterial as $d) {
+                          $selected = ($prod->id_material==$d->id_material)?'selected':'';
                       ?>
-                        <option value="<?=$d->id_fm?>" <?=$selected?>><?=$d->fm_nombre?></option>
+                        <option value="<?=$d->id_material?>" <?=$selected?>><?=$d->mate_name?></option>
                       <?
                         }
                       ?>
@@ -575,10 +579,10 @@ switch($opc):
                   <div class="col-md-6">
                     <select id="sink_color" class="form-control" name="sink_color" required>
                       <?
-                        foreach ($fregColor as $d){
-                          $selected = ($prod->id_fc==$d->id_fc)?'selected':'';
+                        foreach ($sinkColor as $d){
+                          $selected = ($prod->id_color==$d->id_color)?'selected':'';
                       ?>
-                        <option value="<?=$d->id_fc?>" <?=$selected?>><?=$d->fc_nombre?></option>
+                        <option value="<?=$d->id_color?>" <?=$selected?>><?=$d->color_name?></option>
                       <?
                         }
                       ?>
@@ -588,7 +592,7 @@ switch($opc):
                 <div class="form-group">
                   <label class="col-md-4 control-label" for="sink_price">Price:*</label>
                   <div class="col-md-6">
-                    <input id="sink_price" class="form-control" type="text" name="sink_price" value="<?=$prod->freg_costo?>" required/>
+                    <input id="sink_price" class="form-control" type="number" step="0.01" name="sink_price" value="<?=$prod->prod_price?>" required/>
                   </div>
                 </div>
               </div>
@@ -769,17 +773,15 @@ switch($opc):
   <?
   break;
   case 'top':
-    $tipo = ($opc=="sink");
-    $prod = $products->obtener_prod($tipo,$id);
-    //Topes
-    $topesMaterial = $products->topesMateriales();
-    $topesColor    = $products->topesColor();
+    $prod = $products->obtenerProd($id);
+    $topMaterial = $products->selectMaterials(3);
+    $topColor    = $products->selectColors(3);
   ?>
     <section>
       <a class="btn btn-flat btn-default" href="?ver=products"><i class="fa fa-reply" aria-hidden="true"></i> Back</a>
       <button id="b-activate" class="btn btn-flat btn-warning"><i class="fa fa-pencil" aria-hidden="true"></i> Edit information</button>
       <?if($_SESSION['nivel']=="A"){?>
-      <button class="btn btn-flat btn-danger" data-toggle="modal" data-target="#deleteModal">Delete</button>
+      <button class="btn btn-flat btn-danger" data-toggle="modal" data-target="#deleteModal"><i class="fa fa-times"></i> Delete</button>
       <?}?>
     </section>
     <section class="perfil">
@@ -787,7 +789,7 @@ switch($opc):
         <div class="col-md-12">
           <h2 class="page-header" style="margin-top:0!important">
             <i class="fa fa-minus" aria-hidden="true"></i> Top
-            <small class="pull-right">Registered: <?=$prod->tope_fecha_reg?></small>
+            <small class="pull-right">Registered: <?=$prod->prod_fecha_reg?></small>
           </h2>
           <div class="clearfix"></div>
         </div>
@@ -797,22 +799,22 @@ switch($opc):
             <input type="hidden" name="top" value="<?=$id?>">
             <div id="areaForm" class="col-md-3">
               <div class="form-group">
-                <img id="img" class="img-responsive" src="<?=Base::Img("images/productos/".$prod->tope_foto)?>" alt="<?=Base::Img("images/productos/".$prod->tope_foto)?>" prev="">
+                <img id="img" class="img-responsive" src="<?=Base::Img("images/productos/".$prod->prod_foto)?>" alt="<?=Base::Img("images/productos/".$prod->prod_foto)?>" prev="">
               </div>
             </div>
             <div class="col-md-4">
               <div id="infoArea">
-                <h3 id="name"><?=$prod->tope_nombre?></h3>
-                <p><b>Material:</b> <span id="material"><?=$prod->tm_nombre?></span></p>
-                <p><b>Color:</b> <span id="color"><?=$prod->tc_nombre?></span></p>
-                <p><b>Manufacturer:</b> $<span id="manu"><?=Base::Format($prod->tope_manufacture,2,".",",")?></span></p>
-                <p><b>Price:</b> $<span id="price"><?=Base::Format($prod->tope_costo,2,".",",")?></span></p>
+                <h3 id="name"><?=$prod->prod_name?></h3>
+                <p><b>Material:</b> <span id="material"><?=$prod->mate_name?></span></p>
+                <p><b>Color:</b> <span id="color"><?=$prod->color_name?></span></p>
+                <p><b>Manufacture:</b> $<span id="manu"><?=Base::Format($prod->prod_manufacture,2,".",",")?></span></p>
+                <p><b>Price:</b> $<span id="price"><?=Base::Format($prod->prod_price,2,".",",")?></span></p>
               </div>
               <div id="inputArea" style="display:none">
                 <div class="form-group">
                   <label class="col-md-5 control-label" for="top_name">Name: *</label>
                   <div class="col-md-7">
-                    <input id="top_name" class="form-control" type="text" name="top_name" value="<?=$prod->tope_nombre?>" required>
+                    <input id="top_name" class="form-control" type="text" name="top_name" value="<?=$prod->prod_name?>" required>
                   </div>
                 </div>
 
@@ -822,10 +824,10 @@ switch($opc):
                     <select id="top_material" class="form-control" name="top_material" required>
                       <option value="">Select...</option>
                       <?
-                        foreach ($topesMaterial as $d) {
-                          $selected = ($prod->id_tm==$d->id_tm)?'selected':'';
+                        foreach ($topMaterial as $d) {
+                          $selected = ($prod->id_material==$d->id_material)?'selected':'';
                       ?>
-                        <option value="<?=$d->id_tm?>" <?=$selected?>><?=$d->tm_nombre?></option>
+                        <option value="<?=$d->id_material?>" <?=$selected?>><?=$d->mate_name?></option>
                       <?
                         }
                       ?>
@@ -839,10 +841,10 @@ switch($opc):
                     <select id="top_color" class="form-control" name="top_color" required>
                       <option value="">Select...</option>
                       <?
-                        foreach ($topesColor as $d) {
-                          $selected = ($prod->id_tc==$d->id_tc)?'selected':'';
+                        foreach ($topColor as $d) {
+                          $selected = ($prod->id_color == $d->id_color)?'selected':'';
                       ?>
-                        <option value="<?=$d->id_tc?>" <?=$selected?>><?=$d->tc_nombre?></option>
+                        <option value="<?=$d->id_color?>" <?=$selected?>><?=$d->color_name?></option>
                       <?
                         }
                       ?>
@@ -852,13 +854,13 @@ switch($opc):
                 <div class="form-group">
                   <label class="col-md-5 control-label" for="top_manufacture">Manufacture: *</label>
                   <div class="col-md-7">
-                    <input id="top_manufacture" class="form-control" type="number" name="top_manufacture" value="<?=$prod->tope_manufacture?>" required>
+                    <input id="top_manufacture" class="form-control" type="number" step="0.01" name="top_manufacture" value="<?=$prod->prod_manufacture?>" required>
                   </div>
                 </div>
                 <div class="form-group">
                   <label class="col-md-5 control-label" for="top_price">Price: *</label>
                   <div class="col-md-7">
-                    <input id="top_price" class="form-control" type="number" name="top_price" value="<?=$prod->tope_costo?>" required>
+                    <input id="top_price" class="form-control" type="number" step="0.01" name="top_price" value="<?=$prod->prod_price?>" required>
                   </div>
                 </div>
               </div>
@@ -971,6 +973,7 @@ switch($opc):
                   $('#name').text($('#top_name').val());
                   $('#material').text($('#top_material option[value='+$("#top_material").val()+']').text());
                   $('#color').text($('#top_color option[value='+$("#top_color").val()+']').text());
+                  $('#manu').text($('#top_manufacture').val());
                   $('#price').text($('#top_price').val());
                   disableForm(r.data);
                 }else{
@@ -1262,11 +1265,12 @@ switch($opc):
   break;
   case 'add':
     //Topes
-    $topesMaterial = $products->topesMateriales();
-    $topesColor    = $products->topesColor();
+    $topsMaterial = $products->selectMaterials(3);
+    $topsColor    = $products->selectColors(3);
     //Fregaderos
-    $fregMaterial = $products->fregMateriales();
-    $fregColor    = $products->fregColor();
+    $sinkMaterial = $products->selectMaterials(2);
+    $sinkColor    = $products->selectColors(2);
+    $sinkShape    = $products->selectShapes();
   ?>
     <div class="row">
       <div class="col-md-6 col-md-offset-3">
@@ -1322,36 +1326,36 @@ switch($opc):
                       <select id="tope_material" class="form-control" name="material" required>
                         <option value="">Select...</option>
                         <?
-                          foreach ($topesMaterial as $d) {
+                          foreach ($topsMaterial as $d) {
                         ?>
-                          <option value="<?=$d->id_tm?>"><?=$d->tm_nombre?></option>
+                          <option value="<?=$d->id_material?>"><?=$d->mate_name?></option>
                         <?
                           }
                         ?>
                       </select>
-                      <button class="btn btn-flat btn-link" type="button" data-toggle="modal" data-target="#addModal" data-title="Tops - Materials" data-action="add_material" data-table="0" data-consult="tope_list_mat" data-label="Material:">Add material</button>
+                      <button class="btn btn-flat btn-link" type="button" data-toggle="modal" data-target="#addModal" data-title="Tops - Materials" data-action="add_material" data-table="3" data-consult="tope_list_mat" data-label="Material:">Add material</button>
                     </div>
                     <div class="form-group">
                       <label class="control-label" for="tope_color">Color: *</label>
                       <select id="tope_color" class="form-control" name="color" required>
                         <option value="">Select...</option>
                         <?
-                          foreach ($topesColor as $d) {
+                          foreach ($topsColor as $d) {
                         ?>
-                          <option value="<?=$d->id_tc?>"><?=$d->tc_nombre?></option>
+                          <option value="<?=$d->id_color?>"><?=$d->color_name?></option>
                         <?
                           }
                         ?>
                       </select>
-                      <button class="btn btn-flat btn-link" type="button" data-toggle="modal" data-target="#addModal" data-title="Tops - Colors" data-action="add_color" data-table="0" data-consult="tope_list_color" data-label="Color:">Add color</button>
+                      <button class="btn btn-flat btn-link" type="button" data-toggle="modal" data-target="#addModal" data-title="Tops - Colors" data-action="add_color" data-table="3" data-consult="tope_list_color" data-label="Color:">Add color</button>
                     </div>
                     <div class="form-group">
                       <label class="control-label" for="tope_manufacture">Manufacture: *</label>
-                      <input id="tope_manufacture" class="form-control" type="number" name="manufacture" placeholder="0.00" required>
+                      <input id="tope_manufacture" class="form-control" type="number" step="0.01" name="manufacture" placeholder="0.00" required>
                     </div>
                     <div class="form-group">
                       <label class="control-label" for="tope_price">Price: *</label>
-                      <input id="tope_price" class="form-control" type="number" name="price" placeholder="0.00" required>
+                      <input id="tope_price" class="form-control" type="number" step="0.01" name="price" placeholder="0.00" required>
                     </div>
                   </fieldset>
 
@@ -1363,44 +1367,49 @@ switch($opc):
 
                     <div class="form-group">
                       <label class="control-label" for="freg_forma">Shape: *</label>
-                      <select id="freg_forma" class="form-control" name="forma" required>
-                        <option value="">Seleccione...</option>
-                        <option value="1">Oval</option>
-                        <option value="2">Rectangular</option>
-                        <option value="3">Square</option>
+                      <select id="sink_shape" class="form-control" name="forma" required>
+                        <option value="">Select...</option>
+                        <?
+                          foreach ($sinkShape as $d) {
+                        ?>
+                          <option value="<?=$d->id_shape?>"><?=$d->shape_name?></option>
+                        <?
+                          }
+                        ?>
                       </select>
+                      <button class="btn btn-flat btn-link" type="button" data-toggle="modal" data-target="#addModal" data-title="Sinks - Shapes" data-action="add_shape" data-table="0" data-consult="freg_list_shape" data-label="Shape:">Add shape</button>
                     </div>
                     <div class="form-group">
                       <label class="control-label" for="freg_material">Material: *</label>
                       <select id="freg_material" class="form-control" name="material" required>
                         <option value="">Select...</option>
                         <?
-                          foreach ($fregMaterial as $d) {
+                          foreach ($sinkMaterial as $d) {
                         ?>
-                          <option value="<?=$d->id_fm?>"><?=$d->fm_nombre?></option>
+                          <option value="<?=$d->id_material?>"><?=$d->mate_name?></option>
                         <?
                           }
                         ?>
                       </select>
-                      <button class="btn btn-flat btn-link" type="button" data-toggle="modal" data-target="#addModal" data-title="Sinks - Materials" data-action="add_material" data-table="1" data-consult="freg_list_mat" data-label="Material:">Add material</button>
+                      <button class="btn btn-flat btn-link" type="button" data-toggle="modal" data-target="#addModal" data-title="Sinks - Materials" data-action="add_material" data-table="2" data-consult="freg_list_mat" data-label="Material:">Add material</button>
                     </div>
                     <div class="form-group">
                       <label class="control-label" for="freg_color">Color: *</label>
                       <select id="freg_color" class="form-control" name="color" required>
                         <option value="">Select...</option>
                         <?
-                          foreach ($fregColor as $d) {
+                          foreach ($sinkColor as $d) {
                         ?>
-                          <option value="<?=$d->id_fc?>"><?=$d->fc_nombre?></option>
+                          <option value="<?=$d->id_color?>"><?=$d->color_name?></option>
                         <?
                           }
                         ?>
                       </select>
-                      <button class="btn btn-flat btn-link" type="button" data-toggle="modal" data-target="#addModal" data-title="Sinks - Colors" data-action="add_color" data-table="1" data-consult="freg_list_color" data-label="Color:">Add color</button>
+                      <button class="btn btn-flat btn-link" type="button" data-toggle="modal" data-target="#addModal" data-title="Sinks - Colors" data-action="add_color" data-table="2" data-consult="freg_list_color" data-label="Color:">Add color</button>
                     </div>
                     <div class="form-group">
                       <label class="control-label" for="freg_costo">Price: *</label>
-                      <input id="freg_costo" class="form-control" type="number" name="price" placeholder="0.00" required>
+                      <input id="freg_costo" class="form-control" type="number" step="0.01" name="price" placeholder="0.00" required>
                     </div>
                   </fieldset>
 
@@ -1411,7 +1420,7 @@ switch($opc):
                     </div>
                     <div class="form-group">
                       <label class="control-label" for="acc_costo">Price: *</label>
-                      <input id="prod_costo" class="form-control" type="number" name="price" placeholder="0.00" required>
+                      <input id="prod_costo" class="form-control" type="number" step="0.01" name="price" placeholder="0.00" required>
                     </div>
                   </fieldset>
 
@@ -1501,6 +1510,8 @@ switch($opc):
                 $('#faddOpc .categoria-list').html('');
                 $('#faddOpc .categoria-list').append(r.data);
               }else{
+                $('#faddOpc .categoria-list').html('');
+                $('#faddOpc .categoria-list').html(r.msj);
               }
             },
             error: function(){
@@ -1572,7 +1583,6 @@ switch($opc):
 
         $('#tipo').change(function(){
           var type = $(this).val();
-          console.log(type);
           switch(type){
             case "1":
               $('#fieldsSinks,#fieldsTops,#fieldsAccessories').prop('disabled',true).hide();
@@ -1670,8 +1680,8 @@ switch($opc):
   break;
   default:
     $gabi  = $products->consulta_gabinetes();
-    $sinks = $products->consulta_fregaderos();
-    $tops  = $products->consulta_topes();
+    $sinks = $products->consultaProduct(2);
+    $tops  = $products->consultaProduct(3);
     $accessories = $products->consulta_accessories();
   ?>
     <div class="row">
@@ -1745,6 +1755,7 @@ switch($opc):
         <li class="active"><a href="#products" data-toggle="tab" aria-expanded="true">Products</a></li>
         <li class=""><a href="#colors" data-toggle="tab" aria-expanded="false">Colors</a></li>
         <li class=""><a href="#materials" data-toggle="tab" aria-expanded="false">Materials</a></li>
+        <li class=""><a href="#shapes" data-toggle="tab" aria-expanded="false">Shapes</a></li>
         <li class="pull-right"><a href="?ver=products&opc=add"><i class="fa fa-plus" aria-hidden="true"></i> Add product</a></li>
       </ul>
       <div class="tab-content">
@@ -1817,21 +1828,21 @@ switch($opc):
                     foreach ($sinks as $d) {
                   ?>
                     <div class="row prod-box">
-                      <a href="?ver=products&opc=sink&id=<?=$d->id_fregadero?>">
+                      <a href="?ver=products&opc=sink&id=<?=$d->id_product?>">
                       <div class="col-md-2 col-sm-3 col-xs-3 prod-img">
-                        <img class="img-responsive" src="<?=Base::Img("images/productos/".$d->freg_foto)?>" alt="<?=Base::Img("images/productos/".$d->freg_foto)?>">
+                        <img class="img-responsive" src="<?=Base::Img("images/productos/".$d->prod_foto)?>" alt="<?=Base::Img("images/productos/".$d->prod_foto)?>">
                       </div>
                       </a>
                       <div class="col-md-10 col-sm-9 col-xs-9 prod-content">
                         <div class="prod-info-text">
-                          <span class="prod-title"><?=$d->freg_nombre?></span>
+                          <span class="prod-title"><?=$d->prod_name?></span>
                           <span class="prod-extras">
-                            Price: $<?=Base::Format($d->freg_costo,2,".",",")?><br>
-                            Registered: <?=Base::removeTS($d->freg_fecha_reg)?>
+                            Price: $<?=Base::Format($d->prod_price,2,".",",")?><br>
+                            Registered: <?=Base::removeTS($d->prod_fecha_reg)?>
                           </span>
                         </div>
                         <div class="prod-opc">
-                          <a class="prod-link btn-primary btn-flat" href="?ver=products&opc=sink&id=<?=$d->id_fregadero?>"><i class="fa fa-search" aria-hidden="true"></i></a>
+                          <a class="prod-link btn-primary btn-flat" href="?ver=products&opc=sink&id=<?=$d->id_product?>"><i class="fa fa-search" aria-hidden="true"></i></a>
                         </div>
                       </div>
                     </div>
@@ -1866,22 +1877,22 @@ switch($opc):
                     foreach ($tops as $d) {
                   ?>
                     <div class="row prod-box">
-                      <a href="?ver=products&opc=top&id=<?=$d->id_tope?>">
+                      <a href="?ver=products&opc=top&id=<?=$d->id_product?>">
                         <div class="col-md-2 col-sm-3 col-xs-3 prod-img">
-                          <img class="img-responsive" src="<?=Base::Img("images/productos/".$d->tope_foto)?>" alt="<?=Base::Img("images/productos/".$d->tope_foto)?>">
+                          <img class="img-responsive" src="<?=Base::Img("images/productos/".$d->prod_foto)?>" alt="<?=Base::Img("images/productos/".$d->prod_foto)?>">
                         
                         </div>
                       </a>
                       <div class="col-md-10 col-sm-9 col-xs-9 prod-content">
                         <div class="prod-info-text">
-                          <span class="prod-title"><?=$d->tope_nombre?></span>
+                          <span class="prod-title"><?=$d->prod_name?></span>
                           <span class="prod-extras">
-                            Price: $<?=Base::Format($d->tope_costo,2,".",",")?><br>
-                            Registered: <?=Base::removeTS($d->tope_fecha_reg)?>
+                            Price: $<?=Base::Format($d->prod_price,2,".",",")?><br>
+                            Registered: <?=Base::removeTS($d->prod_fecha_reg)?>
                           </span>
                         </div>
                         <div class="prod-opc">
-                          <a class="prod-link btn-primary btn-flat" href="?ver=products&opc=top&id=<?=$d->id_tope?>"><i class="fa fa-search" aria-hidden="true"></i></a>
+                          <a class="prod-link btn-primary btn-flat" href="?ver=products&opc=top&id=<?=$d->id_product?>"><i class="fa fa-search" aria-hidden="true"></i></a>
                         </div>
                       </div>
                     </div>
@@ -1916,7 +1927,7 @@ switch($opc):
                     foreach ($accessories as $d) {
                   ?>
                     <div class="row prod-box">
-                      <a href="?ver=products&opc=acce&id=<?=$d->id_tope?>">
+                      <a href="?ver=products&opc=acce&id=<?=$d->id_accessory?>">
                         <div class="col-md-2 col-sm-3 col-xs-3 prod-img">
                           <img class="img-responsive" src="<?=Base::Img("images/productos/".$d->acce_foto)?>" alt="<?=Base::Img("images/productos/".$d->acce_foto)?>">
                         </div>
@@ -1962,7 +1973,7 @@ switch($opc):
               <h3 class="box-title"><i class="fa fa-tint" aria-hidden="true"></i> Sink colors</h3>
             </div><!-- /.box-header -->
             <div class="box-body">
-              <div id="sinksArea" class="row">
+              <div id="sinksColorArea" class="row">
                 <div class="col-md-10 col-md-offset-1">
                   <div class="alert" role="alert" style="display:none"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;<span id="msj"></span></div>
                 </div>
@@ -1970,7 +1981,7 @@ switch($opc):
                   <form id="addSinkColor"  action="#" method="post">
                     <input id="sinkColorAtion" type="hidden" name="action" value="add_color">
                     <input id="sinkColor" type="hidden" name="id" value="0">
-                    <input type="hidden" name="table" value="1">
+                    <input type="hidden" name="table" value="2">
                     <input type="hidden" name="load" value="false">
                     <div class="form-group">
                       <label class="control-label">Color: *</label>
@@ -1987,8 +1998,8 @@ switch($opc):
                     </div>
                   </form>
                 </div>
-                <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
-                  <table id="tSinkColors" class="table table-condensed table-bordered">
+                <div class="col-md-8 col-sm-12 col-xs-12">
+                  <table id="tSinkColors" class="table table-bordered">
                     <thead>
                       <tr>
                         <th>#</th>
@@ -1998,6 +2009,12 @@ switch($opc):
                       </tr>
                     </thead>
                     <tbody id="tbSinkColors">
+                      <tr>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                      </tr>
                     </tbody>
                   </table>
                 </div>
@@ -2010,7 +2027,7 @@ switch($opc):
               <h3 class="box-title"><i class="fa fa-minus" aria-hidden="true"></i> Top colors</h3>
             </div><!-- /.box-header -->
             <div class="box-body">
-              <div id="topsArea" class="row">
+              <div id="topsColorArea" class="row">
                 <div class="col-md-10 col-md-offset-1">
                   <div class="alert" role="alert" style="display:none"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;<span id="msj"></span></div>
                 </div>
@@ -2018,7 +2035,7 @@ switch($opc):
                   <form id="addTopColor"  action="#" method="post">
                     <input id="topColorAtion" type="hidden" name="action" value="add_color">
                     <input id="topColor" type="hidden" name="id" value="0">
-                    <input type="hidden" name="table" value="0">
+                    <input type="hidden" name="table" value="3">
                     <input type="hidden" name="load" value="false">
                     <div class="form-group">
                       <label class="control-label">Color: *</label>
@@ -2036,7 +2053,7 @@ switch($opc):
                   </form>
                 </div>
                 <div class="col-md-8 col-sm-12 col-xs-12">
-                  <table id="tTopColors" class="table table-condensed table-bordered">
+                  <table id="tTopColors" class="table table-bordered">
                     <thead>
                       <tr>
                         <th>#</th>
@@ -2046,6 +2063,12 @@ switch($opc):
                       </tr>
                     </thead>
                     <tbody id="tbTopColors">
+                      <tr>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                      </tr>
                     </tbody>
                   </table>
                 </div>
@@ -2076,7 +2099,7 @@ switch($opc):
                   <form id="addSinkMaterial"  action="#" method="post">
                     <input id="sinkMaterialAtion" type="hidden" name="action" value="add_material">
                     <input id="sinkMaterial" type="hidden" name="id" value="0">
-                    <input type="hidden" name="table" value="1">
+                    <input type="hidden" name="table" value="2">
                     <input type="hidden" name="load" value="false">
                     <div class="form-group">
                       <label class="control-label">Material: *</label>
@@ -2094,7 +2117,7 @@ switch($opc):
                   </form>
                 </div>
                 <div class="col-md-8">
-                  <table id="tSinkMaterials" class="table table-condensed table-bordered">
+                  <table id="tSinkMaterials" class="table table-bordered">
                     <thead>
                       <tr>
                         <th>#</th>
@@ -2104,6 +2127,12 @@ switch($opc):
                       </tr>
                     </thead>
                     <tbody id="tbSinkMaterials">
+                      <tr>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                      </tr>
                     </tbody>
                   </table>
                 </div>
@@ -2124,7 +2153,7 @@ switch($opc):
                   <form id="addTopMaterial"  action="#" method="post">
                     <input id="topMaterialAtion" type="hidden" name="action" value="add_material">
                     <input id="topMaterial" type="hidden" name="id" value="0">
-                    <input type="hidden" name="table" value="0">
+                    <input type="hidden" name="table" value="3">
                     <input type="hidden" name="load" value="false">
                     <div class="form-group">
                       <label class="control-label">Material: *</label>
@@ -2142,7 +2171,7 @@ switch($opc):
                   </form>
                 </div>
                 <div class="col-md-8">
-                  <table id="tTopMaterials" class="table table-condensed table-bordered">
+                  <table id="tTopMaterials" class="table table-bordered">
                     <thead>
                       <tr>
                         <th>#</th>
@@ -2152,6 +2181,12 @@ switch($opc):
                       </tr>
                     </thead>
                     <tbody id="tbTopMaterials">
+                      <tr>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                      </tr>
                     </tbody>
                   </table>
                 </div>
@@ -2164,11 +2199,72 @@ switch($opc):
           ====================================================================================================================-->
         </div>
         <!-- /.tab-pane -->
+        <div class="tab-pane" id="shapes">
+          <!--==================================================================================================================
+          =========================================|| SHAPES || ================================================================
+          ====================================================================================================================-->
+          <div class="box box-warning">
+            <div class="box-header with-border">
+              <h3 class="box-title"><i class="fa fa-tint" aria-hidden="true"></i> Sink shapes</h3>
+            </div><!-- /.box-header -->
+            <div class="box-body">
+              <div id="shapeArea" class="row">
+                <div class="col-md-10 col-md-offset-1">
+                  <div class="alert" role="alert" style="display:none"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;<span id="msj"></span></div>
+                </div>
+                <div class="col-md-4">
+                  <form id="addShape"  action="#" method="post">
+                    <input id="shapeAtion" type="hidden" name="action" value="add_shape">
+                    <input id="shape" type="hidden" name="id" value="0">
+                    <input type="hidden" name="load" value="false">
+                    <div class="form-group">
+                      <label class="control-label">Shape: *</label>
+                      <input id="shapeVal" type="text" class="form-control" name="opc" required>
+                    </div>
+                    <div class="form-group">
+                      <div class="progress" style="display:none">
+                        <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <button class="btn btn-sm btn-success btn-flat" type="submit">Save <i class="fa fa-send" aria-hidden="true"></i></button>
+                    </div>
+                  </form>
+                </div>
+                <div class="col-md-8 col-sm-12 col-xs-12">
+                  <table id="tShapes" class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Shape</th>
+                        <th>Products</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tbShapes">
+                      <tr>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div><!-- /.box-body -->
+          </div><!-- /.box -->          
+
+          <!--==================================================================================================================
+          =========================================|| SHAPES || ==============================================================
+          ====================================================================================================================-->
+        </div>
       </div>
       <!-- /.tab-content -->
     </div>
-  
-  <!--=====================================|| MODAL DELETE ||============================================================-->
+
+    <!--=====================================|| MODAL DELETE COLOR ||================================================-->
     <div id="delColorModal" class="modal fade modal-danger" tabindex="-1" role="dialog" aria-labelledby="delColorModalLabel">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -2244,9 +2340,45 @@ switch($opc):
       </div>
       <!-- /.modal-dialog -->
     </div>
-    <!--=====================================|| MODAL DELETE ||============================================================-->
+    <!--=====================================|| MODAL DELETE MATERIALS ||============================================-->
 
-    
+    <!--=====================================|| MODAL DELETE SHAPES ||==============================================-->
+    <div id="delShapeModal" class="modal fade modal-danger" tabindex="-1" role="dialog" aria-labelledby="delShapeModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <form id="delShape" action="funciones/class.products.php">
+            <input type="hidden" name="action" value="del_shape">
+            <input id="delShape" type="hidden" name="id" value="0">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+              <h4 class="modal-title">Delete Shape</h4>
+            </div>
+            <div class="modal-body">
+              <h4 class="text-center">Are you sure you want to <b>delete</b> this shape?</h4>
+              <p class="text-center">This action cannot be undone.</p>
+
+              <div class="alert alert-dismissible" role="alert" style="display:none">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;<span id="msj"></span>
+              </div>
+
+              <div class="progress progress-sm active" style="display:none">
+                <div class="progress-bar progress-bar-primary progress-bar-striped" role="progressbar" aria-valuenow="100" aria-valuemin="100" aria-valuemax="100" style="width:100%">
+                  <span class="sr-only">100% Complete</span>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button id="b-del" type="submit" class="btn btn-outline pull-left">Delete</button>
+              <button type="button" class="btn btn-outline" data-dismiss="modal">Close</button>
+            </div>
+          </form>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!--=====================================|| MODAL DELETE ||============================================================-->
 
     <!--Scroll top link-->
     <p class="scrolltop"><a href="#main-body"> <i class="fa fa-chevron-up"></i></a></p>
@@ -2454,6 +2586,56 @@ switch($opc):
           }
         });//==========================================addTopMaterial
 
+        //addShape
+        $('#addShape').submit(function(e){
+          e.preventDefault();
+          var form  = $(this);
+          var btn   = form.find("button");
+          var alert = $('#shapeArea .alert');
+          var bar   = form.find('.progress');
+          var shape = form.find('input[name="opc"]');
+
+          bar.show();
+          btn.button('loading');
+
+          if(shape.val().replace(/\s+/g, '')!=""){
+            $.ajax({
+              type: 'post',
+              cache:false,
+              url: 'funciones/class.products.php',
+              data: form.serialize(),
+              dataType: 'json',
+              success: function(r){
+                if(r.response){
+                  form[0].reset();
+                  $('#shapeAtion').val('add_shape');
+                  $('#shape').val(0);
+                  alert.removeClass('alert-danger').addClass('alert-success');
+                  loadShapes();
+                }else{
+                  alert.removeClass('alert-success').addClass('alert-danger');
+                }
+                alert.find('#msj').text(r.msj);
+              },
+              error: function(){
+                alert.removeClass('alert-success').addClass('alert-danger');
+                alert.find('#msj').text('Han error has ocurred.');
+              },
+              complete: function(){
+                alert.show().delay(7000).hide('slow');
+                bar.hide();
+                btn.button('reset');
+              }
+            })
+          }else{
+            alert.find('#msj').text('You must enter a shape.');
+            alert.removeClass('alert-success').addClass('alert-danger');
+            alert.show().delay(7000).hide('slow');
+            bar.hide();
+            btn.button('reset');
+          }
+        });//==========================================addShape
+
         $('#delColorModal').on('show.bs.modal', function (event) {
           var button = $(event.relatedTarget)
           var table  = button.data('table');
@@ -2472,6 +2654,14 @@ switch($opc):
           var modal = $(this);
           modal.find('#delMaterialTable').val(table);
           modal.find('#delMaterial').val(color);
+        });
+
+        $('#delShapeModal').on('show.bs.modal', function (event) {
+          var button = $(event.relatedTarget)
+          var color  = button.data('id');
+
+          var modal = $(this);
+          modal.find('#delShape').val(color);
         });
 
         //Eliminar colores
@@ -2496,7 +2686,7 @@ switch($opc):
                 form[0].reset();
                 $('#delColor').val(0);
                 alert.removeClass('alert-danger').addClass('alert-success');
-                if(r.data=="1"){
+                if(r.data=="2"){
                   loadSinkColors();
                 }else{
                   loadTopColors();
@@ -2540,7 +2730,7 @@ switch($opc):
                 form[0].reset();
                 $('#delColor').val(0);
                 alert.removeClass('alert-danger').addClass('alert-success');
-                if(r.data=="1"){
+                if(r.data=="2"){
                   loadSinkMaterials();
                 }else{
                   loadTopMaterials();
@@ -2560,7 +2750,47 @@ switch($opc):
               btn.button('reset');
             }
           })
-        });//===========================================delColor
+        });//===========================================delMaterial
+
+        //Eliminar shapes
+        $('#delShape').submit(function(e){
+          e.preventDefault();
+          var form  = $(this);
+          var btn   = form.find('button[type="submit"]');
+          var alert = form.find('.alert');
+          var bar   = form.find('.progress');
+
+          bar.show();
+          btn.button('loading');
+
+          $.ajax({
+            type: 'post',
+            cache:false,
+            url: 'funciones/class.products.php',
+            data: form.serialize(),
+            dataType: 'json',
+            success: function(r){
+              if(r.response){
+                form[0].reset();
+                $('#delShape').val(0);
+                alert.removeClass('alert-danger').addClass('alert-success');
+                loadShapes();
+              }else{
+                alert.removeClass('alert-success').addClass('alert-danger');
+              }
+              alert.find('#msj').text(r.msj);
+            },
+            error: function(){
+              alert.removeClass('alert-success').addClass('alert-danger');
+              alert.find('#msj').text('Han error has ocurred.');
+            },
+            complete: function(){
+              alert.show().delay(7000).hide('slow');
+              bar.hide();
+              btn.button('reset');
+            }
+          })
+        });//===========================================delShape
 
         //Scroll top button
         var $root = $('html, body');
@@ -2579,17 +2809,20 @@ switch($opc):
         });//====================================================================
 
         //Load colors
-        $('#sinksArea').on('click','.editSinkColor',editSinkColor);
-        $('#topsArea').on('click','.editTopColor',editTopColor);
-        
+        $('#sinksColorArea').on('click','.editColor',editSinkColor);
+        $('#topsColorArea').on('click','.editColor',editTopColor);
         loadSinkColors();
         loadTopColors();
 
         //Load materiales
-        $('#sinksMaterialArea').on('click','.editSinkMaterial',editSinkMaterial);
-        $('#topsMaterialArea').on('click','.editTopMaterial',editTopMaterial);
+        $('#sinksMaterialArea').on('click','.editMaterial',editSinkMaterial);
+        $('#topsMaterialArea').on('click','.editMaterial',editTopMaterial);
         loadSinkMaterials();
         loadTopMaterials();
+
+        //Load shapes
+        $('#shapeArea').on('click','.editShape',editShape);
+        loadShapes();
       });//Ready
   
 
@@ -2709,9 +2942,38 @@ switch($opc):
         })
       }//============================================
 
+      //Shapes
+      function loadShapes(){
+        var alert = $('#shapeArea .alert');
+        $.ajax({
+          type: 'post',
+          cache: false,
+          url: 'funciones/class.products.php',
+          data: {action:'shapes'},
+          dataType: 'json',
+          success: function(r){
+            if(r){
+              $('#tShapes').DataTable().destroy();
+              $('#tbShapes').empty();
+              $('#tbShapes').append(r.data);
+              DTable('#tShapes');
+            }else{
+              alert.removeClass('alert-success').addClass('alert-danger');
+              alert.find('#msj').text('An error has ocurred.');
+              alert.show().delay(7000).hide('slow');
+            }
+          },
+          error: function(){
+            alert.removeClass('alert-success').addClass('alert-danger');
+            alert.find('#msj').text('An error has ocurred.');
+            alert.show().delay(7000).hide('slow');
+          }
+        })
+      }//============================================
+
       function editSinkColor(){
         var id = this.id;
-        var color = $.trim($('#sinkColor'+id).text());
+        var color = $.trim($('#c2-'+id).text());
         $('#sinkColorAtion').val('edit_color');
         $('#sinkColor').val(this.id);
         $('#sinkColorVal').val(color);
@@ -2719,7 +2981,7 @@ switch($opc):
 
       function editTopColor(){
         var id = this.id;
-        var color = $.trim($('#topColor'+id).text());
+        var color = $.trim($('#c3-'+id).text());
         $('#topColorAtion').val('edit_color');
         $('#topColor').val(this.id);
         $('#topColorVal').val(color);
@@ -2727,7 +2989,7 @@ switch($opc):
 
       function editSinkMaterial(){
         var id = this.id;
-        var mate = $.trim($('#sinkMaterial'+id).text());
+        var mate = $.trim($('#m2-'+id).text());
         $('#sinkMaterialAtion').val('edit_material');
         $('#sinkMaterial').val(this.id);
         $('#sinkMaterialVal').val(mate);
@@ -2735,14 +2997,28 @@ switch($opc):
 
       function editTopMaterial(){
         var id = this.id;
-        var mate = $.trim($('#topMaterial'+id).text());
+        var mate = $.trim($('#m3-'+id).text());
         $('#topMaterialAtion').val('edit_material');
         $('#topMaterial').val(this.id);
         $('#topMaterialVal').val(mate);
       }
 
+      function editShape(){
+        var id = this.id;
+        var shape = $.trim($('#s-'+id).text());
+        $('#shapeAtion').val('edit_shape');
+        $('#shape').val(this.id);
+        $('#shapeVal').val(shape);
+      }
+
       function DTable(table){
         $(table).DataTable({
+          "paging": true,
+          "lengthChange": false,
+          responsive:true,
+          "searching": false,
+          "ordering": true,
+          "aaSorting": []
         });
       }
     </script>

@@ -124,45 +124,42 @@ switch($opc):
 		    			<th>Description</th>
 		    			<th>Item #</th>
 		    			<th>Price</th>
-		    			<th>Discount</th>
-		    			<th>Price disc.</th>
 		    			<th>Quantity</th>
 		    			<th>Subtotal</th>
             </tr>
             </thead>
             <tbody>
           	<?
-          		$i=1; $manufacturer = 0; $labor = 0;$c_sub=0;$s_sub=0;$t_sub=0;
+          		$i=1; $manufacturer = 0; $labor = 0;$c_sub=0;$s_sub=0;$t_sub=0;$a_sub=0;
           		foreach ($prod as $d){          			
           			
           			switch($d->od_type){
           				case '1':
-          					$product="Cabinet";
-          					$item = $d->od_item;
-          					$discount = $d->od_discount."%";
-          					$pdisc = $d->od_price - (($d->od_price*$d->od_discount)/100);
-          					$pdisc = "$".Base::Format(ceil($d->od_price - $pdisc),2,".",",");
-          					$labor += $d->od_labor*$d->od_qty;
-          					$qty = $d->od_qty;
-          					$c_sub += $d->od_subtotal;
+          					$product  = $d->od_name;
+          					$item     = $d->od_item;
+          					$labor   += $d->od_labor*$d->od_qty;
+          					$qty      = $d->od_qty;
+          					$c_sub   += $d->od_subtotal;
           				break;
           				case '2':
-          					$product="Sink";
-          					$item = "-";
-          					$discount = "-";
-          					$pdisc = "-";
-          					$qty = $d->od_qty;
-          					$s_sub += $d->od_subtotal;
+          					$product  = $d->od_name;
+          					$item     = "-";
+          					$qty      = $d->od_qty;
+          					$s_sub   += $d->od_subtotal;
           				break;
           				case '3':
-          					$product="Top";
-          					$item = "-";
-          					$discount = "-";
-          					$pdisc = "-";
-          					$qty = $d->od_qty."(ft^2)";
-          					$manufacturer += $order->order_manufacturer*$d->od_qty;
-          					$t_sub += $d->od_subtotal;
+          					$product       = $d->od_name;
+          					$item          = "-";
+          					$qty           = $d->od_qty."(ft^2)";
+          					$manufacturer += $d->od_manufacturer*$d->od_qty;
+          					$t_sub        += $d->od_subtotal;
         					break;
+                  case '4':
+                    $product  = $d->od_name;
+                    $item     = "-";
+                    $qty      = $d->od_qty;
+                    $a_sub   += $d->od_subtotal;
+                  break;
           			}
           	?>
 	          	<tr>
@@ -171,8 +168,6 @@ switch($opc):
 			    			<td class="text-center"><?=$d->od_description?></td>
 			    			<td class="text-center"><?=$d->od_item?></td>
 			    			<td class="text-right">$<?=Base::Format($d->od_price,2,".",",")?></td>
-			    			<td class="text-center"><?=$discount?></td>
-			    			<td class="text-right"><?=$pdisc?></td>
 			    			<td class="text-center"><?=$qty?></td>
 			    			<td class="text-right">$<?=Base::Format($d->od_subtotal,2,".",",")?></th>
 		    			</tr>
@@ -189,12 +184,12 @@ switch($opc):
 
       <div class="row">
         <!-- /.col -->
-        <div class="col-md-6 col-md-offset-6 col-xs-12">
+        <div class="col-md-10 col-md-offset-2 col-xs-12">
           <!--<p class="lead">&nbsp;</p>--><br>
 					<?
         		$taxes = ceil(($c_sub*$order->order_tax)/100);
         		$delivery = ceil((($c_sub +  $taxes)*$order->order_delivery)/100);
-        		$c_e = (($c_sub+$taxes+$delivery+$labor)*$order->order_earnings_cab)/100;
+        		$c_e = ceil((($c_sub+$taxes+$delivery+$labor)*$order->order_earnings_cab)/100);
         		$c_total = $c_e + $c_sub + $taxes + $delivery + $labor;
 
         		$s_e = ceil(($s_sub*$order->order_earnings_sinks)/100);
@@ -202,6 +197,9 @@ switch($opc):
 
         		$t_e = ceil((($t_sub + $manufacturer)*$order->order_earnings_tops)/100);
         		$t_total = $t_e + $t_sub + $manufacturer;
+
+            $a_e = ceil(($a_sub*$order->order_earnings_acce)/100);
+            $a_total = $a_e + $a_sub;
 					?>
           <div class="table-responsive">
             <table class="table table-bordered">
@@ -210,6 +208,7 @@ switch($opc):
             			<th colspan="2">Cabinets</th>
             			<th colspan="2">Sinks</th>
             			<th colspan="2">Tops</th>
+                  <th colspan="2">Accessories</th>
             		</tr>
             	</thead>
               <tbody>
@@ -220,6 +219,8 @@ switch($opc):
                 	<td class="text-right">$<?=Base::Format($s_sub,2,".",",")?></td>
                 	<th style="text-align:right !important;">Subtotal:</th>
                 	<td class="text-right">$<?=Base::Format($t_sub,2,".",",")?></td>
+                  <th style="text-align:right !important;">Subtotal:</th>
+                  <td class="text-right">$<?=Base::Format($a_sub,2,".",",")?></td>
               	</tr>
               	<tr>
 	                <th style="text-align:right !important">Tax (<?=$order->order_tax?>%):</th>
@@ -228,6 +229,8 @@ switch($opc):
 	                <td>&nbsp;</td>
 	                <th style="text-align:right !important">Manufacturer:</th>
 	                <td class="text-right">$<?=Base::Format($manufacturer,2,".",",")?></td>
+                  <th>&nbsp;</th>
+                  <td>&nbsp;</td>
 	              </tr>
 	              <tr>
 	                <th style="text-align:right !important">Delivery (<?=$order->order_delivery?>%):
@@ -237,6 +240,8 @@ switch($opc):
 	                <td>&nbsp;</td>
 	                <th>&nbsp;</th>
 	                <td>&nbsp;</td>
+                  <th>&nbsp;</th>
+                  <td>&nbsp;</td>
 	              </tr>
 	              <tr>
 	                <th style="text-align:right !important">Labor:
@@ -246,6 +251,8 @@ switch($opc):
 	                <td>&nbsp;</td>
 	                <th>&nbsp;</th>
 	                <td>&nbsp;</td>
+                  <th>&nbsp;</th>
+                  <td>&nbsp;</td>
 	              </tr>
 	              <tr>
 	              <tr>
@@ -255,6 +262,8 @@ switch($opc):
 	                <td class="text-right">$<?=Base::Format($s_e,2,".",",")?></td>
 	                <th style="text-align:right !important">Earnings (<?=$order->order_earnings_tops?>%):</th>
 	                <td class="text-right">$<?=Base::Format($t_e,2,".",",")?></td>
+                  <th style="text-align:right !important">Earnings (<?=$order->order_earnings_acce?>%):</th>
+                  <td class="text-right">$<?=Base::Format($a_e,2,".",",")?></td>
 	              </tr>
 	              <tr>
 	                <th style="text-align:right !important">Total:</th>
@@ -263,19 +272,21 @@ switch($opc):
 	                <td class="text-right">$<?=Base::Format($s_total,2,".",",")?></td>
 	                <th style="text-align:right !important">Total:</th>
 	                <td class="text-right">$<?=Base::Format($t_total,2,".",",")?></td>
+                  <th style="text-align:right !important">Total:</th>
+                  <td class="text-right">$<?=Base::Format($a_total,2,".",",")?></td>
 	              </tr>
 	            </tbody>
 	            <tfoot>
 	              <tr>
-	                <th colspan="5" style="text-align:right !important">General Subtotal:</th>
+	                <th colspan="7" style="text-align:right !important">General Subtotal:</th>
 	                <td class="text-right">$<?=Base::Format($order->order_subtotal,2,".",",")?></td>
 	              </tr>
 	              <tr>
-	                <th colspan="5" style="text-align:right !important">Shipping (<?=$order->order_shipping?>%):</th>
+	                <th colspan="7" style="text-align:right !important">Shipping (<?=$order->order_shipping?>%):</th>
 	                <td class="text-right">$<?=Base::Format(ceil(($order->order_subtotal*$order->order_shipping)/100),2,".",",")?></td>
 	              </tr>
 	              <tr>
-	                <th colspan="5" style="text-align:right !important">Grand total:</th>
+	                <th colspan="7" style="text-align:right !important">Grand total:</th>
 	                <td class="text-right">$<?=Base::Format($order->order_total,2,".",",")?></td>
 	              </tr>
 	            </tfoot>

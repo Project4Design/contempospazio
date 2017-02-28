@@ -1,6 +1,21 @@
 <?php
 require_once '../config/config.php';
 require_once '../vendor/mpdf/mpdf.php';
+/**
+ * Create a new PDF document
+ *
+ * @param string $mode
+ * @param string $format
+ * @param int $font_size
+ * @param string $font
+ * @param int $margin_left
+ * @param int $margin_right
+ * @param int $margin_top (Margin between content and header, not to be mixed with margin_header - which is document margin)
+ * @param int $margin_bottom (Margin between content and footer, not to be mixed with margin_footer - which is document margin)
+ * @param int $margin_header
+ * @param int $margin_footer
+ * @param string $orientation (P, L)
+ */
 
 class Pdf_orders{
   private $pdf;
@@ -20,7 +35,7 @@ class Pdf_orders{
     if($o){
       $name = $o->order_order;
       $paddress =($o->order_address)?$o->order_address:'N/A';
-      $shipping = Base::Format(($o->order_subtotal*$o->order_shipping)/100,2,".",",");
+      $shipping = Base::Format(ceil(($o->order_subtotal*$o->order_shipping)/100),2,".",",");
       $subtotal = Base::Format($o->order_subtotal,2,".",",");
       $total    = Base::Format($o->order_total,2,".",",");
 
@@ -30,9 +45,10 @@ class Pdf_orders{
       $i=1;
       foreach ($prod as $d){
         switch($d->od_type){
-          case '1': $product="Cabinet"; $item = $d->od_item; $qty = $d->od_qty; break;
-          case '2': $product="Sink"; $item = "-"; $qty = $d->od_qty; break;
-          case '3': $product="Top"; $item = "-"; $qty = $d->od_qty."(ft^2)"; break;
+          case '1': $product=$d->od_name; $item = $d->od_item; $qty = $d->od_qty; break;
+          case '2': $product=$d->od_name; $item = "-"; $qty = $d->od_qty; break;
+          case '3': $product=$d->od_name; $item = "-"; $qty = $d->od_qty."(ft^2)"; break;
+          case '4': $product=$d->od_name; $item = "-"; $qty = $d->od_qty; break;
         }
         $tbody .= "
           <tr>
@@ -46,67 +62,58 @@ class Pdf_orders{
         $i++;
       }
 
-      $body.=
-      "<!DOCTYPE html>
-        <html>
-          <body>
-              <div class='col-12'> &nbsp; </div>
-              <div class='col-12'> &nbsp; </div>
-              <div class='col-12'> &nbsp; </div>
-              <div class='col-12'>
-                <b>ORDER #{$o->order_order}</b>
-              </div>
-              <div class='col-6'>
-                <h4>Client details</h4>
-                <strong>{$o->client_name}</strong><br>
-                {$o->client_address}<br>
-                Phone: {$o->client_phone}<br>
-                Email: {$o->client_email}<br>
-                Contact: {$o->client_contact}<br>
-                Project Address: {$paddress}<br>
-              </div>
-              <div class='col-12'> &nbsp; </div>
-              <div class='col-12'>
-                <table class='table table-bordered'>
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Product</th>
-                      <th>Description</th>
-                      <th>Item</th>
-                      <th>Qty</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {$tbody}
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <th colspan='4' class='text-right'>Subtotal:</th>
-                      <td class='text-right'>$ {$subtotal}</td>
-                    </tr>
-                    <tr>
-                      <th colspan='4' class='text-right'>Shipping:</th>
-                      <td class='text-right'>$ {$shipping}</td>
-                    </tr>
-                    <tr>
-                      <th colspan='4' class='text-right'>Total:</th>
-                      <td class='text-right'>$ {$total}</td>
-                    </tr>
-                  </tfoot>
-                </table>
-
-              </div>
-          </body>
-        </html>
-      ";
+      $body.="
+            <div class='col-12'>
+              <b>ORDER #{$o->order_order}</b>
+            </div>
+            <div class='col-6'>
+              <h4>Client details</h4>
+              <strong>{$o->client_name}</strong><br>
+              {$o->client_address}<br>
+              Phone: {$o->client_phone}<br>
+              Email: {$o->client_email}<br>
+              Contact: {$o->client_contact}<br>
+              Project Address: {$paddress}<br>
+            </div>
+            <div class='col-12'> &nbsp; </div>
+            <div class='col-12'>
+              <table class='table table-bordered'>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Product</th>
+                    <th>Description</th>
+                    <th>Item</th>
+                    <th>Qty</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {$tbody}
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th colspan='4' class='text-right'>Subtotal:</th>
+                    <td class='text-right'>$ {$subtotal}</td>
+                  </tr>
+                  <tr>
+                    <th colspan='4' class='text-right'>Shipping:</th>
+                    <td class='text-right'>$ {$shipping}</td>
+                  </tr>
+                  <tr>
+                    <th colspan='4' class='text-right'>Total:</th>
+                    <td class='text-right'>$ {$total}</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          ";
 
     }else{
       $name="";
       $body = "<center> <h1>An error has ocurred.</h1></cener>";
     }//Si existe un error
 
-    $mpdf = new mPDF('','', 12, '', 15, 15, 16, 16, 10, 5, 'P');
+    $mpdf = new mPDF('','', 12, '', 15, 15, 0, 5, 5, 5, 'P');
     
     $header = "
               <div class='col-3'>
@@ -116,13 +123,13 @@ class Pdf_orders{
                 <h4>CONTEMPOSPAZIO</h4>
                 9773 S. Orange Blossom Trail. ste 29. Orlando, Fl. 32837<br>
                 www.contempospazio.com<br>
-                Tlf: +1 (407) 5908881<br>
+                Tlf: +1 (407) 5908881
               </div>";
     $footer = "
             <table width=\"100%\" style=\"vertical-align: bottom; font-family: serif; font-size: 8pt; color: #000000; font-weight: bold; font-style: italic;\"><tr>
             <td width=\"33%\"><span style=\"font-weight: bold; font-style: italic;\">{DATE m-d-Y}</span></td>
             <td width=\"33%\" align=\"center\" style=\"font-weight: bold; font-style: italic;\">{PAGENO}/{nbpg}</td>
-            <td width=\"33%\" style=\"text-align: right; \">{$name}</td>
+            <td width=\"33%\" style=\"text-align: right; \">ORDER #{$name}</td>
             </tr></table>";
     $css = "
     body{box-sizing: border-box;font-family: 'Source Sans Pro',sans-serif;}
@@ -140,8 +147,9 @@ class Pdf_orders{
     .col-7{width:53.87%;}.col-8{width:62.21%;}.col-9{width:70.54%;}.col-10{width:78.87%;}.col-11{width:87.21%;}.col-12{width:100%;}
     p{font-size:16px} .under{border-bottom:1px solid #000}.b{font-weight:bold}";
 
+    $mpdf->setAutoTopMargin = 'stretch';
+    $mpdf->setAutoBottomMargin = 'stretch';
     $mpdf->SetHTMLHeader($header);
-
     $mpdf->SetHTMLFooter($footer);
     $mpdf->WriteHTML($css,1);
     $mpdf->WriteHTML($body,2);

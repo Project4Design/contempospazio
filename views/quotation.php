@@ -1,5 +1,5 @@
 <?
-$configuration = new Configuracion();
+$configuration = new Configuration();
 $config = $configuration->consulta();
 $clients = new Clients();
 $list    = $clients->list_clients();
@@ -64,6 +64,7 @@ $list    = $clients->list_clients();
 		                  	<option value="1" selected>Cabinets</option>
 		                  	<option value="2">Sinks</option>
 		                  	<option value="3">Tops</option>
+		                  	<option value="4">Accessories</option>
 		                  </select>
 		                	
 		  								<input id="search" class="form-control" type="text" name="search" placeholder="Item #">
@@ -85,9 +86,9 @@ $list    = $clients->list_clients();
 		              		<span id="p-id" class="hide"></span>
 			              	<div id="box-other" style="display:none">
 							          <h3><span id="other-name">-</span></h3>
-							          <p id="shape"><b>Forma:</b> <span id="other-shape"></span></p>
-							          <p><b>Meterial:</b> <span id="other-mat">-</span></p>
-							          <p><b>Color:</b> <span id="other-color">-</span></p>
+							          <p id="shape"><b>Shape:</b> <span id="other-shape"></span></p>
+							          <p id="material"><b>Material:</b> <span id="other-mat">-</span></p>
+							          <p id="color"><b>Color:</b> <span id="other-color">-</span></p>
 							          <p><b>Price:</b> $<span id="other-price">-</span></p>
 							          <p id="manufact"><b>Manufacturer:</b> $<span id="other-manu">-</span></p>
 			              	</div>
@@ -136,7 +137,7 @@ $list    = $clients->list_clients();
 
 				  		<div class="col-md-12 quotation-list" style="background:#ECF0F5;padding:5px">
 						  </div><!--Table-responsive-->
-						  <div class="col-md-8 col-md-offset-4" style="margin-top:10px">
+						  <div class="col-md-10 col-md-offset-2" style="margin-top:10px">
 			          <div class="table-responsive">
 			            <table class="table table-bordered">
 			            	<thead>
@@ -144,29 +145,36 @@ $list    = $clients->list_clients();
 			            			<th colspan="2">Cabinets (Units): <span id="c-qty">0</span></th>
 			            			<th colspan="2">Sinks (Units): <span id="s-qty">0</span></th>
 			            			<th colspan="2">Tops (ft^2): <span id="t-qty">0</span></th>
+			            			<th colspan="2">Accessories (Units): <span id="a-qty">0</span></th>
 			            		</tr>
 			            	</thead>
 			              <tbody>
 			              	<tr>
 			                	<th style="text-align:right !important;">Subtotal:</th>
-			                	<td>$<span id="c-sub">0.00</span></td>
+			                	<td>$<span id="c-sub" class='pull-right'>0.00</span></td>
 			                	<th style="text-align:right !important;">Subtotal:</th>
-			                	<td>$<span id="s-sub">0.00</span></td>
+			                	<td>$<span id="s-sub" class='pull-right'>0.00</span></td>
 			                	<th style="text-align:right !important;">Subtotal:</th>
-			                	<td>$<span id="t-sub">0.00</span></td>
+			                	<td>$<span id="t-sub" class='pull-right'>0.00</span></td>
+			                	<th style="text-align:right !important;">Subtotal:</th>
+			                	<td>$<span id="a-sub" class='pull-right'>0.00</span></td>
 			              	</tr>
 			              	<tr>
 				                <th style="text-align:right !important">Tax (<?=$config->config_tax?>%):</th>
-				                <td>$<span id="taxes">0.00</span></td>
+				                <td>$<span id="taxes" class='pull-right'>0.00</span></td>
 				                <th>&nbsp;</th>
 				                <td>&nbsp;</td>
 				                <th style="text-align:right !important">Manufacturer:</th>
-				                <td>$<span id="manufacturer">0.00</span></td>
+				                <td>$<span id="manufacturer" class='pull-right'>0.00</span></td>
+				                <th>&nbsp;</th>
+				                <td>&nbsp;</td>
 				              </tr>
 				              <tr>
 				                <th style="text-align:right !important">Delivery (<?=$config->config_delivery?>%):
 				                </th>
-				                <td>$<span id="delivery">0.00</span></td>
+				                <td>$<span id="delivery" class='pull-right'>0.00</span></td>
+				                <th>&nbsp;</th>
+				                <td>&nbsp;</td>
 				                <th>&nbsp;</th>
 				                <td>&nbsp;</td>
 				                <th>&nbsp;</th>
@@ -175,7 +183,9 @@ $list    = $clients->list_clients();
 				              <tr>
 				                <th style="text-align:right !important">Labor:
 				                </th>
-				                <td>$<span id="labor">0.00</span></td>
+				                <td>$<span id="labor" class='pull-right'>0.00</span></td>
+				                <th>&nbsp;</th>
+				                <td>&nbsp;</td>
 				                <th>&nbsp;</th>
 				                <td>&nbsp;</td>
 				                <th>&nbsp;</th>
@@ -184,33 +194,37 @@ $list    = $clients->list_clients();
 				              <tr>
 				              <tr>
 				                <th style="text-align:right !important">Earnings (<?=$config->config_earnings_cab?>%):</th>
-				                <td>$<span id="c-earnings">0.00</span></td>
+				                <td>$<span id="c-earnings" class='pull-right'>0.00</span></td>
 				                <th style="text-align:right !important">Earnings (<?=$config->config_earnings_sinks?>%):</th>
-				                <td>$<span id="s-earnings">0.00</span></td>
+				                <td>$<span id="s-earnings" class='pull-right'>0.00</span></td>
 				                <th style="text-align:right !important">Earnings (<?=$config->config_earnings_tops?>%):</th>
-				                <td>$<span id="t-earnings">0.00</span></td>
+				                <td>$<span id="t-earnings" class='pull-right'>0.00</span></td>
+				                <th style="text-align:right !important">Earnings (<?=$config->config_earnings_acce?>%):</th>
+				                <td>$<span id="a-earnings" class='pull-right'>0.00</span></td>
 				              </tr>
 				              <tr>
 				                <th style="text-align:right !important">Total:</th>
-				                <td>$<span id="c-total">0.00</span></td>
+				                <td>$<span id="c-total" class='pull-right'>0.00</span></td>
 				                <th style="text-align:right !important">Total:</th>
-				                <td>$<span id="s-total">0.00</span></td>
+				                <td>$<span id="s-total" class='pull-right'>0.00</span></td>
 				                <th style="text-align:right !important">Total:</th>
-				                <td>$<span id="t-total">0.00</span></td>
+				                <td>$<span id="t-total" class='pull-right'>0.00</span></td>
+				                <th style="text-align:right !important">Total:</th>
+				                <td>$<span id="a-total" class='pull-right'>0.00</span></td>
 				              </tr>
 				            </tbody>
 				            <tfoot>
 				              <tr>
-				                <th colspan="5" style="text-align:right !important">General Subtotal:</th>
-				                <td>$<span id="g-sub">0.00</span></td>
+				                <th colspan="7" style="text-align:right !important">General Subtotal:</th>
+				                <td>$<span id="g-sub" class='pull-right'>0.00</span></td>
 				              </tr>
 				              <tr>
-				                <th colspan="5" style="text-align:right !important">Shipping (<?=$config->config_shipment?>%):</th>
-				                <td>$<span id="shipping">0.00</span></td>
+				                <th colspan="7" style="text-align:right !important">Shipping (<?=$config->config_shipment?>%):</th>
+				                <td>$<span id="shipping" class='pull-right'>0.00</span></td>
 				              </tr>
 				              <tr>
-				                <th colspan="5" style="text-align:right !important">Grand total:</th>
-				                <td>$<span id="g-total">0.00</span></td>
+				                <th colspan="7" style="text-align:right !important">Grand total:</th>
+				                <td>$<span id="g-total" class='pull-right'>0.00</span></td>
 				              </tr>
 				            </tfoot>
 				          </table>
@@ -315,7 +329,7 @@ $list    = $clients->list_clients();
         		<div id="step-3" class="setup-content">
 
 							<div class="col-md-12">
-								<h3 class="text-center"><span id="order-project"></span></h3>
+								<h3 class="text-center"><span id="order-project_name"></span></h3>
                 <br>
 							</div>
 							<div class="col-md-10 col-md-offset-1">
@@ -330,7 +344,7 @@ $list    = $clients->list_clients();
 								<p>Name: <span id="order-name"></span></p>
 								<p>Phone: <span id="order-phone"></span></p>
 								<p>Address: <br><span id="order-address"></span></p>
-								<p>Project address: <br><span id="order-address2"></span></p>
+								<p>Project address: <br><span id="order-project_address"></span></p>
 							</div>
 							<div class="col-md-3 col-md-offset-1">
 								<h4>Order details</h4>
@@ -347,6 +361,10 @@ $list    = $clients->list_clients();
 										<tr>
 											<td class="text-right">Tops (ft^2):</td>
 											<td class="text-left"><span id="order-tops"></span></td>
+										</tr>
+										<tr>
+											<td class="text-right">Accessories (Units):</td>
+											<td class="text-left"><span id="order-accessories"></span></td>
 										</tr>
 									</tbody>
 									<tfoot>
@@ -377,7 +395,7 @@ $list    = $clients->list_clients();
 		//Cantidad cajas de productos agregadas .box
 		rows = 0;
 		//Cantidad totales de cada producto
-		c_qty = 0; s_qty = 0; t_qty = 0;
+		c_qty = 0; s_qty = 0; t_qty = 0; a_qty = 0;
 		//Variable de impuestos
 		tax = <?=$config->config_tax?>;
 		//Variable de % de envio al cliente
@@ -388,9 +406,9 @@ $list    = $clients->list_clients();
 		e_sinks = <?=$config->config_earnings_sinks?>;
 		//Ganacias
 		e_tops = <?=$config->config_earnings_tops?>;
-		//Descuento
-		discount = <?=$config->config_discount?>;
-		//Descuento
+		//Ganacias
+		e_acce = <?=$config->config_earnings_acce?>;
+		//Delivery
 		delivery = <?=$config->config_delivery?>;
 
 		$("#number").select2({
@@ -407,8 +425,9 @@ $list    = $clients->list_clients();
 			clean();
 			switch(val){
 				case "1":$('#search').focus();$('#box-gabi').show('slow');$('#box-other').hide();$('#search').attr('placeholder','Item #');$('#b-add').prop('disabled',false);break;
-				case "2":$('#search').focus();$('#box-gabi').hide();$('#shape').show();$('#manufact').hide();$('#box-other').show('slow');$('#search').attr('placeholder','Name');$('#b-add').prop('disabled',false);break;
-				case "3":$('#search').focus();$('#box-gabi').hide();$('#shape').hide();$('#manufact').show();$('#box-other').show('slow');$('#search').attr('placeholder','Name');$('#b-add').prop('disabled',false);break;
+				case "2":$('#search').focus();$('#box-gabi').hide();$('#shape').show();$('#manufact').hide();$('#color').show();$('#material').show();$('#box-other').show('slow');$('#search').attr('placeholder','Name');$('#b-add').prop('disabled',false);break;
+				case "3":$('#search').focus();$('#box-gabi').hide();$('#shape').hide();$('#manufact').show();$('#color').show();$('#material').show();$('#box-other').show('slow');$('#search').attr('placeholder','Name');$('#b-add').prop('disabled',false);break;
+				case "4":$('#search').focus();$('#box-gabi').hide();$('#shape').hide();$('#manufact').hide();$('#color').hide();$('#material').hide();$('#box-other').show('slow');$('#search').attr('placeholder','Name');$('#b-add').prop('disabled',false);break;
 				default:$('#b-add').prop('disabled',true);$('#box-gabi,#box-other').hide();$('#search').attr('placeholder','Search');break;
 			}
 		});
@@ -422,7 +441,7 @@ $list    = $clients->list_clients();
 			var term  = $('#search').val();
 			var type  = $('#type').val();
 
-			if(type=="0"){
+			if(type==0){
 				alert.find('#msj').text('You must select a type.');alert.show().delay(7000).hide('slow');
 			}else{
 				if(term==""){
@@ -444,7 +463,7 @@ $list    = $clients->list_clients();
 									$('#gabi-labor').text(r.data.labor);
 									$('#gabi-desc').text(r.data.desc);
 									$('#tbody-item').empty(); $('#tbody-item').append(r.data.tr);
-								}else if(r.data.type=="2"||r.data.type=="3"){
+								}else if(r.data.type=="2"||r.data.type=="3"||r.data.type=="4"){
 									$('#qty').focus();
 									//Asignar los datos a los campos Other.
 									$.each(r.data.s,function(i,v){$("#"+i).text(v);});
@@ -475,15 +494,15 @@ $list    = $clients->list_clients();
 
 			var td    = $('#tbody-item td.item-active').length;
 			var id    = $('#p-id').text();
-			var type  = $('#p-type').text();
+			var type  = $('#p-type').text()*1;
 			var qty   = $('#qty').val();
 			//Si la cantidad a agregar es mayor a 0.
 			if(qty>0){
-				if(type=="1"){
+				if(type==1){
 					//Si hay un item activo para agregar.
 					if(td>0){addRow(id,type,qty);
 					}else{alert.find('#msj').text('You must select a item first.');alert.show().delay(7000).hide('slow');}
-				}else if(type=="2"||type=="3"){addRow(id,type,qty);
+				}else if(type==2||type==3||type==4){addRow(id,type,qty);
 				}else{alert.find('#msj').text('You must look for a product first.');alert.show().delay(7000).hide('slow');}
 			}else{alert.find('#msj').text('Quantity must be greater than 0.');alert.show().delay(7000).hide('slow');}
 		});
@@ -631,8 +650,8 @@ $list    = $clients->list_clients();
 
 		$('#s-reset').click(function(){
 			$('#client_number').val(0);
+			$('#number').val('');
 			$('#client-form input[name*="client_"]:visible').prop('readonly',false).val('');
-			
 		})
 	});//Ready
 
@@ -646,44 +665,49 @@ $list    = $clients->list_clients();
 		//Activamos el boton para continuar al paso 2
 		$('#activate-step-2').prop('disabled',false);
 
-		if(type == "1"){
+		if(type == 1){
 			var id_gp = $('#id-item').text();
 			var item  = $('#gabi-item').text();
 			var labor = $('#gabi-labor').text();
 			var desc  = $('#gabi-desc').text();
-			var cost  = $('#tbody-item td.item-active').text();
+			var price = $('#tbody-item td.item-active').text();
 			var index = $('#tbody-item td.item-active').attr('index');
-			var price = Math.ceil((cost*discount)/100);
 			var sub   = (price*qty);
 			var color = cabinetColor(index);
 			c_qty += (qty*1);
-			//$('#tbody-list').append('<tr><td><button class="btn btn-flat btn-sm btn-danger delRow" type="button"><i class="fa fa-trash"></i></button></td><td>'+rows+'</td><td>-</td><td>'+desc+'</td><td>'+item+'</td><td>$'+cost+'</td><td>'+discount+'%</td><td>$'+price+'</td><td>'+qty+'</td><td>$<span pid="'+id+'" item="'+id_gp+'" index="'+index+'" ptype="1" labor="'+labor+'" qty="'+qty+'">'+sub+'</td>');
 			var box ='<div class="box box-danger" pid="'+id+'" item="'+id_gp+'" index="'+index+'" ptype="1" labor="'+labor+'" qty="'+qty+'"><div class="box-header with-border"><h3 class="box-title"><span class="row-num">'+rows+'</span> | Cabinet</h3><div class="box-tools pull-right"><button class="btn btn-sm btn-flat btn-danger delBox" type="button"><i class="fa fa-times" aria-hidden="true"></i></button></div></div>';
-			box +='<div class="box-body"><div class="col-md-12">'+desc+' | <b>Color:</b> '+color+'</div>';
+			box +='<div class="box-body">';
+			box +='<div class="col-md-5">'+desc+' | <b>Color:</b> '+color+'</div>';
 			box +='<div class="col-md-2"><p><b>Item #:</b><span class="pull-right">'+item+'</span></p></div>';
-			box +='<div class="col-md-2"><p><b>Price:</b><span class="pull-right">$'+cost+'</span></p></div>';
-			box +='<div class="col-md-2"><p><b>Discount:</b><span class="pull-right">'+discount+'%</span></p></div>';
-			box +='<div class="col-md-2"><p><b>Price disc:</b><span class="pull-right">$'+price+'</span></p></div>';
-			box +='<div class="col-md-2"><p><b>Qty:</b><span class="pull-right">'+qty+'</span></p></div>';
+			box +='<div class="col-md-2"><p><b>Price:</b><span class="pull-right">$'+price+'</span></p></div>';
+			box +='<div class="col-md-1"><p><b>Qty:</b><span class="pull-right">'+qty+'</span></p></div>';
 			box +='<div class="col-md-2"><p><b>Subtotal:</b><span class="pull-right subotal">$<span class="subtotal">'+sub+'</span></span></p></div></div></div>';
 			$('.quotation-list').append(box);
-		}else if(type=="2"||type=="3"){
-			if(type=="2"){s_qty += (qty*1); var shape = '<b>Shape:</b> '+$('#other-shape').text()+" | ";}else{t_qty = (qty*1); var shape = "";}
+		}else if(type==2||type==3||type==4){
+			if(type==2){
+				s_qty += (qty*1);
+				var desc  = '<b>Shape:</b> '+$('#other-shape').text()+" | "+"<b>Mat.:</b> "+$('#other-mat').text()+" | <b>Color</b>: "+$('#other-color').text();
+			}
+			if(type==3){
+				t_qty = (qty*1);
+				var desc  = "<b>Mat.:</b> "+$('#other-mat').text()+" | <b>Color</b>: "+$('#other-color').text();
+			}
+			if(type==4){
+				a_qty = (qty*1);
+				var desc  = "-";
+			}
+
 			var name  = $('#other-name').text();
-			var color = $('#other-color').text();
 			var price = $('#other-price').text();
-			var mat   = $('#other-mat').text();
 			var manu  = $('#other-manu').text();
 			var sub   = (price*qty);
-			var ft    = (type=="3")?'(ft^2)':'';
-			var desc  = shape+"<b>Mat.:</b> "+mat+" | <b>Color</b>: "+color;
+			var ft    = (type==3)?'(ft^2)':'';
 			var box ='<div class="box box-danger" pid="'+id+'" ptype="'+type+'" qty="'+qty+'" manu="'+manu+'"><div class="box-header with-border"><h3 class="box-title"><span class="row-num">'+rows+'</span> | '+name+'</h3><div class="box-tools pull-right"><button class="btn btn-sm btn-flat btn-danger delBox" type="button"><i class="fa fa-times" aria-hidden="true"></i></button></div></div>';
-			box +='<div class="box-body"><div class="col-md-12">'+desc+'</div>';
+			box +='<div class="box-body">';
+			box += '<div class="col-md-5"><b>Description:</b> <span class="pull-right">'+desc+'</span></div>';
 			box +='<div class="col-md-2"><p><b>Item #:</b><span class="pull-right">-</span></p></div>';
 			box +='<div class="col-md-2"><p><b>Price:</b><span class="pull-right">$'+price+'</span></p></div>';
-			box +='<div class="col-md-2"><p><b>Discount:</b><span class="pull-right">-</span></p></div>';
-			box +='<div class="col-md-2"><p><b>Price disc:</b><span class="pull-right">-</span></p></div>';
-			box +='<div class="col-md-2"><p><b>Qty:</b><span class="pull-right">'+qty+ft+'</span></p></div>';
+			box +='<div class="col-md-1"><p><b>Qty:</b><span class="pull-right">'+qty+ft+'</span></p></div>';
 			box +='<div class="col-md-2"><p><b>Subtotal:</b><span class="pull-right">$<span class="subtotal">'+sub+'</span></span></p></div></div></div>';
 			$('.quotation-list').append(box);
 		}
@@ -699,7 +723,8 @@ $list    = $clients->list_clients();
 		switch(type){
 			case 1: c_qty -= del; break;
 			case 2: s_qty -= del; break;
-			case 3: t_qty -= del; break; 
+			case 3: t_qty -= del; break;
+			case 4: a_qty -= del; break;
 		}
 
 		box.remove();//Eliminamos el producto.
@@ -728,26 +753,30 @@ $list    = $clients->list_clients();
 		var c_sub   = 0; //Cabinets subtotal
 		var s_sub   = 0; //Sinks Subtotal
 		var t_sub   = 0; //Tops subtotal
+		var a_sub   = 0; //Accessories subtotal
 		var g_sub   = 0; //General subtotal
 
 		var c_earnings = 0; //Cabinerts Earnings
 		var s_earnings = 0; //Sinks Earnings
 		var t_earnings = 0; //Tops Earnings
+		var a_earnings = 0; //Accessories Earnings
 
 		var c_total  = 0; //Cabinets Total
 		var s_total  = 0; //Sinks Total
 		var t_total  = 0; //Tops Total
+		var a_total  = 0; //Accessories Total
 		var grand_total = 0;//Grand total
 
 		$('#c-qty').text(c_qty);
 		$('#s-qty').text(s_qty);
 		$('#t-qty').text(t_qty);
+		$('#a-qty').text(a_qty);
 
 		//Calcular el subtotal.
 		$('.quotation-list .box').each(function(){
 			var box = $(this);//Span con todo lo datos
 			
-			var tr_sub = (box.find('.subtotal').text()*1);//Subtotal del tr
+			var box_sub = (box.find('.subtotal').text()*1);//Subtotal del tr
 			var type   = box.attr('ptype');//Tipo de producto
 			var qty    = box.attr('qty');//Cantidad
 			var lab    = box.attr('labor');//Labor
@@ -756,14 +785,17 @@ $list    = $clients->list_clients();
 			switch(type){
 				case '1':
 					labor += (qty*lab); //Labor
-					c_sub += tr_sub; //Cabinets subtotal
+					c_sub += box_sub; //Cabinets subtotal
 				break;
 				case '2':
-					s_sub += tr_sub; //Sinks Subtotal
+					s_sub += box_sub; //Sinks Subtotal
 				break;
 				case '3':
 					man   += manu*qty; //Manufacturer
-					t_sub += tr_sub; //Tops subtotal
+					t_sub += box_sub; //Tops subtotal
+				break;
+				case '4':
+					a_sub += box_sub; //Accessories subtotal
 				break;
 			}
 		});
@@ -772,20 +804,23 @@ $list    = $clients->list_clients();
 		taxes = Math.ceil(((c_sub*tax)/100)); //Taxes for cabinets
 		deliv = Math.ceil(((c_sub+taxes)*delivery)/100); //Delivery for cabinets
 		c_earnings = Math.ceil(((c_sub+taxes+deliv+labor)*e_cab)/100); //Cabinets Earnings
-		c_total = c_sub + taxes + deliv + labor + c_earnings;//Total Cabinets
+		c_total = Math.ceil(c_sub + taxes + deliv + labor + c_earnings);//Total Cabinets
 
 		
 		s_earnings = Math.ceil((s_sub*e_sinks)/100);//Sinks Earnings
-		s_total = s_earnings + s_sub;//Total Sinks
+		s_total = Math.ceil(s_earnings + s_sub);//Total Sinks
 
 		
 		t_earnings = Math.ceil(((t_sub+man)*e_tops)/100);//Tops Earnings
-		t_total = t_earnings + man + t_sub;//Total Tops
+		t_total = Math.ceil(t_earnings + man + t_sub);//Total Tops
+
+		a_earnings = Math.ceil((a_sub*e_acce)/100);//Accessories Earnings
+		a_total = Math.ceil(a_earnings + a_sub);//Total Tops
 		
-		g_sub = Math.ceil(c_total+s_total+t_total);//General sub-total
+		g_sub = Math.ceil(c_total+s_total+t_total+a_total);//General sub-total
 		
 		ship  = Math.ceil((g_sub*shipping)/100);//Shipment to client
-		grand_total = Math.ceil(c_total+s_total+t_total+ship);//Grand total
+		grand_total = Math.ceil(c_total+s_total+t_total+a_total+ship);//Grand total
 
 		//Asignar valores.
 		//Cabinets
@@ -806,6 +841,11 @@ $list    = $clients->list_clients();
 		$('#manufacturer').text(addCommas(man));
 		$('#t-earnings').text(addCommas(t_earnings));
 		$('#t-total').text(addCommas(t_total));
+
+		//Accessories
+		$('#a-sub').text(addCommas(a_sub));
+		$('#a-earnings').text(addCommas(a_earnings));
+		$('#a-total').text(addCommas(a_total));
 
 		//Totales 
 		$('#g-sub').text(addCommas(g_sub));

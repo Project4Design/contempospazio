@@ -1,9 +1,9 @@
 <?
-$configuracion = new Configuracion();
-$config = $configuracion->consulta();
+$configuration = new Configuration();
+$config = $configuration->consulta();
 ?>
 <section class="content-header">
-  <h1>Configuracion</h1>
+  <h1>Configuration</h1>
   <ol class="breadcrumb">
     <li><a href="inicio.php"><i class="fa fa-home"></i> Inicio</a></li>
     <li class="active">Configuration</li>
@@ -45,6 +45,7 @@ $config = $configuracion->consulta();
                   </div>
                 </div>
               </div>
+
               <div class="form-group">
                 <label for="mano" class="col-md-5 control-label">Regular work:</label>
                 <div class="col-md-7">
@@ -54,6 +55,7 @@ $config = $configuracion->consulta();
                   </div>
                 </div>
               </div>
+
               <div class="form-group">
                 <label for="big_work" class="col-md-5 control-label">Big work:</label>
                 <div class="col-md-7">
@@ -63,15 +65,7 @@ $config = $configuracion->consulta();
                   </div>
                 </div>
               </div>
-              <div class="form-group">
-                <label for="discount" class="col-md-5 control-label">Discount:</label>
-                <div class="col-md-7">
-                  <div class="input-group">
-                    <input type="text" class="form-control numeros" id="discount" name="discount" value="<?=$config->config_discount?>">
-                    <span class="input-group-addon">%</span>
-                  </div>
-                </div>
-              </div>
+
               <div class="form-group">
                 <label for="delivery" class="col-md-5 control-label">Delivery:</label>
                 <div class="col-md-7">
@@ -102,7 +96,7 @@ $config = $configuracion->consulta();
                 <label for="earnings_tops" class="col-md-5 control-label">Earnings:</label>
                 <div class="col-md-7">
                   <div class="input-group">
-                    <input type="text" class="form-control numeros" id="earnings_top" name="earnings_tops" value="<?=$config->config_earnings_tops?>">
+                    <input id="earnings_tops" class="form-control numeros" type="text" name="earnings_tops" value="<?=$config->config_earnings_tops?>">
                     <span class="input-group-addon">%</span>
                   </div>
                 </div>
@@ -110,8 +104,20 @@ $config = $configuracion->consulta();
             </div>
 
             <div class="col-md-3">
+            <h3>Accessories</h3>
+
+              <div class="form-group">
+                <label for="earnings_acce" class="col-md-5 control-label">Earnings:</label>
+                <div class="col-md-7">
+                  <div class="input-group">
+                    <input type="text" class="form-control numeros" id="earnings_acce" name="earnings_acce" value="<?=$config->config_earnings_acce?>">
+                    <span class="input-group-addon">%</span>
+                  </div>
+                </div>
+              </div>
+
               <h3>Global</h3>
-              
+
               <div class="form-group">
                 <label for="shipment" class="col-md-5 control-label">Client shipment:</label>
                 <div class="col-md-7">

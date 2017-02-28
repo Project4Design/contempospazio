@@ -37,7 +37,7 @@ $selling  = $graphics->bestSelling();
     <div class="col-md-6">
     	<div class="box box-success">
         <div class="box-header with-border">
-          <h3 class="box-title">Products by type.</h3>
+          <h3 class="box-title">Sellings by type</h3>
           <div class="box-tools pull-right">
             <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
             </button>
@@ -105,7 +105,7 @@ $selling  = $graphics->bestSelling();
         type: 'pie'
       },
       title: null,
-      tooltip:{pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'},
+      tooltip:{pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b><br>Qty: {point.y}'},
       plotOptions: {
         pie: {
           allowPointSelect: true,

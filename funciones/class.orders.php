@@ -62,18 +62,15 @@ class Orders{
 			while($row = $query->result->fetch_array(MYSQLI_ASSOC)){
 				$data[] = (object) $row;
 			}
-		}else{
-			$data = NULL;
 		}
 
 		return $data;
 	}
 
 	public function obtenerByClient($id){
-		$query = Query::prun("SELECT o.*,c.client_name,c.client_phone,SUM(od.od_qty) AS products FROM orders AS o
+		$query = Query::prun("SELECT o.*,SUM(od.od_qty) AS products FROM orders AS o
 															INNER JOIN orders_details AS od ON od.id_order = o.id_order
-															INNER JOIN clients AS c ON c.client_number = o.client_number
-															WHERE c.id_client = ?
+															WHERE o.client_number = (SELECT client_number FROM clients WHERE id_client = ?)
 															GROUP BY o.id_order",
 															array("i",$id));
 		$data = array();
@@ -256,7 +253,7 @@ class Orders{
 		return Base::Format($data,2,".",",");
 	}
 
-}//Class Configuracion
+}//Class Orders
 
 // Logica
 $modelOrders = new Orders();

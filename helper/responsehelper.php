@@ -10,7 +10,7 @@ class ResponseHelper
 	
 	public function setResponse($response, $msg = '', $reload = false, $redirect = '')
 	{
-		if(!$response && $msg == ''){ $this->msj = 'Ocurrio un error inesperado';}
+		if(!$response && $msg == ''){ $this->msj = 'Unexpected error.';}
 		else { $this->msj = $msg; }
 
 		if($reload){ $this->reload = true; }

@@ -36,8 +36,9 @@ else:
 			$products = new Products();
 			//Total de productos
 			$totalg  = count($products->consulta_gabinetes());
-			$totalf  = count($products->consulta_fregaderos());
-			$totalt  = count($products->consulta_topes());
+			$totalf  = count($products->consultaProduct(2));
+			$totalt  = count($products->consultaProduct(3));
+			$totala  = count($products->consulta_accessories());
 			$product = $products->lastAdded();
 
 			$clients = new CLients();
@@ -95,7 +96,7 @@ else:
 					<div class="col-md-3 col-sm-6 col-xs-12">
 		        <div class="small-box bg-red">
 	            <div class="inner">
-	              <h3><?=($totalg+$totalf+$totalt)?></h3>
+	              <h3><?=($totalg+$totalf+$totalt+$totala)?></h3>
 
 	              <p>Products</p>
 	            </div>

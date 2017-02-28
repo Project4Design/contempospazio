@@ -1,7 +1,0 @@
-
-[Thu, 23 Feb 2017 18:49:54 -0430] #0 C:\xampp\htdocs\contempospazio\funciones\conex.php(79): mysqli->prepare('SELECT SUM(orde...')
-#1 C:\xampp\htdocs\contempospazio\funciones\class.orders.php(92): Query::prun('SELECT SUM(orde...', Array)
-#2 C:\xampp\htdocs\contempospazio\views\clients.php(22): Orders->revenuesByClient('52')
-#3 C:\xampp\htdocs\contempospazio\inicio.php(15): require('C:\\xampp\\htdocs...')
-#4 {main}
-Table 'contempospazio.clientes' doesn't exist
