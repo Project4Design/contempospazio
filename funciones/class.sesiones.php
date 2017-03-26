@@ -24,7 +24,7 @@ class Sesiones{
 					$_SESSION['nivel']  = $user->user_nivel;
 
 
-					$this->rh->setResponse(true,"Loggin in",true,"inicio.php");
+					$this->rh->setResponse(true,"Loading...",true,"inicio.php");
 				}else{
 					$this->rh->setResponse(false,"Account deactivated. Call the administrator.");
 				}

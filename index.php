@@ -6,7 +6,7 @@ isset($_SESSION['id']) ? session_destroy() : '';
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Administracion</title>
+  <title>Contempospazio</title>
   <!-- Tell the browser to be responsive to screen width -->
   <?=Base::Meta("viewport","width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no")?>
   <!-- Bootstrap 3.3.5 -->

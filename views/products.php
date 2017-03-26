@@ -300,8 +300,8 @@ switch($opc):
           //var codigo = $('#gp_codigo').val().replace(/\s+/g, '');
           var form = $('#fitems');
 
-          var fields = form.find('input,select').filter('[required]').length;
-          form.find('input,select').filter('[required]').each(function(){
+          var fields = form.find('input:visible,select:visible').filter('[required]').length;
+          form.find('input:visible,select:visible').filter('[required]').each(function(){
             var val   = $(this).val();
             if(val == ""){
               $(this).closest('.form-group').addClass('has-error');

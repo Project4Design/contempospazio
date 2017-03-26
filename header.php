@@ -70,8 +70,10 @@ if(isset($_GET['id'])){ $id = $_GET['id']; }else{ $id = 0; }
           
           <!-- logo for regular state and mobile devices -->
           <span class="logo-lg">
-          <b style="font-size:18px;">
-          <img src="<?=Base::Img("images/logo.JPG")?>" alt="logo" width="20px">&nbsp;CONTEMPOSPAZIO</b></span>
+            <b style="font-size:18px;">
+              <img src="<?=Base::Img("images/logo.JPG")?>" alt="logo" width="20px">&nbsp;CONTEMPOSPAZIO
+            </b>
+          </span>
         </a>
 
         <!-- Header Navbar: style can be found in header.less -->

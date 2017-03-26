@@ -161,7 +161,7 @@ class Products{
 	}
 
 	//Agregar Accessory
-	public function add_accessory($name,$price,$foto){
+	public function addAccessory($name,$price,$foto){
 		$query = Query::prun("INSERT INTO accessories (acce_name,acce_price,acce_foto) VALUES (?,?,?)",
 																array("sds",$name,$price,$foto));
 		if($query->response){
@@ -239,7 +239,7 @@ class Products{
 			$query = Query::prun("SELECT id_gp FROM cabinets_items WHERE gp_codigo = ? LIMIT 1",array("s",$codigo));
 
 			if($query->result->num_rows>0){
-				$this->rh->setResponse(false,"Este codigo de Item ya existe.");
+				$this->rh->setResponse(false,"This item code already exist.");
 			}else{
 				$query = Query::prun("INSERT INTO cabinets_items (id_gabi,gp_labor,gp_codigo,gp_gs,gp_mgc,gp_rbs,gp_esms,gp_ws,gp_miw)
 																			VALUES (?,?,?,?,?,?,?,?,?)",array("iisdddddd",$cabinet,$labor,$codigo,$gs,$mgc,$rbs,$esms,$ws,$miw));
@@ -450,7 +450,7 @@ class Products{
 				$query = Query::prun("DELETE FROM cabinets WHERE id_gabi = ?",array("i",$id));
 
 				if($query->response){
-					if(!is_null($prod->gabi_foto)){unlink("../images/productos/".$prod->foto_foto);}
+					if(!is_null($prod->gabi_foto)){unlink("../images/productos/".$prod->gabi_foto);}
 					Query::run("DELETE FROM cabinets_items WHERE id_gabi = $id");
 
 					$this->rh->setResponse(true,"Cabinet deleted.",true,"inicio.php?ver=products");
@@ -987,7 +987,7 @@ class Products{
 	public function delColor($id,$type){
 
 		if($this->nivel == "A"){
-			$query = Query::prun("SELECT id_product FROM products WHERE products_type = ? AND id_color = ? LIMIT 1",array("ii",$type,$id));
+			$query = Query::prun("SELECT id_product FROM products WHERE prod_type = ? AND id_color = ? LIMIT 1",array("ii",$type,$id));
 
 			if($query->result->num_rows>0){
 				$this->rh->setResponse(false,"There are products with this color assigned to them.");
