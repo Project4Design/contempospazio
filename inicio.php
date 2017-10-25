@@ -3,31 +3,9 @@ require_once 'header.php';
 if(isset($_SESSION['id'])===false):
 	require_once 'views/forbidden.php';
 else:
-
 	switch($inicio):
-		case 'profile':
-			require Base::LoadView($inicio);
-		break;
 		case 'users':
 			require Base::LoadView($inicio,"A");
-		break;
-		case 'clients':
-			require Base::LoadView($inicio);
-		break;
-		case 'configuration':
-			require Base::LoadView($inicio);
-		break;
-		case 'products':
-			require Base::LoadView($inicio);
-		break;
-		case 'quotation':
-			require Base::LoadView($inicio);
-		break;
-		case 'orders':
-			require Base::LoadView($inicio);
-		break;
-		case 'statistics':
-			require Base::LoadView($inicio);
 		break;
 		case 'index':
 			$usuarios  = new Usuarios();
@@ -45,8 +23,7 @@ else:
 			$client  = count($clients->consulta());
 			$orders  = new Orders();
 			$order   = $orders->latestOrders();
-
-		?>
+?>
 	    <section class="content-header">
 	      <h1 class="text-center">
 	        <img src="<?=Base::Img("images/logo.JPG")?>" alt="logo" width="50px">&nbsp;CONTEMPOSPAZIO

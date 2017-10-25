@@ -102,7 +102,7 @@ switch($opc):
           ?>        
           </tbody>
         </table>
-       </div>
+      </div>
     </div>
 
     <script type="text/javascript">
@@ -231,7 +231,7 @@ switch($opc):
           ?>
           </tbody>
         </table>
-       </div>
+      </div>
     </div>
   <?
   break;

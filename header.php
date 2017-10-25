@@ -1,8 +1,8 @@
 <?
 require_once 'config/config.php';
-if(isset($_GET['ver'])){ $inicio = $_GET['ver']; }else{ $inicio = "index"; }
-if(isset($_GET['opc'])){ $opc = $_GET['opc']; }else{ $opc = ""; }
-if(isset($_GET['id'])){ $id = $_GET['id']; }else{ $id = 0; }
+$inicio = isset($_GET['ver'])?$_GET['ver']:"index";
+$opc    = isset($_GET['opc'])?$_GET['opc']:"";
+$id     = isset($_GET['id'])?$_GET['id']:0;
 
 ?>
 <!DOCTYPE html>
@@ -186,14 +186,19 @@ if(isset($_GET['id'])){ $id = $_GET['id']; }else{ $id = 0; }
                 <li><a href="?ver=products&opc=add"><i class="fa fa-circle-o"></i>Add product</a></li>
               </ul>
             </li>
-<!--
-            <li>
+
+            <li class="treeview <?=($inicio=="inventory")?'active':'';?>">
               <a href="#">
-                <i class="fa fa-cubes" aria-hidden="true"></i>
-                <span>Materials</span>
+                <i class="fa fa-archive" aria-hidden="true"></i>
+                <span>Inventory</span>
+                <i class="fa fa-angle-left pull-right"></i>
               </a>
+              <ul class="treeview-menu <?=($inicio=='inventory')?'active':'';?>">
+                <li><a href="?ver=inventory"><i class="fa fa-circle-o"></i>Inventory</a></li>
+                <li><a href="?ver=inventory&opc=add"><i class="fa fa-circle-o"></i>Add product</a></li>
+              </ul>
             </li>
--->
+
             <li class="<?=($inicio=='statistics')?'active':''?>">
               <a href="?ver=statistics">
                 <i class="fa fa-area-chart" aria-hidden="true"></i>

@@ -1,9 +1,5 @@
-<?
+<?php
 /*==========| Archivo de configuracion base - Beta |=========*/
-if(!isset($_SESSION)){
-  session_name("Contempo");
-  session_start();
-}
 /*
 * Definicion de variables globales
 */
@@ -36,6 +32,12 @@ if (!defined('BASE_URL')) {
   define('BASE_URL', "http://".$base);
 }
 
+if(!isset($_SESSION)){
+  session_save_path(ROOT.APP_DIR.'config\sessions');
+  session_name("Contempo");
+  session_start();
+}
+
 /*
 * Definicion de variables para conexion a la BD
 */
@@ -54,7 +56,7 @@ if (!defined('DB_PASS')) {
 }
 //Definir tabla de la BD
 if (!defined('DB_TABLE')) {
-  define('DB_TABLE', "contempospazio");
+  define('DB_TABLE', "contempo");
 }
 
 //Definir zona horaria por defecto

@@ -1,0 +1,7 @@
+
+[Wed, 25 Oct 2017 15:48:09 -0400] #0 C:\xampp\htdocs\contempo\funciones\conex.php(47): mysqli->query('SELECT * FROM c...')
+#1 C:\xampp\htdocs\contempo\funciones\class.inventory.php(35): Query::run('SELECT * FROM c...')
+#2 C:\xampp\htdocs\contempo\views\inventory.php(19): Inventory->selectCategorys()
+#3 C:\xampp\htdocs\contempo\inicio.php(189): require('C:\\xampp\\htdocs...')
+#4 {main}
+Table 'contempo.categorys' doesn't exist
