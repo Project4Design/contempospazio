@@ -130,7 +130,7 @@ $(document).ready(function() {
         },
         error: function(){
           alert.removeClass('alert-info alert-success').addClass('alert-danger');
-          alert.find('#msj').text('Ah ocurrido un error inesperado');
+          alert.find('#msj').text('An unexpected error has occurred');
         },
         complete: function(r){
           bar.hide();

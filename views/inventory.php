@@ -15,38 +15,196 @@ if($opc=="add"){$li="Add";}elseif($opc=="edit"){$li="Edit";}elseif($opc=="ver"){
 <div class="content">
 <?
 switch($opc):
+	case 'ver':
+	$item = $inventory->obtener($id);
+  ?>
+    <section>
+      <a class="btn btn-flat btn-default" href="?ver=inventory"><i class="fa fa-reply" aria-hidden="true"></i> Back</a>
+      <a class="btn btn-flat btn-success" href="?ver=inventory&opc=edit&id=<?=$id?>"><i class="fa fa-pencil" aria-hidden="true"></i> Edit information</a>
+      <?if($_SESSION['nivel']=="A"){?>
+      <button class="btn btn-flat btn-primary" data-toggle="modal" data-target="#stockModal"><i class="fa fa-dot-circle-o" aria-hidden="true"></i> Stock</button>
+      <button class="btn btn-flat btn-danger" data-toggle="modal" data-target="#delModal"><i class="fa fa-times" aria-hidden="true"></i> Delete</button>
+      <?}?>
+    </section>
+    <section class="perfil">
+      <div class="row">
+        <div class="col-md-12">
+          <h2 class="page-header" style="margin-top:0!important">
+            <i class="fa fa-archive" aria-hidden="true"></i>
+            <?=$item->inv_name?>
+            <small class="pull-right">Registered: <?=Base::ConvertTS2($item->inv_fecha_reg)?></small>
+            <span class="clearfix"></span>
+          </h2>
+        </div>
+        <div class="col-md-4">
+          <h4>Item details</h4>
+          <p><b>Category:</b> <?=$item->icat_category?></p>
+          <p><b>Name:</b> <?=$item->inv_name?></p>
+          <p><b>Stock:</b> <?=$item->inv_stock." ({$item->mea_unit})"?></p>
+        </div>
+      </div>
+    </section>
+
+    <div id="stockModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="stockModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="stockModalLabel"></h4>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <form id="delete-user" class="col-md-8 col-md-offset-2" action="funciones/class.inventory.php" method="PSOT">
+                <input type="hidden" name="id" value="<?=$id?>">
+                <input type="hidden" name="action" value="stock">
+
+								<center>
+									<div class="form-group">
+										<div class="btn-group" data-toggle="buttons">
+										  <label class="btn btn-default btn-flat active">
+										    <input type="radio" name="type" value="1" checked required> <i class="fa fa-plus" aria-hidden="true"></i> Increase Stock
+										  </label>
+										  <label class="btn btn-default btn-flat">
+										    <input type="radio" name="type" value="2" required> <i class="fa fa-retweet" aria-hidden="true"></i> Replace Stock
+										  </label>
+										</div>
+									</div>
+								
+									<fieldset id="increase">
+										<h4 class="text-center">
+											<i class="fa fa-plus" aria-hidden="true"></i> Increase Stock
+										</h4>
+										<p class="help-block"><b>This option will increase the current stock.</b></p>
+									</fieldset>
+
+									<fieldset id="replace" style="display:none">
+										<h4 class="text-center">
+											<i class="fa fa-retweet" aria-hidden="true"></i> Replace Stock
+										</h4>
+										<p class="text-danger"><b>This option will replace the current stock.</b></p>
+									</fieldset>
+
+									<div class="form-group">
+										<label class="control-label" for="Stock">Stock: *</label>
+										<input id="stock" class="form-control" type="number" name="stock" min="0" style="width:60px" required>
+									</div>
+								</center>
+
+                <div class="form-group">
+                  <div class="progress" style="display:none">
+                    <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%">
+                    </div>
+                  </div>
+                  <div class="alert" style="display:none" role="alert"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;<span id="msj"></span></div>
+                </div>
+                <center>
+                  <button type="button" class="btn btn-flat btn-default" data-dismiss="modal">Close</button>
+                  <button id="b-eliminar" class="btn btn-flat btn-success b-submit" type="submit"><i class="fa fa-send" aria-hidden="true"></i> Save</button>
+                </center>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="delModal" class="modal fade modal-danger" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <form action="funciones/class.inventory.php" method="POST">
+            <input type="hidden" name="action" value="delete">
+            <input type="hidden" name="id" value="<?=$id?>">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+              <h4 class="modal-title">Delete Product</h4>
+            </div>
+            <div class="modal-body">
+              <h4 class="text-center">Are you sure you want to <b>delete</b> this Item?</h4>
+              <p class="text-center">This action cannot be undone.</p>
+
+              <div class="alert alert-dismissible" role="alert" style="display:none">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;<span id="msj"></span>
+              </div>
+
+              <div class="progress progress-sm active" style="display:none">
+                <div class="progress-bar progress-bar-primary progress-bar-striped" role="progressbar" aria-valuenow="100" aria-valuemin="100" aria-valuemax="100" style="width:100%">
+                  <span class="sr-only">100% Complete</span>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button id="b-del" type="submit" class="btn btn-flat btn-outline pull-left b-submit">Delete</button>
+              <button type="button" class="btn btn-flat btn-outline" data-dismiss="modal">Close</button>
+            </div>
+          </form>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+
+    <script type="text/javascript">
+    	$(document).ready(function(){
+    		$('input[name=type]').change(function(){
+    			if(this.value == 1){
+    				$('#increase').show();
+    				$('#replace').hide();
+    			}else{
+    				$('#increase').hide();
+    				$('#replace').show();
+    			}
+    		});
+    	});
+    </script>
+
+  <?
+	break;
   case 'add':
-    $categorys = $inventory->selectCategorys();
+  case 'edit':
+  	$item = $inventory->obtener($id);
   ?>
     <div class="row">
       <div class="col-md-6 col-md-offset-3">
         <div class="box box-success">
           <div class="box-header">
-            <h3 class="box-title"><i class="fa fa-cubes"></i> Add product</h3>
+            <h3 class="box-title"><i class="fa <?=($id>0)? 'fa-pencil':'fa-archive'?>"></i> <?=($id>0)?'Edit':'Add'?> Inventory</h3>
           </div>
           <div class="box-body">
             <div class="row">
               <div class="col-md-10 col-md-offset-1">
                 <form id="finventory" action="funciones/class.inventory.php" method="post" enctype="multipart/form-data">
-                  <input id="action" type="hidden" name="action" value="add">
+                  <input id="action" type="hidden" name="action" value="<?=($id>0)?'edit':'add';?>">
+                  <input type="hidden" name="id" value="<?=$id?>">
+                  
                   <div class="form-group">
-                    <label class="control-label" for="category">Category:</label>
+                    <label class="control-label" for="category">Category: *</label>
                     <select id="category" class="form-control" type="text" name="category" required>
                       <option value="">Select...</option>
-                      <?foreach($categorys as $d){?>
-												<option value="<?=$d->id_inv_cat?>"><?=$d->icat_category?></option>
-                      <?}	?>
+                      <?foreach($inventory->consultaCategories() as $d){?>
+												<option value="<?=$d->id_category?>" <?=($item)?($item->id_category==$d->id_category)?'selected':'':''?>><?=$d->icat_category?></option>
+                      <?}?>
                     </select>
                   </div>
 
                   <div class="form-group">
                     <label class="control-label" for="name">Name: *</label>
-                    <input id="name" class="form-control" type="text" name="name" required>
+                    <input id="name" class="form-control" type="text" name="name" value="<?=($item)?$item->inv_name:''?>" required>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="control-label" for="measurement">Measurement unit: *</label>
+                    <select id="measurement" class="form-control" type="text" name="measurement" required>
+                      <option value="">Select...</option>
+                      <?foreach($inventory->consultaMeasurements() as $d){?>
+												<option value="<?=$d->id_measurement?>" <?=($item)?($item->id_measurement==$d->id_measurement)?'selected':'':''?>><?=$d->mea_unit?></option>
+                      <?}?>
+                    </select>
                   </div>
 
                   <div class="form-group">
                     <label class="control-label" for="stock">Stock: *</label>
-                    <input id="stock" class="form-control" type="number" name="stock" required>
+                    <input id="stock" class="form-control" type="number" name="stock" min="0" value="<?=($item)?$item->inv_stock:''?>" style="width:75px" required>
                   </div>
 
                   <div class="alert alert-dismissible" role="alert" style="display:none">
@@ -62,7 +220,7 @@ switch($opc):
 
                   <div class="form-group">
                     <a class="btn btn-default btn-flat" href="?ver=inventory"><i class="fa fa-reply" aria-hiden="true"></i> Back</a>
-                    <button id="binventory" class="btn btn-flat btn-primary" type="submit"><i class="fa fa-paper-plane" aria-hidden="true"></i> Save</button>
+                    <button id="binventory" class="btn btn-flat btn-primary b-submit" type="submit"><i class="fa fa-paper-plane" aria-hidden="true"></i> Save</button>
                   </div>
                 </form>
               </div>
@@ -208,32 +366,12 @@ switch($opc):
         $('#finventory').submit(function(e){
           e.preventDefault();
           var form = $('#finventory');
-          var formdata = new FormData(form[0]);
           var btn   = form.find('button[type="submit"]');
           var alert = form.find('.alert');
           var bar   = form.find('.progress');
 
           alert.hide();
           bar.show();
-
-          var textArea = $('#descripcion').val().replace(/\s+/g, '');
-
-          var fields = form.find('fieldset:not([disabled]) input,fieldset:not([disabled]) select,fieldset:not([disabled]) textarea').filter('[required]').length;
-          form.find('fieldset:not([disabled]) input,fieldset:not([disabled]) select,fieldset:not([disabled]) textarea').filter('[required]').each(function(){
-            var regex = $(this).attr('pattern');
-            var val   = $(this).val();
-            if(val == ""){
-              $(this).closest('.form-group').addClass('has-error');
-            }
-            else{
-              if(val.match(regex)){
-                $(this).closest('.form-group').removeClass('has-error');
-                fields = fields-1;
-              }else{
-                $(this).closest('.form-group').addClass('has-error');
-              }
-            }
-          });
 
           if(fields!=0){
             alert.removeClass('alert-success').addClass('alert-danger');
@@ -280,7 +418,7 @@ switch($opc):
   ?>
     <div class="row">
     	<div class="col-md-12">
-    		<div class="box box-danger">
+    		<div class="box box-primary">
 		      <div class="box-header with-border">
 		        <h3 class="box-title"><i class="fa fa-archive"></i> Inventory</h3>
 		        <div class="pull-right">
@@ -295,31 +433,22 @@ switch($opc):
 		              <th class="text-center">Category</th>
 		              <th class="text-center">Name</th>
 		              <th class="text-center">Stock</th>
-		              <th class="text-center">Date</th>
+		              <th class="text-center">Registered</th>
 		              <th class="text-center">Action</th>
 		            </tr>
 		          </thead>
 		          <tbody>
 		          <? $i = 1;
-		            foreach($inventory as $d) {
-		              switch ($d->order_status){
-		                case 'Started':$status = "<span class=\"label label-primary\">Started</span>";break;
-		                case 'Completed':$status = "<span class=\"label label-success\">Completed</span>";break;
-		                case 'Standby':$status = "<span class=\"label label-warning\">Standby</span>";break;
-		                case 'Canceled':$status = "<span class=\"label label-danger\">Canceled</span>";break;
-		              }
+		            foreach($inventory->consulta() as $d) {
 		          ?>
 		            <tr>
-		              <td class="text-center"><?=$d->order_order?></td>
-		              <td><?=$d->order_project?></td>
-		              <td class="text-center"><?=$status?></td>
-		              <td><?=($d->order_address)?$d->order_address:'N/A';?></td>
-		              <td class="text-center"><?=$d->products?></td>
-		              <td class="text-right">$<?=Base::Format($d->order_total,2,".",",")?></td>
-		              <td class="text-center"><?=Base::removeTS($d->order_fecha_reg)?></td>
+		              <td class="text-center"><?=$i?></td>
+		              <td class="text-center"><?=$d->icat_category?></td>
+		              <td class="text-center"><?=$d->inv_name?></td>
+		              <td class="text-center"><?=$d->inv_stock?></td>
+		              <td class="text-center"><?=Base::removeTS($d->inv_fecha_reg)?></td>
 		              <td class="text-center">
-		                <a class="btn btn-flat btn-primary btn-sm" href="?ver=orders&opc=ver&id=<?=$d->id_order?>"><i class="fa fa-search"></i></a>
-		                <button class="btn btn-sm btn-flat btn-danger btn-print" xhref="reportes/orders.php?action=order&order=<?=$d->id_order?>" type="button"><i class="fa fa-print"></i></button>
+		                <a class="btn btn-flat btn-primary btn-sm" href="?ver=inventory&opc=ver&id=<?=$d->id_inventory?>"><i class="fa fa-search"></i></a>
 		              </td>
 		            </tr>
 		          <?
@@ -337,55 +466,3 @@ switch($opc):
 endswitch;
 ?>
 </div>
-
-<script type="text/javascript">
-  $(document).ready(function(){
-    //Asignar evento al cargar una imagen
-    $('#file').change(preview);
-  });
-
-  //Preview IMG
-  function preview(){
-    //Id del input
-    var input = this.id;
-    //El archivo
-    var file  = this.files[0];
-    //Tippo de archivo
-    var type  = file.type;
-    //Contar errores
-    var error = 0;
-    //Imagen
-    var img   = $('#img');
-    //Imagen anterior
-    var prev  = img.attr("src");
-    //Imagen loading
-    var load = $(".spinner-image");
-    //Guardar imagen anterior
-    img.attr('prev',prev);
-    //Ocultar imagen
-    img.hide();
-    //Mostar cargando
-    load.show();
-    if(file){
-      if(file.size<2000000){
-        if(type == "image/jpeg" || type == "image/png" || type == "image/jpg"){
-          var reader = new FileReader();
-          reader.onload = function (e) {
-            img.attr('src', e.target.result);
-            load.hide();
-          img.show('slow');
-          }
-          reader.readAsDataURL(file);
-        }else{ $('#msj').html('Archivo no admitido.'); error++; }
-      }else{ $('#msj').html('La imagen supera el tamaño permitido: 2MB.'); error++; }
-    }
-
-    if(error>0){
-      img.parent().parent().addClass('has-error');
-      $('#'+input).val('');
-      $('.alert').removeClass('alert-success').addClass("alert-danger");
-      $('.alert').show().delay(7000).hide('slow');
-      load.hide();
-    }else{ img.parent().parent().removeClass('error'); }
-  }//Preview-----------------------------------------------------------------------------------
-</script>
