@@ -158,15 +158,23 @@ $(document).ready(function() {
 
 });//document.ready
 
-function loadTable(){
-  $('.data-table').DataTable({
+//Load data table with all functions
+function loadTable(table = null){
+
+	var table = table?table:'.data-table';
+
+  $(table).DataTable({
     responsive: true,
     "aaSorting": []
   });
 }
 
-function loadBasic(){
-  $('.table-basic').DataTable({
+//Load basic data table without searching
+function loadBasic(table = null){
+
+	var table = table?table:'.table-basic';
+
+  $(table).DataTable({
     "paging": true,
     "lengthChange": false,
     responsive:true,
@@ -194,3 +202,40 @@ function addCommas(nStr){
   }
   return x1 + x2;
 }
+
+//Colores para Hightcharts
+var colors = [
+		'#90ED7D',
+		'#00A65A',
+  	'#D32F2F',
+		'#F44336',
+		'#7C4DFF',
+		'#7B1FA2',
+		'#1976D2',
+		'#00796B',
+		'#009688',
+		'#8BC34A',
+		'#4CAF50',
+		'#FFC107',
+		'#D2D6DE',
+		'#F56954',
+		'#00C0EF',
+		'#DD4B39',
+		'#D2D6DE',
+		'#605CA8',
+		'#FF851B',
+		'#39CCCC',
+		'#3D9970'
+	];
+
+function shuffle(a) {
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+Highcharts.setOptions({
+  colors: shuffle(colors)
+});

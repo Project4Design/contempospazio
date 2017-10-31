@@ -1999,7 +1999,7 @@ switch($opc):
                   </form>
                 </div>
                 <div class="col-md-8 col-sm-12 col-xs-12">
-                  <table id="tSinkColors" class="table table-bordered">
+                  <table id="tSinkColors" class="table table-bordered" style="width:100%">
                     <thead>
                       <tr>
                         <th>#</th>
@@ -2053,7 +2053,7 @@ switch($opc):
                   </form>
                 </div>
                 <div class="col-md-8 col-sm-12 col-xs-12">
-                  <table id="tTopColors" class="table table-bordered">
+                  <table id="tTopColors" class="table table-bordered" style="width:100%">
                     <thead>
                       <tr>
                         <th>#</th>
@@ -2171,7 +2171,7 @@ switch($opc):
                   </form>
                 </div>
                 <div class="col-md-8">
-                  <table id="tTopMaterials" class="table table-bordered">
+                  <table id="tTopMaterials" class="table table-bordered" style="width:100%">
                     <thead>
                       <tr>
                         <th>#</th>
@@ -2233,7 +2233,7 @@ switch($opc):
                   </form>
                 </div>
                 <div class="col-md-8 col-sm-12 col-xs-12">
-                  <table id="tShapes" class="table table-bordered">
+                  <table id="tShapes" class="table table-bordered" style="width:100%">
                     <thead>
                       <tr>
                         <th>#</th>
@@ -2840,7 +2840,7 @@ switch($opc):
               $('#tSinkColors').DataTable().destroy();
               $('#tbSinkColors').empty();
               $('#tbSinkColors').append(r.data);
-              DTable('#tSinkColors');
+              loadBasic('#tSinkColors');
             }else{
               alert.removeClass('alert-success').addClass('alert-danger');
               alert.find('#msj').text('An error has ocurred.');
@@ -2869,7 +2869,7 @@ switch($opc):
               $('#tTopColors').DataTable().destroy();
               $('#tbTopColors').empty();
               $('#tbTopColors').append(r.data);
-              DTable('#tTopColors');
+              loadBasic('#tTopColors');
             }else{
               alert.removeClass('alert-success').addClass('alert-danger');
               alert.find('#msj').text('An error has ocurred.');
@@ -2898,7 +2898,7 @@ switch($opc):
               $('#tSinkMaterials').DataTable().destroy();
               $('#tbSinkMaterials').empty();
               $('#tbSinkMaterials').append(r.data);
-              DTable('#tSinkMaterials');
+              loadBasic('#tSinkMaterials');
             }else{
               alert.removeClass('alert-success').addClass('alert-danger');
               alert.find('#msj').text('An error has ocurred.');
@@ -2927,7 +2927,7 @@ switch($opc):
               $('#tTopMaterials').DataTable().destroy();
               $('#tbTopMaterials').empty();
               $('#tbTopMaterials').append(r.data);
-              DTable('#tTopMaterials');
+              loadBasic('#tTopMaterials');
             }else{
               alert.removeClass('alert-success').addClass('alert-danger');
               alert.find('#msj').text('An error has ocurred.');
@@ -2956,7 +2956,7 @@ switch($opc):
               $('#tShapes').DataTable().destroy();
               $('#tbShapes').empty();
               $('#tbShapes').append(r.data);
-              DTable('#tShapes');
+              loadBasic('#tShapes');
             }else{
               alert.removeClass('alert-success').addClass('alert-danger');
               alert.find('#msj').text('An error has ocurred.');
@@ -3010,8 +3010,8 @@ switch($opc):
         $('#shape').val(this.id);
         $('#shapeVal').val(shape);
       }
-
-      function DTable(table){
+/*
+      function loadBasic(table){
         $(table).DataTable({
           "paging": true,
           "lengthChange": false,
@@ -3020,7 +3020,8 @@ switch($opc):
           "ordering": true,
           "aaSorting": []
         });
-      }
+
+      }*/
     </script>
   <?
   break;

@@ -44,7 +44,7 @@ $id     = isset($_GET['id'])?$_GET['id']:0;
 
     <!-- Datatable -->
     <?=Base::Js("includes/js/datatables.min.js")?>
-
+		<!--Highcarts-->
     <?=Base::Js("includes/js/highcharts.js")?>
     <!-- AdminLTE App -->
     <?=Base::Js("includes/js/app.min.js")?>
@@ -195,7 +195,7 @@ $id     = isset($_GET['id'])?$_GET['id']:0;
               </a>
               <ul class="treeview-menu <?=($inicio=='inventory')?'active':'';?>">
                 <li><a href="?ver=inventory"><i class="fa fa-circle-o"></i>Inventory</a></li>
-                <li><a href="?ver=inventory&opc=add"><i class="fa fa-circle-o"></i>Add product</a></li>
+                <li><a href="?ver=inventory&opc=add"><i class="fa fa-circle-o"></i>Add inventory</a></li>
               </ul>
             </li>
 

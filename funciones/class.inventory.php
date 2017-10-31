@@ -51,11 +51,8 @@ class Inventory{
     													INNER JOIN inventory_category AS ic ON ic.id_category = i.id_category
     													INNER JOIN inventory_measurement AS im ON im.id_measurement = i.id_measurement
     													WHERE id_inventory = ? LIMIT 1",array("i",$id));
-		if($query->result->num_rows>0){
-			$data = (object) $query->result->fetch_array(MYSQLI_ASSOC);
-		}else{
-			$data = NULL;
-		}
+		
+		$data = ($query->result->num_rows>0)?(object) $query->result->fetch_array(MYSQLI_ASSOC):NULL;
 
 		return $data;
 	}
@@ -165,6 +162,30 @@ class Inventory{
   	echo json_encode($this->rh);
   }
 
+  public function itemsByCategory()
+  {
+  	$query = Query::run("SELECT COUNT(i.id_inventory) AS total, ic.icat_category, ic.id_category
+  																FROM inventory AS i
+  																RIGHT JOIN inventory_category AS ic ON ic.id_category = i.id_category
+                                  GROUP BY ic.id_category");
+  	$data = [];
+
+  	while($row = $query->fetch_array(MYSQLI_ASSOC)){
+			$data[] = (object)$row;
+		}
+
+		return $data;
+  }
+
+  public function convertToChart($items)
+  {
+  	$data = [];
+  	foreach ($items as $d) {
+			$data[] = "{name: '{$d->icat_category}',y:$d->total}";
+  	}
+  	return $data;
+  }
+
 	//===================NULL RESPONSE ========
 	public function fdefault(){
 		echo json_encode($this->rh);
@@ -178,7 +199,7 @@ $modelInventory = new Inventory();
 if(Base::IsAjax()):
 	if(isset($_POST['action'])):
 	  switch ($_POST['action']):
-	  	case 'add':
+	  	case 'add_inventory':
 	  		$category    = $_POST['category'];
 	  		$name        = $_POST['name'];
 	  		$measurement = $_POST['measurement'];
@@ -186,7 +207,7 @@ if(Base::IsAjax()):
 
 	  		$modelInventory->add($category,$name,$measurement,$stock);
 	  	break;
-	  	case 'edit':
+	  	case 'edit_inventory':
 	  		$id          = $_POST['id'];
 	  		$category    = $_POST['category'];
 	  		$name        = $_POST['name'];
