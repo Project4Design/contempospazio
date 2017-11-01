@@ -71,6 +71,7 @@ $list    = $clients->list_clients();
 				  					</div>
 				  					<div class="form-group">
 				  						<button class="btn btn-flat btn-primary" type="submit"><i class="fa fa-search"></i></button>
+				  						<button class="btn btn-flat btn-default" type="button" data-toggle="modal" data-target="#productsAddressBookModal" title="Products list"><i class="fa fa-server"></i></button>
 				  					</div>
 				  				</form>
 				  			</div>
@@ -390,6 +391,43 @@ $list    = $clients->list_clients();
   </div>
 </section>
 
+<!--============================|| Libreta de productos ||==================================-->
+<div id="productsAddressBookModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="productsAddressBookModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="productsAddressBookModalLabel">Products - <span id="productsAddressBookTitle"></span></h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-12">
+          	<table id="table-products-address-book" class="table table-bordered table-condensed" style="width:100%">
+          		<thead>
+          			<tr>
+          				<th>#</th>
+          				<th>#</th>
+          				<th>Product</th>
+          				<th>Action</th>
+          			</tr>
+          		</thead>
+          		<tbody id="tbody-products-address-book">
+          			<tr>
+          				<td></td>
+          				<td></td>
+          				<td></td>
+          				<td></td>
+          			</tr>
+          		</tbody>
+          	</table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--======================================================================================================-->
+
 <script type="text/javascript">
 	$(document).ready(function(){
 		//Cantidad cajas de productos agregadas .box
@@ -413,6 +451,24 @@ $list    = $clients->list_clients();
 
 		$("#number").select2({
       placeholder: 'Client number'
+    });
+
+    $('#productsAddressBookModal').on('show.bs.modal', function(event){
+    	var modal = $(this);
+			var type  = $("#type").val();
+			var title = $("#type option[value="+type+"]").text();
+
+			loadProductsAddressBook(type);
+
+			modal.find('#productsAddressBookTitle').text(title);
+    });
+
+    //Add search term for the selected product and trigger the search
+    $('#tbody-products-address-book').on('click','.btn-add-term', function(e){
+	  	var term = $(this).parent().parent().find('.search-term-data').text().trim();
+	  	$('#productsAddressBookModal').modal('hide');
+	  	$('#search').val(term);
+	  	$('#fsearch').submit();
     });
 
 		//Activar la seccion correspondiente al cabiar el tipo de busqueda
@@ -491,7 +547,6 @@ $list    = $clients->list_clients();
 		$('#faddRow').submit(function(e){
 			e.preventDefault();
 			var alert = $('.box-product .alert');
-
 			var td    = $('#tbody-item td.item-active').length;
 			var id    = $('#p-id').text();
 			var type  = $('#p-type').text()*1;
@@ -653,7 +708,8 @@ $list    = $clients->list_clients();
 			$('#number').val('');
 			$('#client-form input[name*="client_"]:visible').prop('readonly',false).val('');
 		})
-	});//Ready
+
+	});//==========================Ready
 
 	//Agregar un producto a la cotizacion.		
 	function addRow(id,type,qty){
@@ -888,4 +944,63 @@ $list    = $clients->list_clients();
 		}
 		return color;
 	}
+
+	//Cargar libreta de productos
+	function loadProductsAddressBook(type){
+		$.ajax({
+			type: 'POST',
+			cache: false,
+			url: 'funciones/class.products.php',
+			data: {action:'getProductsAddressBook',type:type},
+			dataType: 'json',
+			success: function(r){
+				if(r.response){
+	        $('#table-products-address-book').DataTable().destroy();
+	        $('#tbody-products-address-book').empty();
+	        $('#tbody-products-address-book').append(r.data);
+        	builProductTable(type);
+				}else{
+					
+				}
+			},
+			error: function(r){
+				console.log("error");
+			},
+			complete: function(r){
+			}
+		});
+	}
+
+	function builProductTable(type){
+		if(type==1){
+			$('#table-products-address-book').DataTable({
+				responsive:true,
+		    "aaSorting": [],
+	      "columnDefs": [{"visible":false, "targets":0}],
+	      "order": [[ 0, 'asc' ]],
+	      "displayLength": 25,
+	      "drawCallback": function(settings){
+	        var api = this.api();
+	        var rows = api.rows( {page:'current'} ).nodes();
+	        var last=null;
+	 
+	        api.column(0,{page:'current'}).data().each( function( group, i ){
+	          if(last !== group){
+	            $(rows).eq(i).before('<tr class="text-center group bg-grey"><td colspan="4"><b>'+group+'</b></td></tr>');
+	            last = group;
+	          }
+	        });
+	      }
+	    });
+		}else{
+			$('#table-products-address-book').DataTable({
+		    "paging": true,
+		    responsive:true,
+		    "searching": true,
+		    "ordering": true,
+		    "aaSorting": [],
+	      "columnDefs": [{"visible":false, "targets":0}],
+		  });
+		}    
+  }
 </script>

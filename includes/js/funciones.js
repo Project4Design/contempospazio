@@ -185,7 +185,6 @@ function loadBasic(table = null){
 }
 
 function addCommas(nStr){
-  console.log(nStr);
   nStr += '';
   x = nStr.split('.');
   x1 = x[0];

@@ -58,6 +58,12 @@ $id     = isset($_GET['id'])?$_GET['id']:0;
     <?=Base::Js("includes/js/jquery.easing.min.js")?>
     
     <?=Base::Js("plugins/select2/select2.min.js")?>
+    <style type="text/css">
+    	.bg-grey{
+    		background-color: #808080;
+    		color: #fff;
+    	}
+    </style>
   </head>
 
   <body id="main-body" class="hold-transition skin-red sidebar-mini">

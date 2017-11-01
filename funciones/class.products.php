@@ -762,7 +762,8 @@ class Products{
 							<td index=\"5\">".Base::Format($prod->gp_rbs,2,".",",")."</td>
 							<td index=\"6\">".Base::Format($prod->gp_esms,2,".",",")."</td>
 							<td index=\"7\">".Base::Format($prod->gp_ws,2,".",",")."</td>
-							<td index=\"8\">".Base::Format($prod->gp_miw,2,".",",")."</td> 
+							<td index=\"8\">".Base::Format($prod->gp_miw,2,".",",")."</td>
+						</tr>
 					";
 					$array = array("id"=>$prod->id_gabi,"id_item"=>$prod->id_gp,"type"=>$type,"item"=>$prod->gp_codigo,"labor"=>$labor->labor($prod->gp_labor),"desc"=>$prod->gabi_descripcion,"tr"=>$tr,"foto"=>$prod->gabi_foto);
 					$this->rh->setResponse(true);
@@ -1094,6 +1095,61 @@ class Products{
 		return $data;
 	}
 
+	//Cargar libreta de productos en Quotation
+	public function getProductsAddressBook($type){
+		$tbody = "";
+		switch ($type) {
+			case 1:
+				# Cabinets
+				foreach($this->consulta_gabinetes() AS $d){
+					$i=1;
+					foreach($this->items($d->id_gabi) AS $e){
+						$tbody .= "<tr>";
+						$tbody .= "<td>{$d->gabi_descripcion}</td>";
+						$tbody .= "<td width='10%' class='text-center'>{$i}</td>";
+						$tbody .= "<td width='80%' class='search-term-data'>{$e->gp_codigo}</td>";
+						$tbody .= "<td width='10%' class='text-center'><button class='btn btn-sm btn-flat btn-success btn-add-term' title='Add'><i class='fa fa-plus-circle' aria-hidden='true'></button></td>";
+						$tbody .= "</tr>";
+						$i++;
+					}
+				}
+			break;
+			case 2:
+			case 3:
+				# Sinks AND Tops
+			$i=1;
+				foreach($this->consultaProduct($type) AS $d){
+					$tbody .= "<tr>";
+					$tbody .= "<td></td>";
+					$tbody .= "<td width='10%' class='text-center'>{$i}</td>";
+					$tbody .= "<td width='80%' class='search-term-data'>{$d->prod_name}</td>";
+					$tbody .= "<td width='10%' class='text-center'><button class='btn btn-sm btn-flat btn-success btn-add-term' title='Add'><i class='fa fa-plus-circle' aria-hidden='true'></i></button></td>";
+					$tbody .= "</tr>";
+					$i++;
+				}
+			break;
+			case 4:
+				# Accessories
+				$i=1;
+				foreach($this->consulta_accessories() AS $d){
+					$tbody .= "<tr>";
+					$tbody .= "<td></td>";
+					$tbody .= "<td width='10%' class='text-center'>{$i}</td>";
+					$tbody .= "<td width='80%' class='search-term-data'>{$d->acce_name}</td>";
+					$tbody .= "<td width='10%' class='text-center'><button class='btn btn-sm btn-flat btn-success btn-add-term' title='Add'><i class='fa fa-plus-circle' aria-hidden='true'></i></button></td>";
+					$tbody .= "</tr>";
+					$i++;
+				}
+			break;
+			default:
+				$products = [];
+			break;
+		}
+		$this->rh->setResponse(true);
+		$this->rh->data = $tbody;
+		echo json_encode($this->rh);
+	}
+
 	//===================NULL RESPONSE ========
 	public function fdefault(){
 		echo json_encode($this->rh);
@@ -1323,6 +1379,10 @@ if(Base::IsAjax()):
 			break;
 			case 'shapes':
 				$modelProducts->loadShapes();
+			break;
+			case 'getProductsAddressBook':
+				$type = $_POST['type'];
+				$modelProducts->getProductsAddressBook($type);
 			break;
 		endswitch;
 	endif;
