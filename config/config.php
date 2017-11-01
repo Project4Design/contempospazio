@@ -24,7 +24,7 @@ if (!defined('BASE_URL')) {
   );
 
   if(!in_array($_SERVER['REMOTE_ADDR'], $whitelist)){
-    $base = $_SERVER['HTTP_HOST'].DS.APP_DIR;
+    $base = $_SERVER['HTTP_HOST'].DS;
   }else{
     $base = $_SERVER['HTTP_HOST'].DS.APP_DIR;
   }
@@ -33,7 +33,7 @@ if (!defined('BASE_URL')) {
 }
 
 if(!isset($_SESSION)){
-  session_save_path(ROOT.APP_DIR.'config\sessions');
+  session_save_path(ROOT.APP_DIR.'config'.DS.'sessions');
   session_name("Contempo");
   session_start();
 }
