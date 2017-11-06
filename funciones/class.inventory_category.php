@@ -39,7 +39,9 @@ class Inventory_category{
 
   public function getItemsByCategory($id)
   {
-  	$query = Query::prun("SELECT * FROM inventory WHERE id_category = ?",['i',$id]);
+  	$query = Query::prun("SELECT * FROM inventory AS i
+  																INNER JOIN inventory_measurement AS im ON im.id_measurement = i.id_measurement
+  																WHERE id_category = ?",['i',$id]);
   	$data = [];
 
     while($registro = $query->result->fetch_array(MYSQLI_ASSOC)){

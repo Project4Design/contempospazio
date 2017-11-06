@@ -63,6 +63,12 @@ $id     = isset($_GET['id'])?$_GET['id']:0;
     		background-color: #808080;
     		color: #fff;
     	}
+    	#tbody-project-items-list .form-group{
+    		margin-bottom: 0;
+    	}
+    	#inventory-item-list li.disabled button{
+    		pointer-events: none;
+    	}
     </style>
   </head>
 
@@ -180,6 +186,18 @@ $id     = isset($_GET['id'])?$_GET['id']:0;
               </ul>
             </li>
             <? endif; ?>
+
+            <li class="treeview <?=($inicio=="projects")?'active':'';?>">
+              <a href="#">
+                <i class="fa fa-wrench"></i>
+                <span>Projects</span>
+                <i class="fa fa-angle-left pull-right"></i>
+              </a>
+              <ul class="treeview-menu <?=($inicio=='projects')?'active':'';?>">
+                <li><a href="?ver=projects"><i class="fa fa-circle-o"></i>Projects</a></li>
+                <li><a href="?ver=projects&opc=add"><i class="fa fa-circle-o"></i>Add project</a></li>
+              </ul>
+            </li>
 
             <li class="treeview <?=($inicio=="products")?'active':'';?>">
               <a href="#">

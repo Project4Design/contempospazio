@@ -8,8 +8,8 @@ class Inventory{
 	private $user;
 	private $nivel;
 	private $fecha;
-	private $category;
-	private $measurement;
+	public $category;
+	public $measurement;
 
 	public function __CONSTRUCT()
 	{
@@ -71,7 +71,7 @@ class Inventory{
   	echo json_encode($this->rh);
   }
 
-  public function edit($id,$category,$name,$measurement,$stock)
+  public function edit($id,$category,$name,$measurement,$stock,$echo = true)
   {
   	$query = Query::prun("SELECT id_inventory FROM inventory WHERE id_inventory = $id");
 
@@ -92,7 +92,11 @@ class Inventory{
 	  	$this->rh->setResponse(false,"Item not found.");
 	  }
 
-  	echo json_encode($this->rh);
+	  if($echo){
+  		echo json_encode($this->rh);
+	  }else{
+	  	return $query->response;
+	  }
   }
 
   //Increase current stock

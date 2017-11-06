@@ -16,20 +16,18 @@
       <p>
         You are not allowed to view this page.
         You will be redirected in a few seconds. Or
-        You may <a href="inicio.php">return to Home</a>.
+        You may <a href="index.php">return to Home</a>.
       </p>
 
-    </div>
-    <!-- /.error-content -->
-  </div>
-  <!-- /.error-page -->
-<!-- /.content -->
+    </div><!-- /.error-content -->
+  </div><!-- /.error-page -->
+</section><!-- /.content -->
 
 
-<script type="text/javascript">/*
+<script type="text/javascript">
 	function redirect_main(){
 		location.replace('index.php');
 	}
 
-	setTimeout('redirect_main()',3000);*/
+	setTimeout('redirect_main()',3000);
 </script>

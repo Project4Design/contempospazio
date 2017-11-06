@@ -171,8 +171,7 @@ $list    = $clients->list_clients();
 				                <td>&nbsp;</td>
 				              </tr>
 				              <tr>
-				                <th style="text-align:right !important">Delivery (<?=$config->config_delivery?>%):
-				                </th>
+				                <th style="text-align:right !important">Delivery (<?=$config->config_delivery?>%):</th>
 				                <td>$<span id="delivery" class='pull-right'>0.00</span></td>
 				                <th>&nbsp;</th>
 				                <td>&nbsp;</td>
@@ -182,8 +181,7 @@ $list    = $clients->list_clients();
 				                <td>&nbsp;</td>
 				              </tr>
 				              <tr>
-				                <th style="text-align:right !important">Labor:
-				                </th>
+				                <th style="text-align:right !important">Labor:</th>
 				                <td>$<span id="labor" class='pull-right'>0.00</span></td>
 				                <th>&nbsp;</th>
 				                <td>&nbsp;</td>
@@ -192,7 +190,6 @@ $list    = $clients->list_clients();
 				                <th>&nbsp;</th>
 				                <td>&nbsp;</td>
 				              </tr>
-				              <tr>
 				              <tr>
 				                <th style="text-align:right !important">Earnings (<?=$config->config_earnings_cab?>%):</th>
 				                <td>$<span id="c-earnings" class='pull-right'>0.00</span></td>
@@ -249,7 +246,7 @@ $list    = $clients->list_clients();
 									<div class="form-group">
 										<label class="col-md-3 control-label" for="number">Client number: </label>
 										<div class="col-md-7">
-											<select id="number" class="form-control" type="text" name="number"/>
+											<select id="number" class="form-control" type="text" name="number">
 												<option value=""></option>
 												<?
 													foreach ($list as $d){
