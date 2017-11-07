@@ -3010,18 +3010,6 @@ switch($opc):
         $('#shape').val(this.id);
         $('#shapeVal').val(shape);
       }
-/*
-      function loadBasic(table){
-        $(table).DataTable({
-          "paging": true,
-          "lengthChange": false,
-          responsive:true,
-          "searching": false,
-          "ordering": true,
-          "aaSorting": []
-        });
-
-      }*/
     </script>
   <?
   break;

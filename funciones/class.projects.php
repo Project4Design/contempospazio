@@ -8,12 +8,15 @@ class Projects{
 	private $user;
 	private $nivel;
 	private $fecha;
+	private $comments;
+	private $project_id = NULL;
 
 	public function __CONSTRUCT()
 	{
-		$this->rh     = new ResponseHelper();
-		$this->user   = isset($_SESSION['id']) ? $_SESSION['id'] : 0;
-		$this->nivel  = isset($_SESSION['nivel']) ? $_SESSION['nivel'] : "X";
+		$this->rh       = new ResponseHelper();
+		$this->comments = new projects_comments();
+		$this->user     = isset($_SESSION['id']) ? $_SESSION['id'] : 0;
+		$this->nivel    = isset($_SESSION['nivel']) ? $_SESSION['nivel'] : "X";
 	}
 
 	//Buscar todos los items en Project
@@ -31,17 +34,29 @@ class Projects{
 
 	public function obtener($id)
 	{
-		$query = Query::prun("SELECT * FROM projects AS i
-    													WHERE id_project = ? LIMIT 1",array("i",$id));
-		
-		$data = ($query->result->num_rows>0)?(object) $query->result->fetch_array(MYSQLI_ASSOC):NULL;
+		$query = Query::prun("SELECT p.*,u.user_nombres,u.user_apellidos FROM projects AS p
+																	INNER JOIN usuarios AS u ON u.id_user = p.id_user
+    															WHERE p.id_project = ? LIMIT 1",array("i",$id));
+
+		if($query->result->num_rows>0){
+			$data = (object) $query->result->fetch_array(MYSQLI_ASSOC);
+			$this->project_id = $id;
+		}else{
+			$data = NULL;
+		}
 
 		return $data;
 	}
 
-  public function add($nombre,$foto,$items)
+  public function add($title,$foto,$items)
   {
-  	$query = Query::prun("INSERT INTO projects (id_user,name,photo,status) VALUES (?,?,?,?)",["issi",$this->user,$nombre,$foto,1]);
+		if($foto){
+			$img = new img();
+			$tmp = $img->load($foto['foto']['tmp_name'],$foto['foto']['name'],"../images/projects");
+			$foto = $tmp->name;
+		}else{ $foto = NULL; }
+
+  	$query = Query::prun("INSERT INTO projects (id_user,title,photo,status) VALUES (?,?,?,?)",["issi",$this->user,$title,$foto,1]);
 
   	if($query->response){
   		$id = $query->id;
@@ -63,7 +78,8 @@ class Projects{
   				$inventory->edit($item->id_inventory,$item->id_category,$item->inv_name,$item->id_measurement,$item_stock,false);
   			}
   		}
-  		$this->rh->setResponse(true,"Project added.",true,"?ver=projects&opc=ver&id=".$id);
+  		$this->rh->setResponse(true,"Project added.");
+  		$this->rh->data = $id;
   	}else{
   		$this->rh->setResponse(false,"An error has ocurred with the data.");
   	}
@@ -145,6 +161,12 @@ class Projects{
   	return $label;
   }
 
+  //Conexion con comentarios
+  public function comments()
+  {
+  	return $this->comments->consulta($this->project_id);
+  }
+
 	//===================NULL RESPONSE ========
 	public function fdefault(){
 		echo json_encode($this->rh);
@@ -158,11 +180,11 @@ if(Base::IsAjax()):
 	if(isset($_POST['action'])):
 	  switch ($_POST['action']):
 	  	case 'add_project':
-	  		$nombre = ucfirst($_POST['project-name']);
-	  		$foto   = ($_FILES['foto']['name'])?$_FILES:NULL;
-	  		$items  = $_POST['project-items'];
+	  		$title = ucfirst($_POST['project-title']);
+	  		$foto  = ($_FILES['foto']['name'])?$_FILES:NULL;
+	  		$items = $_POST['project-items'];
 
-	  		$modelProject->add($nombre,$foto,$items);
+	  		$modelProject->add($title,$foto,$items);
 	  	break;
 	  	case 'edit_project':
 	  		$id          = $_POST['id'];

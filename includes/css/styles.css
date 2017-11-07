@@ -390,7 +390,19 @@ td.success.item-active{
 }
 
 .box.box-poison{
-  border-top-color: #524E8F;
+  border-top-color: #555299;
+}
+.direct-chat-text{
+	word-wrap: break-word;
+}
+.direct-chat-poison .right > .direct-chat-text{
+  background: #605CA8;
+  border-color: #605CA8;
+  color: #ffffff;
+}
+.direct-chat-poison .right > .direct-chat-text:after,
+.direct-chat-poison .right > .direct-chat-text:before {
+  border-left-color: #605CA8;
 }
 
 .hide{

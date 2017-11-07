@@ -1,5 +1,5 @@
 <?
-$project = new Projects();
+$projects = new Projects();
 if($opc=="add"){$li="Add";}elseif($opc=="edit"){$li="Edit";}elseif($opc=="ver"){$li="Ver";}else{$li="";}
 ?>
 
@@ -16,71 +16,140 @@ if($opc=="add"){$li="Add";}elseif($opc=="edit"){$li="Edit";}elseif($opc=="ver"){
 <?
 switch($opc):
 	case 'ver':
+	$project = $projects->obtener($id);
   ?>
-    <section>
-      <a class="btn btn-flat btn-default" href="?ver=project"><i class="fa fa-reply" aria-hidden="true"></i> Back</a>
-      <a class="btn btn-flat btn-success" href="?ver=project&opc=edit&id=<?=$id?>"><i class="fa fa-pencil" aria-hidden="true"></i> Edit information</a>
-      <?if($_SESSION['nivel']=="A"){?>
-      <button class="btn btn-flat btn-primary" data-toggle="modal" data-target="#stockModal"><i class="fa fa-dot-circle-o" aria-hidden="true"></i> Stock</button>
-      <button class="btn btn-flat btn-danger" data-toggle="modal" data-target="#delModal"><i class="fa fa-times" aria-hidden="true"></i> Delete</button>
-      <?}?>
-    </section>
-    <section class="perfil">
-      <div class="row">
-        <div class="col-md-12">
-          <h2 class="page-header" style="margin-top:0!important">
-            <i class="fa fa-archive" aria-hidden="true"></i>
-            <?=$item->inv_name?>
-            <small class="pull-right">Registered: <?=Base::ConvertTS2($item->inv_fecha_reg)?></small>
-            <span class="clearfix"></span>
-          </h2>
-        </div>
-        <div class="col-md-4">
-          <h4>Item details</h4>
-          <p><b>Category:</b> <?=$item->icat_category?></p>
-          <p><b>Name:</b> <?=$item->inv_name?></p>
-          <p><b>Stock:</b> <?=$item->inv_stock." ({$item->mea_unit})"?></p>
-        </div>
+  <div class="row">
+  	<div class="col-md-12">
+	    <section>
+	      <a class="btn btn-flat btn-default" href="?ver=projects"><i class="fa fa-reply" aria-hidden="true"></i> Back</a>
+	      <a class="btn btn-flat btn-success" href="?ver=projects&opc=edit&id=<?=$id?>"><i class="fa fa-pencil" aria-hidden="true"></i> Edit information</a>
+	      <?if($_SESSION['nivel']=="A"){?>
+	      <button class="btn btn-flat btn-danger" data-toggle="modal" data-target="#delModal"><i class="fa fa-times" aria-hidden="true"></i> Delete</button>
+	      <?}?>
+	    </section><br>
+  	</div>
+  </div>
+  <div class="row">
+  	<div class="col-md-5">
+  		<div class="box box-poison">
+        <div class="box-body box-profile">
+          <h3 class="profile-username text-center"><?=$project->title?></h3>
+          <img class="img-responsive pad" src="<?=Base::Img("images/projects/".$project->photo)?>" alt="<?=Base::Img("images/projects/".$project->photo)?>" style="margin:0 auto">
+
+          <ul class="list-group list-group-unbordered">
+            <li class="list-group-item">
+              <b>Created</b> <span class="pull-right"><?=$project->created?></span>
+            </li>
+            <li class="list-group-item">
+              <b>Status</b> <span class="pull-right"><?=$projects->status($project->status)?></span>
+            </li>
+            <li class="list-group-item">
+              <b>User</b> <span class="pull-right"><?=$project->user_nombres." ".$project->user_apellidos?></span>
+            </li>
+          </ul>
+        </div><!-- /.box-body -->
       </div>
-    </section>
+  	</div>
+  	<div class="col-md-7">
+  		<div class="nav-tabs-custom">
+        <ul class="nav nav-tabs">
+          <li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="false">Messages</a></li>
+          <li class=""><a href="#tab_2" data-toggle="tab" aria-expanded="false">History</a></li>
+        </ul>
+        <div class="tab-content">
 
-    <div id="delModal" class="modal fade modal-danger" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <form action="funciones/class.project.php" method="POST">
-            <input type="hidden" name="action" value="delete">
-            <input type="hidden" name="id" value="<?=$id?>">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-              <h4 class="modal-title">Delete Product</h4>
-            </div>
-            <div class="modal-body">
-              <h4 class="text-center">Are you sure you want to <b>delete</b> this Item?</h4>
-              <p class="text-center">This action cannot be undone.</p>
-
-              <div class="alert alert-dismissible" role="alert" style="display:none">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;<span id="msj"></span>
+          <!--=====================|| MESSAGES ||====================-->
+          <div class="tab-pane active" id="tab_1">
+          	<div class="box box-solid direct-chat direct-chat-poison" style="margin: 0">
+              <!-- /.box-header -->
+              <div class="box-body">
+                <!-- Conversations are loaded here -->
+                <div id="direct-chat-messages" class="direct-chat-messages">
+                  <!-- Message. Default to the left -->
+                  <?foreach($projects->comments() AS $comment){
+                  	$align = ($comment->id_user == $_SESSION['id'])?'right':'left';
+                  ?>
+                  <div id="chat-text-<?=$comment->id_comment?>" class="direct-chat-msg <?=$align?>">
+                    <div class="direct-chat-info clearfix">
+                      <span class="direct-chat-name pull-<?=$align?>">&nbsp;&nbsp;<?=$comment->user_nombres." ".$comment->user_apellidos?></span>
+                      <span class="direct-chat-timestamp pull-<?=$align?>">&nbsp;&nbsp;<?=date("d M y H:i",strtotime($comment->created))?></span>
+                    </div>
+                    <img src="" alt="">
+                    <div class="direct-chat-text">
+                      <?=$comment->comment?>
+                    </div><!-- /.direct-chat-text -->
+                  </div><!-- /.direct-chat-msg -->
+									<?}?>
+                </div><!--/.direct-chat-messages-->
+                <!-- /.direct-chat-pane -->
+              </div><!-- /.box-body -->
+              
+              <div class="box-footer" style="">
+                <form id="form-new-comment" action="funciones/class.project_comments.php" method="POST">
+                	<input type="hidden" name="project" value="<?=$project->id_project?>">
+                	<input type="hidden" name="action" value="add_comment">
+                  <div class="input-group">
+                    <input name="comment" placeholder="Type Message ..." class="form-control" type="text">
+                    <span class="input-group-btn">
+                      <button type="submit" class="btn btn-poison btn-flat">Send</button>
+                    </span>
+                  </div>
+                  <div class="alert alert-danger" style="display:none" role="alert">
+			        			<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;<span id="msj">An error has ocurred.</span>
+			        		</div>
+                </form>
               </div>
-
-              <div class="progress progress-sm active" style="display:none">
-                <div class="progress-bar progress-bar-primary progress-bar-striped" role="progressbar" aria-valuenow="100" aria-valuemin="100" aria-valuemax="100" style="width:100%">
-                  <span class="sr-only">100% Complete</span>
-                </div>
-              </div>
+              <!-- /.box-footer-->
             </div>
-            <div class="modal-footer">
-              <button id="b-del" type="submit" class="btn btn-flat btn-outline pull-left b-submit">Delete</button>
-              <button type="button" class="btn btn-flat btn-outline" data-dismiss="modal">Close</button>
-            </div>
-          </form>
-        </div><!-- /.modal-content -->
-      </div><!-- /.modal-dialog -->
-    </div>
+          </div><!-- /.tab-pane -->
+          <!--=====================|| HISTORY ||====================-->
+          <div class="tab-pane" id="tab_2">
+          	
+          </div><!-- /.tab-pane -->
+        </div>
+        <!-- /.tab-content -->
+      </div>
+  	</div>
+  </div>
 
     <script type="text/javascript">
     	$(document).ready(function(){
+    		scrollDown();
+
+    		$('#form-new-comment').submit(function(e){
+    			e.preventDefault();
+    			var form = $(this);
+    			var alert = form.find('.alert');
+
+    			$.ajax({
+    				type: 'POST',
+    				cache: false,
+    				url: 'funciones/class.projects_comments.php',
+    				data: form.serialize(),
+    				dataType: 'json',
+    				success: function(r){
+    					if(r.response){
+    						form[0].reset();
+    						$('.direct-chat-messages').append(r.data.comment);
+    						scrollDown();
+    					}else{
+    						alert.show().delay(5000).hide();
+    					}
+    				},
+    				error: function(){
+    					alert.show().delay(5000).hide();
+    				}
+    			})
+    		});
     	});
+
+    	function scrollDown(){
+    		
+    		var height = document.getElementById("direct-chat-messages").scrollHeight-150;
+    		$('#direct-chat-messages').animate({
+            scrollTop: height
+          }, 1000);
+    	}
     </script>
 
   <?
@@ -97,8 +166,7 @@ switch($opc):
     				<div class="box-header with-border">
     					<h3 class="box-title">Inventory Items</h3>
 			        <div class="box-tools pull-right">
-	              <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-	              </button>
+	              <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
 	            </div>
     				</div>
     				<div class="box-body">
@@ -134,8 +202,8 @@ switch($opc):
 			      		<div class="row">
 			      			<div class="col-md-6">
 			      				<div class="form-group">
-					      			<label class="control-label" for="project-name">Project name: *</label>
-					      			<input id="project-name" class="form-control" type="text" name="project-name" placeholder="Project name" required>
+					      			<label class="control-label" for="project-title">Project title: *</label>
+					      			<input id="project-title" class="form-control" type="text" name="project-title" placeholder="Project title" required>
 					      		</div>
 			      			</div>
 			      			<div class="col-md-6" style="border-left: 2px solid #eee;">
@@ -341,6 +409,7 @@ switch($opc):
               if(r.response){
                 alert.removeClass('alert-danger').addClass('alert-success');
                 form[0].reset();
+                window.location.replace('?ver=projects&opc=ver&id='+r.data);
               }else{
                 alert.removeClass('alert-success').addClass('alert-danger');
               }
@@ -408,7 +477,7 @@ switch($opc):
   <?
   break;
   default:
-  	$projects = $project->consulta();
+  	$project = $projects->consulta();
   ?>
     <div class="row">
       <div class="col-md-3 col-sm-6 col-xs-12">
@@ -416,7 +485,7 @@ switch($opc):
           <span class="info-box-icon bg-purple"><i class="fa fa-wrench"></i></span>
           <div class="info-box-content">
             <span class="info-box-text">Projects</span>
-            <span class="info-box-number"><?=count($projects)?></span>
+            <span class="info-box-number"><?=count($project)?></span>
           </div><!-- /.info-box-content -->
         </div><!-- /.info-box -->
       </div>
@@ -436,7 +505,7 @@ switch($opc):
 		          <thead>
 		            <tr>
 		              <th class="text-center">#</th>
-		              <th class="text-center">Name</th>
+		              <th class="text-center">Title</th>
 		              <th class="text-center">Status</th>
 		              <th class="text-center">Registered</th>
 		              <th class="text-center">Action</th>
@@ -444,12 +513,12 @@ switch($opc):
 		          </thead>
 		          <tbody>
 		          <? $i = 1;
-		            foreach($projects as $d) {
+		            foreach($project as $d) {
 		          ?>
 		            <tr>
 		              <td class="text-center"><?=$i?></td>
-		              <td class="text-center"><?=$d->name?></td>
-		              <td class="text-center"><?=$project->status($d->status)?></td>
+		              <td class="text-center"><?=$d->title?></td>
+		              <td class="text-center"><?=$projects->status($d->status)?></td>
 		              <td class="text-center"><?=Base::removeTS($d->created)?></td>
 		              <td class="text-center">
 		                <a class="btn btn-flat btn-primary btn-sm" href="?ver=projects&opc=ver&id=<?=$d->id_project?>"><i class="fa fa-search"></i></a>
@@ -465,46 +534,6 @@ switch($opc):
 		    </div><!--box-->
     	</div>
     </div><!--row-->
-
-    <div id="delModal" class="modal fade modal-danger" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <form id="form-delete-unit" action="#" method="POST">
-            <input id="delete-unit-action" type="hidden" name="action" value="delete">
-            <input id="delete-unit-id" type="hidden" name="id" value="<?=$id?>">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-              <h4 class="modal-title">Delete Product</h4>
-            </div>
-            <div class="modal-body">
-              <h4 class="text-center">Are you sure you want to <b>delete</b> this Item?</h4>
-              <p class="text-center">This action cannot be undone.</p>
-
-              <div class="alert alert-dismissible" role="alert" style="display:none">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;<span id="msj"></span>
-              </div>
-
-              <div class="progress progress-sm active" style="display:none">
-                <div class="progress-bar progress-bar-primary progress-bar-striped" role="progressbar" aria-valuenow="100" aria-valuemin="100" aria-valuemax="100" style="width:100%">
-                  <span class="sr-only">100% Complete</span>
-                </div>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button id="b-del" type="submit" class="btn btn-flat btn-outline pull-left b-submit">Delete</button>
-              <button type="button" class="btn btn-flat btn-outline" data-dismiss="modal">Close</button>
-            </div>
-          </form>
-        </div><!-- /.modal-content -->
-      </div><!-- /.modal-dialog -->
-    </div>
-
-    <script type="text/javascript">
-    	$(document).ready(function(){
-
-			});//ready
-    </script>
   <?
   break;
 endswitch;
