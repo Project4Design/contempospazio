@@ -1,11 +1,15 @@
 <?
 require_once 'config/config.php';
-$view = "views". DS . "statistics.php";
-if(is_readable($view)){
-echo "si";
-}else{
-echo "no";
+
+$items     = json_decode('[{"id":"0","content":"Test"},{"id":"1","content":"TWO"}]');
+
+foreach ($items as $k => $v) {
+	echo var_dump($k)."<br>";
+	echo var_dump($v)."<br>";
+	echo $v->id."<br>";
 }
+
+
 ?>
 
 <!DOCTYPE html>
@@ -19,25 +23,6 @@ echo "no";
 	<script type="text/javascript">
 		$(document).ready(function(){
 		});
-
-
-		function addArray(){
-
-		/*
-			var products = {"type":1,"id":1,"qty":4};
-			var products2 = {"type":5,"id":5,"qty":5};
-			var array = {};
-			array[0] = products;
-			array[1] = products2;
-			console.log(array);
-			$('#products').val(JSON.stringify(array));
-			var  x = $('#products').val();
-			console.log(x);
-			/*console.log(x);
-			$.each(x,function(k,v){
-				console.log(this);
-			});*/
-		}
 	</script>
 </body>
 </html>

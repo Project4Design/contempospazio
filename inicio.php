@@ -8,11 +8,11 @@ else:
 			require Base::LoadView($inicio,"A");
 		break;
 		case 'index':
-			$usuarios  = new Usuarios();
-			//Total de usuarios
-			$totaluser = count($usuarios->consulta());
-			$products = new Products();
+			//Projects
+			$projects = new Projects();
+			$totalProjects = count($projects->consulta());
 			//Total de productos
+			$products = new Products();
 			$totalg  = count($products->consulta_gabinetes());
 			$totalf  = count($products->consultaProduct(2));
 			$totalt  = count($products->consultaProduct(3));
@@ -38,23 +38,23 @@ else:
 	      <!-- Info boxes -->
 		    <div class="row">
 		      <div class="col-md-3 col-sm-6 col-xs-12">
-		        <div class="small-box bg-yellow">
+		        <div class="small-box bg-purple">
 		          <div class="inner">
-		            <h3><?=$totaluser?></h3>
+		            <h3><?=$totalProjects?></h3>
 
-		            <p>Users</p>
+		            <p>Projects</p>
 		          </div>
 		          <div class="icon">
-		            <i class="fa fa-user-plus"></i>
+		            <i class="fa fa-wrench"></i>
 		          </div>
-		          <a href="?ver=users" class="small-box-footer">
+		          <a href="?ver=projects" class="small-box-footer">
 		            More info <i class="fa fa-arrow-circle-right"></i>
 		          </a>
 		        </div>
 		      </div>
 
 					<div class="col-md-3 col-sm-6 col-xs-12">
-		        <div class="small-box bg-purple">
+		        <div class="small-box bg-yellow">
 	            <div class="inner">
 	              <h3><?=count($orders->consulta())?></h3>
 
@@ -105,7 +105,7 @@ else:
 
 		    <div class="row">
 		    	<div class="col-md-8">
-			    	<div class="box box-poison">
+			    	<div class="box box-warning">
 				      <div class="box-header with-border">
 				        <h3 class="box-title"><i class="fa fa-file-text-o"></i> Latest orders</h3>
 				      </div>

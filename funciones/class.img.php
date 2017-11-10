@@ -75,4 +75,8 @@ class Img{
 		return $this;
 	}
 
+	public function thumbnail(){
+		
+	}
+
 }

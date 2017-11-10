@@ -7,7 +7,6 @@ class projects_comments{
 	private $rh;
 	private $user;
 	private $nivel;
-	private $fecha;
 
 
 	public function __CONSTRUCT()

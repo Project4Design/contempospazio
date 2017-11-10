@@ -187,7 +187,7 @@ switch($opc):
 
                   <div class="form-group">
                     <label class="control-label" for="name">Name: *</label>
-                    <input id="name" class="form-control" type="text" name="name" value="<?=($item)?$item->inv_name:''?>" required>
+                    <input id="name" class="form-control" type="text" name="name" value="<?=($item)?htmlspecialchars($item->inv_name):''?>" required>
                   </div>
 
                   <div class="form-group">
@@ -202,7 +202,7 @@ switch($opc):
 
                   <div class="form-group">
                     <label class="control-label" for="stock">Stock: *</label>
-                    <input id="stock" class="form-control" type="number" name="stock" min="0" value="<?=($item)?$item->inv_stock:''?>" style="width:75px" required>
+                    <input id="stock" class="form-control" type="number" name="stock" min="0" step="0.1" value="<?=($item)?$item->inv_stock:''?>" style="width:75px" required>
                   </div>
 
                   <div class="alert alert-dismissible" role="alert" style="display:none">
