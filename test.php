@@ -1,13 +1,13 @@
 <?
 require_once 'config/config.php';
 
-$items     = json_decode('[{"id":"0","content":"Test"},{"id":"1","content":"TWO"}]');
-
-foreach ($items as $k => $v) {
-	echo var_dump($k)."<br>";
-	echo var_dump($v)."<br>";
-	echo $v->id."<br>";
-}
+$x = array('a'=>'first', 'b'=>'second', 'c'=>'third');
+foreach ($x as &$a) echo $a;
+//unset($a);
+foreach ($x as $a){};
+echo "<pre>";
+print_r($x);
+echo "</pre>";
 
 
 ?>

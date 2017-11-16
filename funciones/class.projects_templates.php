@@ -93,6 +93,7 @@ class Projects_templates{
   public function itemsToJson($items)
   {
   	$inventory = new Inventory();
+  	$data = [];
   	//Go through the items
 		foreach ($items as $key => $item){
 			//Get the iformation of each item in the Inventory table
@@ -100,7 +101,7 @@ class Projects_templates{
 			//If Item exist, continue. Else, cancel...
 			if($item_inv){
 				//Save the item's information in the content array
-				$data[] = ['id'            => $key,
+				$data[] = ['id'            => ($key+1),
 										'item'         => $item_inv->id_inventory,
 										'stock_needed' => $item->qty
 									];
@@ -141,16 +142,19 @@ class Projects_templates{
 
   		$items = json_decode($template->content);
 	  	//Go through the items
-			$data .="<tr id=\"\" class=\"active\" type='2'><th class=\"text-center\" colspan=\"3\">{$template->name}</th>
+			$data .="<tr id=\"template-xx\" class=\"active\" xid=\"{$template->id_pt}\" type=\"2\">
+							<td class=\"text-center\"></td>
+							<th class=\"text-center\" colspan=\"2\">{$template->name}</th>
 							<td class=\"text-center\"><button row=\"\" class=\"btn-link btn-box-tool btn-delete-template\" type=\"button\"><i class=\"fa fa-times\" aria-hidden=\"true\" style=\"color:red\"></i></button></td>
 							</tr>";
 			foreach ($items as $key => $item){
 				//Get the iformation of each item in the Inventory table
 				$item_inv = $inventory->obtener($item->item);
-				$data .="<tr class=\"\" id=\"\" xid=\"{$item->item}\"><td class=\"text-center\">-</td>
+				$data .="<tr class=\"template-xx\">
+					<td></td>
     			<td>{$item_inv->inv_name}</td>
-    			<td><div class=\"form-group\"><input id=\"qty-{$item->item}\" class=\"form-control\" type=\"number\" placeholder=\"Qty\" min=\"1\" value=\"1\" required></div></td>
-    			<td class=\"text-center\">-</td>
+    			<td class=\"text-center\">{$item->stock_needed}</td>
+    			<td></td>
     			</tr>";
   		}
 

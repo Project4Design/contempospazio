@@ -7,7 +7,7 @@ if($opc=="add"){$li="Add";}elseif($opc=="edit"){$li="Edit";}elseif($opc=="ver"){
   <h1> Projects </h1>
   <ol class="breadcrumb">
     <li><a href="inicio.php"><i class="fa fa-home"></i> Home</a></li>
-    <li><a href="inicio.php?ver=project"> Project</a></li>
+    <li><a href="inicio.php?ver=projects"> Projects</a></li>
     <?if($li!=""){echo "<li class=\"active\">".$li."</li>";}?>
   </ol>
 </section>
@@ -115,10 +115,7 @@ switch($opc):
   	<div class="col-md-12">
   		<div class="box box-poison">
 	      <div class="box-header with-border">
-	        <h3 class="box-title"> Items for this project</h3>
-	        <div class="pull-right">
-	          <a class="btn btn-flat btn-sm btn-success" href="?ver=projects&opc=add"><i class="fa fa-plus" aria-hidden="true"></i> Add Project</a>
-	        </div>
+	        <h3 class="box-title"> Items in this project</h3>
 	      </div>
 	      <div class="box-body">
 	      	<table class="table table-striped">
@@ -133,18 +130,64 @@ switch($opc):
 		  			</thead>
 		  			<tbody>
 	  				<?$i=1;
-	  					foreach ($projects->items() as $d){
+	  					foreach ($projects->items() as $k => $d){
+	  						$data = $projects->checkItemStock($d);
 	  				?>
 	  					<tr>
   							<td class="text-center"><?=$i?></td>
   							<td><?=$d->category?></td>
   							<td><?=$d->name?></td>
-  							<td><?=$projects->checkStock($d->stock_needed,$d->stock)?></td>
-  							<td>-</td>
+  							<td><?=$data->stock?></td>
+  							<td class="text-center"><?=$data->button?></td>
 	  					</tr>
 	  				<?
 	  					$i++;
-	  					}?>
+	  					}
+	  				?>
+		  			</tbody>
+		  		</table>
+	      </div>
+	    </div><!--box-->
+  	</div>
+  	<div class="col-md-12">
+  		<div class="box box-poison">
+	      <div class="box-header with-border">
+	        <h3 class="box-title"> Templates in this project</h3>
+	      </div>
+	      <div class="box-body">
+	      	<table class="table table-striped">
+		  			<thead>
+		  				<tr>
+		  					<th>#</th>
+		  					<th>Category</th>
+		  					<th>Name</th>
+		  					<th>Quantity</th>
+		  					<th>Action</th>
+		  				</tr>
+		  			</thead>
+		  			<tbody>
+		  				<?$i=1;
+		  					foreach ($projects->templates() as $tempID => $template){
+		  				?>
+		  				<tr>
+								<td class="text-center"><?=$i?></td>
+								<th class="text-center" colspan="4"><?=$template->name?></th>
+		  				</tr>
+			  				<?
+			  					foreach ($template->items as $k => $d){
+			  						$data = $projects->checkItemStock($d,$tempID);
+			  				?>
+			  					<tr>
+		  							<td></td>
+		  							<td><?=$d->category?></td>
+		  							<td><?=$d->name?></td>
+		  							<td><?=$data->stock?></td>
+		  							<td class="text-center"><?=$data->button?></td>
+			  					</tr>
+			  				<?
+			  					}	//foreach Items
+		  					}//foreach Templates
+			  				?>
 		  			</tbody>
 		  		</table>
 	      </div>
@@ -152,10 +195,103 @@ switch($opc):
   	</div>
   </div>
 
+  <div id="delModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content modal-danger">
+        <form action="funciones/class.projects.php" method="POST">
+          <input type="hidden" name="action" value="delete_project">
+          <input type="hidden" name="project" value="<?=$id?>">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+            <h4 class="modal-title">Delete Project</h4>
+          </div>
+          <div class="modal-body">
+            <h4 class="text-center">Are you sure you want to <b>delete</b> this Project?</h4>
+            <p class="text-center">This action cannot be undone.</p>
+
+            <div class="alert alert-dismissible" role="alert" style="display:none">
+              <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+              <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;<span id="msj"></span>
+            </div>
+
+            <div class="progress progress-sm active" style="display:none">
+              <div class="progress-bar progress-bar-primary progress-bar-striped" role="progressbar" aria-valuenow="100" aria-valuemin="100" aria-valuemax="100" style="width:100%">
+                <span class="sr-only">100% Complete</span>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button id="b-del" type="submit" class="btn btn-flat btn-outline pull-left b-submit">Delete</button>
+            <button type="button" class="btn btn-flat btn-outline" data-dismiss="modal">Close</button>
+          </div>
+        </form>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div>
+
+  <div id="addModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <form action="funciones/class.projects.php" method="POST">
+          <input type="hidden" name="action" value="add_item_stock">
+          <input id="project" type="hidden" name="project" value="<?=$id?>">
+          <input id="template" type="hidden" name="template" value="">
+          <input id="item" type="hidden" name="item" value="">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+            <h4 class="modal-title">Add Stock</h4>
+          </div>
+          <div class="modal-body">
+          	<div class="row">
+	          	<div class="col-md-12">
+		            <h4 class="text-center">Add stock for this Item</h4>
+		            <p class="text-center">The excess amount will be added to the inventory.</p>
+		          </div>
+		          <div class="col-md-6 col-md-offset-3">
+		            <div class="form-group">
+		            	<label for="stock">Stock: *</label>
+		            	<input id="stock" class="form-control" type="number" name="stock" placeholder="Quantity" required>
+		            </div>
+							</div>
+							<div class="col-md-12">
+		            <div class="alert alert-dismissible" role="alert" style="display:none">
+		              <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		              <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;<span id="msj"></span>
+		            </div>
+
+		            <div class="progress progress-sm active" style="display:none">
+		              <div class="progress-bar progress-bar-primary progress-bar-striped" role="progressbar" aria-valuenow="100" aria-valuemin="100" aria-valuemax="100" style="width:100%">
+		                <span class="sr-only">100% Complete</span>
+		              </div>
+		            </div>
+		          </div>
+	          </div>
+          </div>
+          <div class="modal-footer">
+            <button id="b-del" type="submit" class="btn btn-flat btn-success b-submit">Save</button>
+            <button type="button" class="btn btn-flat btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </form>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div>
+
   <script type="text/javascript">
   	$(document).ready(function(){
   		var lastcomment = 0;
   		scrollDown();
+
+  		$('#addModal').on('show.bs.modal',function(event){
+        var btn  = $(event.relatedTarget);
+        var item = btn.data('item');
+        var template = btn.data('template');
+        console.log(template)
+
+        var modal   = $(this);
+
+        modal.find('#item').val(item);
+        modal.find('#template').val(template);
+      });
 
   		$('#form-new-comment').submit(function(e){
   			e.preventDefault();
@@ -278,7 +414,23 @@ switch($opc):
 			      					<tbody id="tbody-project-items-list">
 			      					</tbody>			      					
 			      				</table>
-
+			      			</div>
+			      			<div class="col-md-12">
+			      				<h5><strong>Templates for this project:</strong></h5>
+			      				<table class="table table-bordered table-hover table-condensed">
+			      					<thead>
+			      						<tr>
+			      							<th width="10%">#</th>
+			      							<th width="60%">Item</th>
+			      							<th width="20%">Qty</th>
+			      							<th width="10%">Action</th>
+			      						</tr>
+			      					</thead>			      					
+			      					<tbody id="tbody-project-template-list">
+			      					</tbody>
+			      				</table>
+			      			</div>
+			      			<div class="col-md-12">
 	                  <div class="alert alert-dismissible" role="alert" style="display:none">
 	                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 	                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;<span id="msj"></span>
@@ -379,7 +531,7 @@ switch($opc):
 
     		//Add items from inventory to the project
     		$('#inventory-item-list .btn-add-item').on('click',addProjectItem);
-    		//Delete items added to project
+    		//Delete Templates added to project
     		$('#tbody-project-items-list').on('click','.btn-delete-item',deleteProjectItem);
     		//Save Project
     		$('#form-new-project').submit(save);
@@ -389,6 +541,8 @@ switch($opc):
     		loadTemplates();
     		//
     		$('#projects-template-list').on('click','.btn-add-template',addProjectTemplate);
+    		//Delete Templates added to project
+    		$('#tbody-project-template-list').on('click','.btn-delete-template',deleteProjectTemplate);
 
     		$('#delModal').on('show.bs.modal',function (event){
     			var btn = $(event.relatedTarget);
@@ -417,8 +571,8 @@ switch($opc):
     			dataType: 'json',
     			success: function(r){
     				if(r.response){
-    					$('#tbody-project-items-list').append(r.data);
-    					fixCount();
+    					$('#tbody-project-template-list').append(r.data);
+    					fixTemplatesCount();
     				}else{
 	            alert.removeClass('alert-success').addClass('alert-danger');
 	            alert.find('#msj').text('An error has occurred.').show().delay(7000).hide('slow');
@@ -447,7 +601,7 @@ switch($opc):
     			dataType: 'json',
     			success: function(r){
     				if(r.response){
-    					$('#projects-template-list').append(r.data);
+    					$('#projects-template-list').html(r.data);
     				}else{
     					alert.show().delay(7000).hide('slow');
     				}
@@ -467,11 +621,11 @@ switch($opc):
     		var xid   = $(this).attr('xid'); //Inventory ID
     		var type  = $(this).attr('type');
     		var tbody = $('#tbody-project-items-list');
-    		var num   = $('#tbody-project-items-list tr').length+1;
+    		var num   = $('#tbody-project-items-list tr[type="1"]').length+1;
     		var stock = parent.find('.inventory-item-stock').text().trim()*1;
     		var tr ='<tr id="item-'+num+'" xid="'+xid+'" type='+type+'><td class="text-center">'+num+'</td>';
     			tr  +='<td>'+name+'</td>';
-    			tr  +='<td><div class="form-group"><input id="qty-'+xid+'" class="form-control" type="number" placeholder="Qty" min="1" value="1" required></div></td>';
+    			tr  +='<td><div class="form-group"><input id="qty-'+xid+'" class="form-control" type="number" placeholder="Qty" min="1" step="0.1" value="1" required></div></td>';
     			tr  +='<td class="text-center"><button row="item-'+num+'" class="btn-link btn-box-tool btn-delete-item" type="button"><i class="fa fa-times" aria-hidden="true" style="color:red"></i></button></td>';
     			tr  +='</tr>';
 
@@ -487,24 +641,53 @@ switch($opc):
     		var btn = $('#inventory-item-list').find('#list-item-'+xid);
     		btn.attr('class','list-group-item');
     		$('#'+row).remove();
-    		fixCount();
+    		fixItemsCount();
     	}
 
-    	function fixCount(){
-    		var tr = $('#tbody-project-items-list tr[type="1"]');
-    		if(tr.length>0){
-	    		$.each(tr, function(k,v){
-	    			$(v).find('td').first().text(k+1);
-	    			$(v).attr('id','item-'+(k+1));
-	    			$(v).find('button').attr('row','item-'+(k+1));
-	    		});
-	    	}else{
-	    		$('#save-new-template,#save-new-project').prop('disabled',true);
-	    	}
+    	function fixItemsCount(){
+    		var items = $('#tbody-project-items-list tr[type="1"]');
+
+    		$.each(items, function(k,v){
+    			$(v).find('td').first().text(k+1);
+    			$(v).attr('id','item-'+(k+1));
+    			$(v).find('button').attr('row','item-'+(k+1));
+    		});
+	    	toggleSaveButtons();
+    	}//FixItemsCount
+
+    	function deleteProjectTemplate(){
+    		var id = $(this).attr('row');
+    		$('#'+id+',.'+id).remove();
+    		fixTemplatesCount();
+    	}//deleteProjectTemplate
+
+    	function fixTemplatesCount(){
+    		var templates = $('#tbody-project-template-list tr[type="2"]');
+
+    		$.each(templates, function(k,v){
+    			var xid   = $(this).attr('xid');
+    			var id    = this.id;
+    			var newid = 'template-'+xid+(k+1);
+
+    			$(v).find('td').first().text(k+1);
+    			$(v).attr('id',newid);
+    			$(v).find('button').attr('row',newid);
+    			$('#tbody-project-template-list tr.'+id).attr('class',newid);
+    		});
+    		toggleSaveButtons();
+    	}//fixTemplatesCount
+
+    	function toggleSaveButtons(){
+    		var templates = $('#tbody-project-template-list tr[type="2"]').length;
+    		var items = $('#tbody-project-items-list tr[type="1"]').length;
+    		//if there is at least 1 template or item added.. Activate the save buttons
+    		var toggle = !(templates>0 || items>0);
+    		$('#save-new-template,#save-new-project').prop('disabled',toggle);
     	}
 
     	//Almacenar los items en como texto en formato JSON en un campo hidden
     	//Para enviar por el formulario
+    	//Esta funcion guarda para los Templates y para los Proyectos
 			function storeItems(form){
 				var items     = [];
 				$('#tbody-project-items-list tr[type="1"]').each(function(k,v){
@@ -514,7 +697,6 @@ switch($opc):
 					var prod = {id:id,qty:qty};
 						items[k] = prod;
 				});
-
 				$('#'+form+' input[name="project-items"]').val(JSON.stringify(items));
 			}
 
@@ -522,15 +704,13 @@ switch($opc):
     	//Para enviar por el formulario
 			function storeTemplates(){
 				var templates = [];
-				$('#tbody-project-items-list tr[type="2"]').each(function(k,v){
+				$('#tbody-project-template-list tr[type="2"]').each(function(k,v){
 					var tr   = $(this);//tr del item
 					var id   = tr.attr('xid');//ID del Item (Inventory)
-					var qty  = tr.find('#qty-'+id).val();//Cantidad
-					var prod = {id:id,qty:qty};
+					var prod = {id:id};
 
 					templates[k] = prod;
 				});
-
 				$('#project-templates').val(JSON.stringify(templates));
 			}
 
@@ -538,17 +718,18 @@ switch($opc):
 			function save(e){
         e.preventDefault();
 
-        var form = $(this);
         var id   = this.id;
+
+        storeItems(id);
+        storeTemplates();
+
+        var form = $(this);
         var url  = form.attr('action');
         var formdata = new FormData(form[0]);
         var alert = form.find('.alert');
         var progress = form.find('.progress');
         var btn  = form.find('input[type="submit"]');
         var errors = 0;
-
-        storeItems(id);
-        storeTemplates();
 
         $.each($('#tbody-project-items-list>tr input'),function(k,v){
         	if($(v).val() <= 0){
@@ -604,13 +785,14 @@ switch($opc):
       function saveTemplate(e){
       	e.preventDefault();
 
-      	var form    = $(this);
       	var id      = this.id;
+     
+        storeItems(id);
+
+      	var form    = $(this);
       	var alert   = form.find('.alert');
       	var loading = form.find('#box-template .overlay');
       	var url     = form.attr('action');
-     
-        storeItems(id);
 
       	loading.show();
 

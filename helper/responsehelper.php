@@ -2,7 +2,7 @@
 class ResponseHelper
 {
 	public $response = false;
-	public $msj      = 'Ocurrio un error inesperado.';
+	public $msj      = 'An unexpected error has occurred.';
 	public $redirect = '';
 	public $error    = 0;
 	public $reload   = false;

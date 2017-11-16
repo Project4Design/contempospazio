@@ -50,7 +50,7 @@ class Inventory{
 		$query = Query::prun("SELECT * FROM inventory AS i
     													INNER JOIN inventory_category AS ic ON ic.id_category = i.id_category
     													INNER JOIN inventory_measurement AS im ON im.id_measurement = i.id_measurement
-    													WHERE id_inventory = ? LIMIT 1",array("i",$id));
+    													WHERE id_inventory = ? LIMIT 1",['i',$id]);
 		
 		$data = ($query->result->num_rows>0)?(object) $query->result->fetch_array(MYSQLI_ASSOC):NULL;
 
@@ -71,9 +71,9 @@ class Inventory{
   	echo json_encode($this->rh);
   }
 
-  public function edit($id,$category,$name,$measurement,$stock,$echo = true)
+  public function edit($id,$category,$name,$measurement,$stock)
   {
-  	$query = Query::prun("SELECT id_inventory FROM inventory WHERE id_inventory = $id");
+  	$query = Query::prun("SELECT id_inventory FROM inventory WHERE id_inventory = ? LIMIT 1",['i',$id]);
 
   	if($query->result->num_rows>0){
 	  	$query = Query::prun("UPDATE inventory SET
@@ -81,7 +81,7 @@ class Inventory{
 	  																				id_measurement = ?,
 	  																				inv_name       = ?,
 	  																				inv_stock      = ?
-	  													WHERE id_inventory = ?",array("iisii",$category,$measurement,$name,$stock,$id));
+	  													WHERE id_inventory = ? LIMIT 1",array("iisii",$category,$measurement,$name,$stock,$id));
 
 	  	if($query->response){
 	  		$this->rh->setResponse(true,"Item added to the Inventory.",true,"inicio.php?ver=inventory&opc=ver&id={$id}");
@@ -92,22 +92,18 @@ class Inventory{
 	  	$this->rh->setResponse(false,"Item not found.");
 	  }
 
-	  if($echo){
-  		echo json_encode($this->rh);
-	  }else{
-	  	return $query->response;
-	  }
+		echo json_encode($this->rh);
   }
 
   //Increase current stock
-  public function restock($id,$stock)
+  public function restock($id,$stock,$echo = true)
   {
-  	$query = Query::prun("SELECT id_inventory FROM inventory WHERE id_inventory = $id");
+  	$query = Query::prun("SELECT id_inventory FROM inventory WHERE id_inventory = ? LIMIT 1",['i',$id]);
 
   	if($query->result->num_rows>0){
   		$query = Query::prun("UPDATE inventory SET
-  																					inv_stock = inv_stock + $stock
-  													WHERE id_inventory = $id");
+  																					inv_stock = inv_stock + ?
+  													WHERE id_inventory = ? LIMIT 1",['ii',$stock,$id]);
 
   		if($query->response){
   			$this->rh->setResponse(true,"Stock updated.",true,"inicio.php?ver=inventory&opc=ver&id={$id}");
@@ -118,18 +114,22 @@ class Inventory{
   		$this->rh->setResponse(false,"Item not found.");
   	}
 
-  	echo json_encode($this->rh);
+  	if($echo){
+  		echo json_encode($this->rh);
+  	}else{
+  		return $this->rh;
+  	}
   }
 
   //Replace current stock
-  public function replace($id,$stock)
+  public function replace($id,$stock,$echo = true)
   {
-  	$query = Query::prun("SELECT id_inventory FROM inventory WHERE id_inventory = $id");
+  	$query = Query::prun("SELECT id_inventory FROM inventory WHERE id_inventory = ? LIMIT 1",['i',$id]);
 
   	if($query->result->num_rows>0){
   		$query = Query::prun("UPDATE inventory SET
-  																							inv_stock = $stock
-  													WHERE id_inventory = $id");
+																						inv_stock = ?
+  													WHERE id_inventory = ? LIMIT 1",['ii',$stock,$id]);
 
   		if($query->response){
   			$this->rh->setResponse(true,"Stock updated.",true,"inicio.php?ver=inventory&opc=ver&id={$id}");
@@ -140,16 +140,20 @@ class Inventory{
   		$this->rh->setResponse(false,"Item not found.");
   	}
 
-  	echo json_encode($this->rh);
+  	if($echo){
+  		echo json_encode($this->rh);
+  	}else{
+  		return $this->rh;
+  	}
   }
 
   public function delete($id)
   {
   	if($this->nivel=="A"){
-	  	$query = Query::prun("SELECT id_inventory FROM inventory WHERE id_inventory = $id");
+	  	$query = Query::prun("SELECT id_inventory FROM inventory WHERE id_inventory = ? LIMIT 1",['i',$id]);
 
 	  	if($query->result->num_rows>0){
-	  		$query = Query::prun("DELETE FROM inventory WHERE id_inventory = $id");
+	  		$query = Query::prun("DELETE FROM inventory WHERE id_inventory = ? LIMIT 1",['i',$id]);
 
 	  		if($query->response){
 	  			$this->rh->setResponse(true,"Item deleted.",true,"inicio.php?ver=inventory");
