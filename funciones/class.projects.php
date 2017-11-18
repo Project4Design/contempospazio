@@ -61,11 +61,12 @@ class Projects{
   {
 		if($foto){
 			$img = new img();
-			$tmp = $img->load($foto['foto']['tmp_name'],$foto['foto']['name'],"../images/projects");
+			$tmp = $img->load($foto['foto'],true);
 			$foto = $tmp->name;
+			$thumb = $tmp->thumbname;
 		}else{ $foto = NULL; }
 
-  	$query = Query::prun("INSERT INTO projects (id_user,title,photo,status) VALUES (?,?,?,?)",["issi",$this->user,$title,$foto,1]);
+  	$query = Query::prun("INSERT INTO projects (id_user,title,photo,photo_thumb,status) VALUES (?,?,?,?,?)",["isssi",$this->user,$title,$foto,$thumb,1]);
 
   	if($query->response){
   		//ID of the new project

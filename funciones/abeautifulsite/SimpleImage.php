@@ -1416,7 +1416,7 @@ class SimpleImage {
                 'r' => hexdec($r),
                 'g' => hexdec($g),
                 'b' => hexdec($b),
-                'a' => 0
+                'a' => 127
             );
 
         } elseif (is_array($color) && (count($color) == 3 || count($color) == 4)) {

@@ -44,7 +44,7 @@ switch($opc):
             <input type="hidden" name="action" value="edit">
             <input type="hidden" name="gabinete" value="<?=$id?>">
 
-            <img id="img" class="img-responsive" src="<?=Base::Img("images/productos/".$gabi->gabi_foto)?>" alt="<?=Base::Img("images/productos/".$gabi->gabi_foto)?>" prev="">
+            <img id="img" class="img-responsive" src="<?=Base::Img("images/uploads/".$gabi->gabi_foto)?>" alt="<?=$gabi->gabi_foto?>" prev="">
 
             <span id="descripcion"><?=$gabi->gabi_descripcion?></span>
           </form>
@@ -526,7 +526,7 @@ switch($opc):
             <input type="hidden" name="sink" value="<?=$id?>">
             <div id="areaForm" class="col-md-3">
               <div class="form-group">
-                <img id="img" class="img-responsive" src="<?=Base::Img("images/productos/".$prod->prod_foto)?>" alt="<?=Base::Img("images/productos/".$prod->prod_foto)?>" prev="">
+                <img id="img" class="img-responsive" src="<?=Base::Img("images/uploads/".$prod->prod_foto)?>" alt="<?=$prod->prod_foto?>" prev="">
               </div>
             </div>
             <div class="col-md-4">
@@ -799,7 +799,7 @@ switch($opc):
             <input type="hidden" name="top" value="<?=$id?>">
             <div id="areaForm" class="col-md-3">
               <div class="form-group">
-                <img id="img" class="img-responsive" src="<?=Base::Img("images/productos/".$prod->prod_foto)?>" alt="<?=Base::Img("images/productos/".$prod->prod_foto)?>" prev="">
+                <img id="img" class="img-responsive" src="<?=Base::Img("images/uploads/".$prod->prod_foto)?>" alt="<?=$prod->prod_foto?>" prev="">
               </div>
             </div>
             <div class="col-md-4">
@@ -1065,7 +1065,7 @@ switch($opc):
             <input type="hidden" name="accessory" value="<?=$id?>">
             <div id="areaForm" class="col-md-3">
               <div class="form-group">
-                <img id="img" class="img-responsive" src="<?=Base::Img("images/productos/".$prod->acce_foto)?>" alt="<?=Base::Img("images/productos/".$prod->acce_foto)?>" prev="">
+                <img id="img" class="img-responsive" src="<?=Base::Img("images/uploads/".$prod->acce_foto)?>" alt="<?=$prod->acce_foto?>" prev="">
               </div>
             </div>
             <div class="col-md-4" style="margin-left: 10px">
@@ -1783,7 +1783,7 @@ switch($opc):
                     <div class="row prod-box">
                       <a href="?ver=products&opc=cabi&id=<?=$d->id_gabi?>">
                         <div class="col-md-2 col-sm-3 col-xs-3 prod-img">
-                          <img class="img-responsive" src="<?=Base::Img("images/productos/".$d->gabi_foto)?>" alt="<?=Base::Img("images/productos/".$d->gabi_foto)?>">
+                          <img class="img-responsive" src="<?=Base::Img("images/uploads/".$d->gabi_foto)?>" alt="<?=$d->gabi_foto?>">
                         </div>
                       </a>
                       <div class="col-md-10 col-sm-9 col-xs-9 prod-content">
@@ -1830,7 +1830,7 @@ switch($opc):
                     <div class="row prod-box">
                       <a href="?ver=products&opc=sink&id=<?=$d->id_product?>">
                       <div class="col-md-2 col-sm-3 col-xs-3 prod-img">
-                        <img class="img-responsive" src="<?=Base::Img("images/productos/".$d->prod_foto)?>" alt="<?=Base::Img("images/productos/".$d->prod_foto)?>">
+                        <img class="img-responsive" src="<?=Base::Img("images/uploads/".$d->prod_foto)?>" alt="<?=$d->prod_foto?>">
                       </div>
                       </a>
                       <div class="col-md-10 col-sm-9 col-xs-9 prod-content">
@@ -1879,7 +1879,7 @@ switch($opc):
                     <div class="row prod-box">
                       <a href="?ver=products&opc=top&id=<?=$d->id_product?>">
                         <div class="col-md-2 col-sm-3 col-xs-3 prod-img">
-                          <img class="img-responsive" src="<?=Base::Img("images/productos/".$d->prod_foto)?>" alt="<?=Base::Img("images/productos/".$d->prod_foto)?>">
+                          <img class="img-responsive" src="<?=Base::Img("images/uploads/".$d->prod_foto)?>" alt="<?=$d->prod_foto?>">
                         
                         </div>
                       </a>
@@ -1929,7 +1929,7 @@ switch($opc):
                     <div class="row prod-box">
                       <a href="?ver=products&opc=acce&id=<?=$d->id_accessory?>">
                         <div class="col-md-2 col-sm-3 col-xs-3 prod-img">
-                          <img class="img-responsive" src="<?=Base::Img("images/productos/".$d->acce_foto)?>" alt="<?=Base::Img("images/productos/".$d->acce_foto)?>">
+                          <img class="img-responsive" src="<?=Base::Img("images/uploads/".$d->acce_foto)?>" alt="<?=$d->acce_foto?>">
                         </div>
                       </a>
                       <div class="col-md-10 col-sm-9 col-xs-9 prod-content">

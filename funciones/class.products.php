@@ -90,7 +90,7 @@ class Products{
 		if($this->nivel){
 			if($foto){
 				$img = new img();
-				$tmp = $img->load($foto['foto']['tmp_name'],$foto['foto']['name'],"../images/productos");
+				$tmp = $img->load($foto['foto']);
 				$foto = $tmp->name;
 			}else{ $foto = NULL; }
 
@@ -189,7 +189,7 @@ class Products{
 
 				if($foto){
 					$img = new img();
-					$tmp = $img->load($foto['foto']['tmp_name'],$foto['foto']['name'],"../images/productos");
+					$tmp = $img->load($foto['foto']);
 					$foto = $tmp->name;
 					//Cambiar foto
 					$cambia = false;
@@ -202,7 +202,7 @@ class Products{
 
 				if($query->response){
 					$this->rh->setResponse(true,"Changes has been saved.");
-					if($cambia === false && $old != ""){unlink("../images/productos/".$old);}
+					if($cambia === false && $old != ""){unlink("../images/uploads/".$old);}
 					$this->rh->data = $cambia;
 				}else{
 					$this->rh->setResponse(false,"An error has occcurred.");
@@ -303,7 +303,7 @@ class Products{
 
 				if($foto){
 					$img  = new img();
-					$tmp  = $img->load($foto['foto']['tmp_name'],$foto['foto']['name'],"../images/productos");
+					$tmp  = $img->load($foto['foto']);
 					$foto = $tmp->name;
 					
 					$cambia = false; //Cambiar foto en la vista
@@ -320,7 +320,7 @@ class Products{
 																	WHERE id_product = ?",
 																	array("iiisddsi",$color,$material,$shape,$name,$manufacture,$price,$foto,$id));
 				if($query->response){
-					if(!$cambia && is_null($old) === false){unlink("../images/productos/".$old);}
+					if(!$cambia && is_null($old) === false){unlink("../images/uploads/".$old);}
 					$this->rh->setResponse(true,"Changes has been saved.");
 					$this->rh->data = $cambia;
 				}else{
@@ -348,7 +348,7 @@ class Products{
 
 				if($foto){
 					$img = new img();
-					$tmp = $img->load($foto['foto']['tmp_name'],$foto['foto']['name'],"../images/productos");
+					$tmp = $img->load($foto['foto']);
 					$foto = $tmp->name;
 					
 					$cambia = false; //Cambiar foto
@@ -361,7 +361,7 @@ class Products{
 																	WHERE id_accessory = ?",
 																	array("sdsi",$name,$price,$foto,$id));
 				if($query->response){
-					if(!$cambia && $old!=""){unlink("../images/productos/".$old);}
+					if(!$cambia && $old!=""){unlink("../images/uploads/".$old);}
 					$this->rh->setResponse(true,"Changes has been saved.");
 					$this->rh->data = $cambia;
 				}else{
@@ -450,7 +450,7 @@ class Products{
 				$query = Query::prun("DELETE FROM cabinets WHERE id_gabi = ?",array("i",$id));
 
 				if($query->response){
-					if(!is_null($prod->gabi_foto)){unlink("../images/productos/".$prod->gabi_foto);}
+					if(!is_null($prod->gabi_foto)){unlink("../images/uploads/".$prod->gabi_foto);}
 					Query::run("DELETE FROM cabinets_items WHERE id_gabi = $id");
 
 					$this->rh->setResponse(true,"Cabinet deleted.",true,"inicio.php?ver=products");
@@ -499,7 +499,7 @@ class Products{
 				$query = Query::prun("DELETE FROM products WHERE id_product = ? LIMIT 1",array("i",$id));
 
 				if($query->response){
-					if(!is_null($prod->prod_foto)){unlink("../images/productos/".$prod->prod_foto);}
+					if(!is_null($prod->prod_foto)){unlink("../images/uploads/".$prod->prod_foto);}
 					$this->rh->setResponse(true,"Product deleted.",true,"inicio.php?ver=products");
 				}else{
 					$this->rh->setResponse(false,"An error has occcurred.");
@@ -523,7 +523,7 @@ class Products{
 				$query = Query::prun("DELETE FROM accessories WHERE id_accessory = ? LIMIT 1",array("i",$id));
 
 				if($query->response){
-					if(!is_null($prod->acce_foto)){unlink("../images/productos/".$prod->acce_foto);}
+					if(!is_null($prod->acce_foto)){unlink("../images/uploads/".$prod->acce_foto);}
 					$this->rh->setResponse(true,"Accessory deleted.",true,"inicio.php?ver=products");
 				}else{
 					$this->rh->setResponse(false,"An error has occcurred.");

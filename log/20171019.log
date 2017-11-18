@@ -1,8 +1,0 @@
-
-[Thu, 19 Oct 2017 11:54:26 -0400] #0 C:\xampp\htdocs\contempo\funciones\conex.php(22): mysqli->mysqli('localhost', 'root', '', 'contempospazio')
-#1 C:\xampp\htdocs\contempo\funciones\conex.php(14): DB->__construct()
-#2 C:\xampp\htdocs\contempo\funciones\conex.php(79): DB::getInstance()
-#3 C:\xampp\htdocs\contempo\funciones\class.sesiones.php(14): Query::prun('SELECT id_user,...', Array)
-#4 C:\xampp\htdocs\contempo\funciones\class.sesiones.php(60): Sesiones->login('admin@admin.com', '123456')
-#5 {main}
-Unknown database 'contempospazio'

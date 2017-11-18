@@ -164,7 +164,7 @@ else:
 	              ?>
 	                <li class="item">
 	                  <div class="product-img">
-	                    <img class="img-responsive" src="<?=Base::Img("images/productos/".$d->foto)?>" alt="<?=Base::Img("images/productos/".$d->foto)?>">
+	                    <img class="img-responsive" src="<?=Base::Img("images/uploads/".$d->foto)?>" alt="<?=$d->foto?>">
 	                  </div>
 	                  <div class="product-info">
 	                    <a href="?ver=products&opc=<?=$d->opc?>&id=<?=$d->id?>" class="product-title"><?=$d->product?><span class="label label-danger pull-right"><?=$cost?></span></a>

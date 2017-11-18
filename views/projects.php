@@ -34,7 +34,7 @@ switch($opc):
   		<div class="box box-poison">
         <div class="box-body box-profile">
           <h3 class="profile-username text-center"><?=$project->title?></h3>
-          <img class="img-responsive pad" src="<?=Base::Img("images/projects/".$project->photo)?>" alt="<?=Base::Img("images/projects/".$project->photo)?>" style="margin:0 auto">
+          <img class="img-responsive pad" src="<?=Base::Img("images/thumbs/".$project->photo_thumb)?>" alt="<?=$project->photo_thumb?>" style="margin:0 auto">
 
           <ul class="list-group list-group-unbordered">
             <li class="list-group-item">
@@ -731,6 +731,8 @@ switch($opc):
         var btn  = form.find('input[type="submit"]');
         var errors = 0;
 
+        btn.button('loading');
+
         $.each($('#tbody-project-items-list>tr input'),function(k,v){
         	if($(v).val() <= 0){
         		$(v).closest('.form-group').addClass('has-error');
@@ -793,7 +795,9 @@ switch($opc):
       	var alert   = form.find('.alert');
       	var loading = form.find('#box-template .overlay');
       	var url     = form.attr('action');
+      	var btn     = form.find('input[type="submit"]');
 
+      	btn.button('loading');
       	loading.show();
 
       	$.ajax({
@@ -814,6 +818,7 @@ switch($opc):
       		},
       		complete: function(){
       			loading.hide();
+      			btn.button('reset');
       		}
       	})
       }//SaveTemplate

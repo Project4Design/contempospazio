@@ -79,7 +79,7 @@ $list    = $clients->list_clients();
 				  				<div class="row">
 					  				<div class="col-md-3">
 			                <div style="padding:10px">
-			                	<img id="foto" class="img-responsive" src="<?=Base::Img("images/productos/")?>" alt="<?=Base::Img("images/productos/")?>" prev="">
+			                	<img id="foto" class="img-responsive" src="#" alt="#" prev="">
 			                </div>
 			              </div>
 			              <div class="col-md-9">
@@ -521,7 +521,7 @@ $list    = $clients->list_clients();
 									//Asignar los datos a los campos Other.
 									$.each(r.data.s,function(i,v){$("#"+i).text(v);});
 								}
-								if(r.data.foto==null){$('#foto').attr('src','images/no-image.png');}else{$('#foto').attr('src','images/productos/'+r.data.foto);}
+								if(r.data.foto==null){$('#foto').attr('src','images/no-image.png');}else{$('#foto').attr('src','images/uploads/'+r.data.foto);}
 							}else{
 								$('#type').change();
 								$('#tbody-item').empty();$('#tbody-item').append("<tr><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>");
