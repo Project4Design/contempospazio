@@ -69,6 +69,9 @@ $id     = isset($_GET['id'])?$_GET['id']:0;
     	#inventory-item-list li.disabled button{
     		pointer-events: none;
     	}
+    	.direct-chat-messages{
+				height: 355px;
+    	}
     </style>
   </head>
 
