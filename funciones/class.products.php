@@ -90,7 +90,7 @@ class Products{
 		if($this->nivel){
 			if($foto){
 				$img = new img();
-				$tmp = $img->load($foto['foto']);
+				$tmp = $img->loadSmall($foto['foto']);
 				$foto = $tmp->name;
 			}else{ $foto = NULL; }
 
@@ -189,7 +189,7 @@ class Products{
 
 				if($foto){
 					$img = new img();
-					$tmp = $img->load($foto['foto']);
+					$tmp = $img->loadSmall($foto['foto']);
 					$foto = $tmp->name;
 					//Cambiar foto
 					$cambia = false;
@@ -303,7 +303,7 @@ class Products{
 
 				if($foto){
 					$img  = new img();
-					$tmp  = $img->load($foto['foto']);
+					$tmp  = $img->loadSmall($foto['foto']);
 					$foto = $tmp->name;
 					
 					$cambia = false; //Cambiar foto en la vista
@@ -348,7 +348,7 @@ class Products{
 
 				if($foto){
 					$img = new img();
-					$tmp = $img->load($foto['foto']);
+					$tmp = $img->loadSmall($foto['foto']);
 					$foto = $tmp->name;
 					
 					$cambia = false; //Cambiar foto

@@ -66,11 +66,7 @@ class Query extends DB {
 		//Se recorre $data para asignarlos a $refs como referencia &$data[$key] (Necesario para la sentencia dinamica).
 		if(count($data) > 0){
 			foreach ($data as $key => $value){
-				if($value == ''){
-					$refs[$key] = NULL;
-				}else{
-					$refs[$key] = &$data[$key];
-				}
+				$refs[$key] = &$data[$key];
 			}
 		}
 		//Manejar errores, en caso de error, se ejecuta el Catch()

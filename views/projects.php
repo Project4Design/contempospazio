@@ -34,7 +34,7 @@ switch($opc):
   		<div class="box box-poison">
         <div class="box-body box-profile">
           <h3 class="profile-username text-center"><?=$project->title?></h3>
-          <img class="img-responsive pad" src="<?=Base::Img("images/thumbs/".$project->photo_thumb)?>" alt="<?=$project->photo_thumb?>" style="margin:0 auto">
+          <img id="project-main-photo" class="img-responsive pad" src="<?=Base::Img("images/thumbs/".$projects->gallery->getMain()->thumb)?>" alt="<?=$projects->gallery->getMain()->thumb?>" style="margin:0 auto">
 
           <ul class="list-group list-group-unbordered">
             <li class="list-group-item">
@@ -53,8 +53,8 @@ switch($opc):
   	<div class="col-md-7">
   		<div class="nav-tabs-custom">
         <ul class="nav nav-tabs">
-          <li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="false">Messages</a></li>
-          <li class=""><a href="#tab_2" data-toggle="tab" aria-expanded="false">History</a></li>
+          <li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="false">Messages <i class="fa fa-inbox" aria-hidden="true"></i></a></li>
+          <li class=""><a href="#tab_2" data-toggle="tab" aria-expanded="false">History <i class="fa fa-history" aria-hidden="true"></i> </a></li>
         </ul>
         <div class="tab-content">
 
@@ -65,23 +65,7 @@ switch($opc):
               <div class="box-body">
                 <!-- Conversations are loaded here -->
                 <div id="direct-chat-messages" class="direct-chat-messages">
-                  <!-- Message. Default to the left -->
-                  <?foreach($projects->comments() AS $comment){
-                  	$align = ($comment->id_user == $_SESSION['id'])?'right':'left';
-                  ?>
-                  <div id="chat-text-<?=$comment->id_comment?>" class="direct-chat-msg <?=$align?>">
-                    <div class="direct-chat-info clearfix">
-                      <span class="direct-chat-name pull-<?=$align?>">&nbsp;&nbsp;<?=$comment->user_nombres." ".$comment->user_apellidos?></span>
-                      <span class="direct-chat-timestamp pull-<?=$align?>">&nbsp;&nbsp;<?=date("d M y H:i",strtotime($comment->created))?></span>
-                    </div>
-                    <img src="" alt="">
-                    <div class="direct-chat-text">
-                      <?=$comment->comment?>
-                    </div><!-- /.direct-chat-text -->
-                  </div><!-- /.direct-chat-msg -->
-									<?}?>
                 </div><!--/.direct-chat-messages-->
-                <!-- /.direct-chat-pane -->
               </div><!-- /.box-body -->
               
               <div class="box-footer">
@@ -113,7 +97,7 @@ switch($opc):
   </div>
   <div class="row">
   	<div class="col-md-12">
-  		<div class="box box-poison">
+  		<div class="box box-solid">
 	      <div class="box-header with-border">
 	        <h3 class="box-title"> Items in this project</h3>
 	      </div>
@@ -148,9 +132,8 @@ switch($opc):
 		  		</table>
 	      </div>
 	    </div><!--box-->
-  	</div>
-  	<div class="col-md-12">
-  		<div class="box box-poison">
+
+  		<div class="box box-solid">
 	      <div class="box-header with-border">
 	        <h3 class="box-title"> Templates in this project</h3>
 	      </div>
@@ -192,7 +175,35 @@ switch($opc):
 		  		</table>
 	      </div>
 	    </div><!--box-->
-  	</div>
+	  </div>
+	  <div class="col-md-12">
+			<div class="box">
+				<div class="box-header with-border">
+					<h3 class="box-title">Gallery <i class="fa fa-photo" aria-hidden="true"></i> </h3>
+	        <div class="pull-right">
+	          <button class="btn btn-flat btn-sm btn-primary" data-toggle="modal" data-target="#addPhotoModal"><i class="fa fa-upload" aria-hidden="true"></i>&nbsp;Upload</button>
+	        </div>
+				</div>
+				<div class="box-body">
+					<div id="gallery-body" class="col-md-12" style="padding:0">
+						<?foreach($projects->gallery->all() AS $gallery){?>
+							<div id="gallery-<?=$gallery->id_gallery?>" class="col-md-2 col-xs-12" style="margin-bottom: 5px">
+								<div class="gallery-item <?=(!$gallery->main)?:'gallery-item-main'?>">
+									<button type="button" title="Remove photo" data-photo="<?=$gallery->id_gallery?>" class="btn btn-flat btn-danger btn-remove-gallery" data-action="remove_photo" data-toggle="modal" data-target="#optionsPhotoModal"><i class="fa fa-times"></i></button>
+									<button type="button" title="Set as main" data-photo="<?=$gallery->id_gallery?>" class="btn btn-flat btn-warning btn-main-gallery" data-action="set_main" data-toggle="modal" data-target="#optionsPhotoModal"><i class="fa fa-star"></i></button>
+									<img class="img-responsive" src="<?=Base::Img("images/thumbs/{$gallery->thumb}")?>" alt="<?=$gallery->thumb?>">
+								</div>
+							</div>
+						<?}?>
+					</div>
+					<div class="col-md-12 margin">
+            <div class="alert alert-danger" style="display:none" role="alert">
+        			<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;<span class="msj">An error has ocurred.</span>
+        		</div>
+					</div>
+				</div>
+			</div>
+	  </div>
   </div>
 
   <div id="delModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
@@ -275,28 +286,229 @@ switch($opc):
       </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
   </div>
+  </div>
+
+  <div id="optionsPhotoModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="optionsPhotoModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <h4 class="modal-title"</h4>
+        </div>
+        <div class="modal-body">
+          <h4  id="options-text" class="text-center"></h4>
+        </div>
+        <div class="modal-footer">
+					<button type="button" xid="#" xaction="#" class="btn btn-flat options-gallery"></button>
+          <button type="button" class="btn btn-flat btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div>
+
+  <div id="addPhotoModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addPhotoModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <form id="add-project-photos" action="funciones/class.projects_gallery.php" method="POST" enctype="multipart/form-data">
+          <input type="hidden" name="action" value="add_project_photo">
+          <input id="project" type="hidden" name="project" value="<?=$id?>">
+    			<input id="dropzone-input" type="file" accept="image/jpeg,image/png" name="photos[]" multiple style="display:none">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+            <h4 class="modal-title">Upload Photo</h4>
+          </div>
+          <div class="modal-body">
+          	<div class="dropzone text-center">
+          		<div class="dropzone-no-uploads">
+          			<div class="dropzone-drag">
+	          			<h2>
+	          				Drag and drop photos here
+	          			</h2>
+	          			<p>Or</p>
+	          		</div>
+
+          			<button id="btn-select-files" class="btn btn-flat btn-default" type="button"><i class="fa fa-upload" aria-hidden="true"></i>&nbsp;Select files</button>
+          		</div>
+	  					
+	  					<div class="row dropzone-thumbs-container">
+	  					</div><!--dropzone-thumbs-container-->
+          	
+          	</div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-flat btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </form>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div>
 
   <script type="text/javascript">
-  	$(document).ready(function(){
-  		var lastcomment = 0;
-  		scrollDown();
+		var $form = $('#add-project-photos'),
+				$photos = $('#dropzone-input'),
+				uploadFilesList = null,
+				lastcomment = 0,
+				project_id  = <?=$id?>,
+				working   = false,
+				uploading = false;
+		//Create preview image thumbs markup in dropzone
+		var thumbs =	function(id,img){
+  		return	'<div class="col-md-2 col-sm-3 col-xs-6" style="margin-bottom:5px">'+
+  						'<div id="thumb-'+id+'" class="dropzone-thumbs thumb-uploading">'+
+							'<img src="'+img+'">'+
+  						'<div class="dropzone-thumbs-progress">'+
+	            '<div class="progress">'+
+						  '<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">'+
+						  '<span class="progress-loaded"></span>'+
+						  '</div></div></div></div></div>';
+			};
 
+		//Create image thumbs markup in gallery
+		var gallery =	function(id,img){
+				return  '<div id="gallery-'+id+'" class="col-md-2 col-xs-12" style="margin-bottom: 5px"><div class="gallery-item">'+
+		      			'<button type="button" title="Remove photo" data-photo="'+id+'" class="btn btn-flat btn-danger btn-remove-gallery" data-action="remove_photo" data-toggle="modal" data-target="#optionsPhotoModal"><i class="fa fa-times"></i></button>'+
+		      			'<button type="button" title="Set as main" data-photo="'+id+'" class="btn btn-flat btn-warning btn-main-gallery" data-action="set_main" data-toggle="modal" data-target="#optionsPhotoModal"><i class="fa fa-star"></i></button>'+
+		      			'<img class="img-responsive" src="'+img+'" alt="'+img+'">'+
+								'</div></div>';
+			};
+
+  	//Check if browser support Drag and Drop uploads
+		var isAdvancedUpload = function() {
+		  var div = document.createElement('div');
+		  return (('draggable' in div) || ('ondragstart' in div && 'ondrop' in div)) && 'FormData' in window && 'FileReader' in window;
+		}();
+
+		//=========================================== Page fully load.
+  	$(document).ready(function(){
+  		//Get comments every 1seg
+  		//setInterval(getComments,1000);
+
+  		$('#btn-select-files').click(function(){
+  			$('#dropzone-input').click();
+  		});
+
+  		//Photos upload by input
+  		$photos.change(function(){
+  			uploadFilesList = this.files;
+  			preview();
+  		});
+
+			//Check if browser support Drag and Drop
+			if (isAdvancedUpload) {
+			  $form.find('.dropzone').addClass('has-advanced-upload');
+
+			  $form.on('drag dragstart dragend dragover dragenter dragleave drop', function(e) {
+			    e.preventDefault();
+			    e.stopPropagation();
+			  })
+			  .on('dragover dragenter', function() {
+			    $form.find('.dropzone').addClass('is-dragover');
+			  })
+			  .on('dragleave dragend drop', function() {
+			    $form.find('.dropzone').removeClass('is-dragover');
+			  })
+			  .on('drop', function(e) {
+			    uploadFilesList = e.originalEvent.dataTransfer.files;
+			    preview();
+  				//$form.trigger('submit');
+			  });
+			}else{
+
+			}
+
+			//Add stock for Items or Templates
   		$('#addModal').on('show.bs.modal',function(event){
         var btn  = $(event.relatedTarget);
         var item = btn.data('item');
         var template = btn.data('template');
-        console.log(template)
 
         var modal   = $(this);
 
         modal.find('#item').val(item);
         modal.find('#template').val(template);
       });
+			
+  		//Modal for 'Set photo as Main' or 'Delete photo'
+  		//When modal opens, chance the options
+  		$('#optionsPhotoModal').on('show.bs.modal',function(event){
+        var btn    = $(event.relatedTarget),
+        		photo  = btn.data('photo'),
+        		action = btn.data('action'),
+        		modal  = $(this),
+        		submit = modal.find('.options-gallery');
 
+        if(action === 'remove_photo'){
+        	var text = 'Remove';
+        	modal.find('.modal-title').text(text);
+        	modal.find('#options-text').text('Are you sure you want to delete this photo?');
+        	submit.removeClass('btn-warning').addClass('btn-danger');
+        }else{
+        	var text = 'Save';
+        	modal.find('.modal-title').text('Set as main');
+        	modal.find('#options-text').text('Set this photo as Main photo for the project?');
+        	submit.removeClass('btn-danger').addClass('btn-warning');
+        }
+
+        submit.attr({'xid':photo,'xaction':action}).text(text);
+      });
+
+      //Send Ajax request to Delete poto or Set as Main
+      $('.options-gallery').on('click',function(){
+      	var btn    = $(this),
+      	    id     = btn.attr('xid'),
+      	    action = btn.attr('xaction'),
+      	    alert = $('#gallery-body + .col-md-12 .alert');
+
+      	$.ajax({
+      		type: 'POST',
+      		url: 'funciones/class.projects_gallery.php',
+      		data: {
+      			action: action,
+      			id: id
+      		},
+      		dataType: 'json',
+      		success: function(r){
+      			if(r.response){
+      				if(action === 'remove_photo'){
+	      				$('#gallery-'+id).remove();
+
+	      				if(r.data){
+	      					$('#gallery-body .gallery-item-main').removeClass('gallery-item-main');
+	      					$('#gallery-'+r.data.id_gallery+' .gallery-item').addClass('gallery-item-main');
+	      					$('#project-main-photo').attr({'src':'images/thumbs/'+r.data.thumb,'alt':r.data.thumb});
+	      				}
+      				}else{
+      					$('#gallery-body .gallery-item-main').removeClass('gallery-item-main');
+      					$('#gallery-'+id+' .gallery-item').addClass('gallery-item-main');
+      					$('#project-main-photo').attr({'src':'images/thumbs/'+r.data.thumb,'alt':r.data.thumb});
+      				}
+      				
+      				alert.removeClass('alert-danger').addClass('alert-success');
+      			}else{
+      				alert.removeClass('alert-success').addClass('alert-danger');
+      			}
+    				alert.find('.msj').text(r.msj);
+      		},
+      		error: function(){
+    				alert.removeClass('alert-success').addClass('alert-danger');
+    				alert.find('.msj').text('An error has ocurred.');
+      		},
+      		complete: function(){
+      			alert.show().delay(7000).hide('slow');
+      			$('#optionsPhotoModal').modal('hide');
+      		}
+      	});
+      });
+
+			//Save new comments to database  		
   		$('#form-new-comment').submit(function(e){
   			e.preventDefault();
-  			var form = $(this);
-  			var alert = form.find('.alert');
+  			if(working) return false;
+
+  			working = true;
+
+  			var form = $(this),
+  					alert = form.find('.alert');
 
   			$.ajax({
   				type: 'POST',
@@ -307,26 +519,165 @@ switch($opc):
   				success: function(r){
   					if(r.response){
   						form[0].reset();
-  						$('.direct-chat-messages').append(r.data.comment);
-  						scrollDown();
   					}else{
   						alert.show().delay(5000).hide();
   					}
   				},
   				error: function(){
   					alert.show().delay(5000).hide();
+  				},
+  				complete: function(){
+  					working = false;
   				}
   			})
   		});
-  	});
 
+  		$('#addPhotoModal').on('hide.bs.modal',function(){
+  			$('.dropzone-thumbs-container').empty();
+  		});
+
+  	});//=============================================================================READY
+
+		function uploadSinglePhoto(photo,i){
+	    // ajax for modern browserss
+		  var photoThumb = $('.dropzone .thumb-uploading').first(),
+		  		next = (i+1),
+		  		formData = new FormData();
+
+		  formData.append('action','add_project_photo');
+		  formData.append('project',project_id);
+		  formData.append('photo',photo);
+
+		  $.ajax({
+		    url: $form.attr('action'),
+		    type: $form.attr('method'),
+		    data: formData,
+		    dataType: 'json',
+		    cache: false,
+		    contentType: false,
+		    processData: false,
+        // Custom XMLHttpRequest
+        xhr: function() {
+          var myXhr = $.ajaxSettings.xhr();
+          if (myXhr.upload) {
+            // For handling the progress of the upload
+            myXhr.upload.addEventListener('progress', function(e){
+            	loaded = ((100*e.loaded)/e.total).toFixed(0);
+
+              if(e.lengthComputable){
+                photoThumb.find('.progress-bar')
+	                .attr({
+                		'aria-valuenow': loaded,
+                    style: 'width:'+loaded+'%;'
+	                });
+
+                photoThumb.find('.progress-loaded').text(loaded+'%');
+
+                if(e.loaded === e.total){
+                	photoThumb.find('.progress-bar').removeClass('progress-bar-striped active').addClass('progress-bar-success');
+                	photoThumb.find('.progress-loaded').text('Procesing...');
+                }
+              }
+            }, false);
+            //Error Listener
+            myXhr.addEventListener('error', function (e) {
+          		photoThumb.addClass('thumb-error');
+            	photoThumb.find('.progress-bar').removeClass('progress-bar-striped active').addClass('progress-bar-danger');
+            	photoThumb.find('.progress-loaded').text('Error');
+            }, false);
+          }
+          return myXhr;
+        },
+		    success: function(r) {
+		      if(r.response){
+		      	thumb_img = gallery(r.data.id,r.data.thumb);
+		      	$('#gallery-body').append(thumb_img);
+		      }else{
+        		photoThumb.addClass('thumb-error');
+          	photoThumb.find('.progress-bar').removeClass('progress-bar-striped active').addClass('progress-bar-danger');
+          	photoThumb.find('.progress-loaded').text('Error');
+		      }
+		    },
+		    error: function() {
+      		photoThumb.addClass('thumb-error');
+        	photoThumb.find('.progress-bar').removeClass('progress-bar-striped active').addClass('progress-bar-danger');
+        	photoThumb.find('.progress-loaded').text('Error');
+		    },
+		    complete: function() {
+		    	photoThumb.removeClass('thumb-uploading');
+		    	uploading = false;
+		    	uploadPhotos(next);
+		    }
+		  });
+		}//uploadSinglePhoto
+
+		function uploadPhotos(i = 0){
+			if(!uploadFilesList[i] || uploading) return false;
+
+			uploading = true;
+			uploadSinglePhoto(uploadFilesList[i],i);
+		}//uploadPhotos
+
+		//Preview files when uploaded or Droped
+	  function preview(){
+	  	var thumbsCount = checkPreviewCount();
+	  	$.each(uploadFilesList, function(i,file){
+		    //Tippo de archivo
+		    var type  = file.type;
+
+		    if(file){
+		      if(file.size<2000000){
+		        if(type == 'image/jpeg' || type == 'image/png' || type == 'image/jpg'){
+		          var reader = new FileReader();
+		          reader.onload = function (e) {
+		          	nextCount = (thumbsCount+(i+1));
+		          	var thumb = thumbs(nextCount,e.target.result);
+		          	$('.dropzone-thumbs-container').append(thumb);
+		          	uploadPhotos();
+		          }
+		          reader.readAsDataURL(file);
+		        }else{
+		        	$('#msj').html('Archivo no admitido.');
+		        }
+		      }else{
+		      	$('#msj').html('La imagen supera el tamaño permitido: 2MB.');
+		      }
+		    }
+		  })//EACH
+	  }//Preview-----------------------------------------------------------------------------------
+
+		//Check if there's any file uploaded in Dropzone
+		function checkPreviewCount(){
+			return $('.dropzone-thumbs-container .dropzone-thumbs').length;
+		}
+
+		//Get comments from database
+  	function getComments(){
+  		if(working) return false;
+
+  		$.ajax({
+  			type: 'POST',
+  			cache: false,
+  			data: {action:'getComments',project:project_id,lastcomment:lastcomment},
+  			url: 'funciones/class.projects_comments.php',
+  			dataType: 'json',
+  			success: function(r){
+  				if(r.new){
+						$('#direct-chat-messages').append(r.comments);
+						lastcomment = r.last;
+						scrollDown();
+					}
+  			}
+  		})
+  	}//getComments
+
+  	//Scroll down the messages window when new comments appear
   	function scrollDown(){
-  		
   		var height = document.getElementById("direct-chat-messages").scrollHeight-150;
   		$('#direct-chat-messages').animate({
-          scrollTop: height
-        }, 1000);
-  	}
+        scrollTop: height
+      }, 1000);
+  	}//scrollDown
   </script>
 
   <?
@@ -537,29 +888,28 @@ switch($opc):
     		$('#form-new-project').submit(save);
     		//Save Template
     		$('#form-add-template').submit(saveTemplate);
-    		//
+
     		loadTemplates();
-    		//
+
     		$('#projects-template-list').on('click','.btn-add-template',addProjectTemplate);
     		//Delete Templates added to project
     		$('#tbody-project-template-list').on('click','.btn-delete-template',deleteProjectTemplate);
 
     		$('#delModal').on('show.bs.modal',function (event){
-    			var btn = $(event.relatedTarget);
-    			var id  = btn.data('id');
-
-    			var modal = $(this);
+    			var btn   = $(event.relatedTarget),
+    					id    = btn.data('id'),
+    					modal = $(this);
 
     			modal.find('#template').val(id);
     		});
     	});//Ready
 
     	function addProjectTemplate(){
-    		var btn = $(this);
-    		var id  = btn.attr('xid');
-    		var loading_temp = $('#box-template .overlay');
-    		var loading_box = $('#box-projects .overlay');
-    		var alert   = $('#box-projects .alert');
+    		var btn = $(this),
+    				id  = btn.attr('xid'),
+    				loading_temp = $('#box-template .overlay'),
+    				loading_box = $('#box-projects .overlay'),
+    				alert   = $('#box-projects .alert');
 
     		loading_box.show();
     		loading_temp.show();
@@ -590,8 +940,9 @@ switch($opc):
     	}
 
     	function loadTemplates(){
-    		var loading = $('#box-template .overlay');
-    		var alert   = $('#form-add-template .alert');
+    		var loading = $('#box-template .overlay'),
+    		    alert   = $('#form-add-template .alert');
+
     		loading.show();
 
     		$.ajax({
@@ -616,13 +967,15 @@ switch($opc):
     	}
 
     	function addProjectItem(){
-    		var parent = $(this).parent().parent();
-    		var name  = parent.text().trim();
-    		var xid   = $(this).attr('xid'); //Inventory ID
-    		var type  = $(this).attr('type');
-    		var tbody = $('#tbody-project-items-list');
-    		var num   = $('#tbody-project-items-list tr[type="1"]').length+1;
-    		var stock = parent.find('.inventory-item-stock').text().trim()*1;
+    		var parent = $(this).parent().parent(),
+    				name   = parent.text().trim(),
+    				//Inventory ID
+    				xid    = $(this).attr('xid'), 
+    				type   = $(this).attr('type'),
+    				tbody  = $('#tbody-project-items-list'),
+    				num    = $('#tbody-project-items-list tr[type="1"]').length+1,
+    				stock  = parent.find('.inventory-item-stock').text().trim()*1;
+
     		var tr ='<tr id="item-'+num+'" xid="'+xid+'" type='+type+'><td class="text-center">'+num+'</td>';
     			tr  +='<td>'+name+'</td>';
     			tr  +='<td><div class="form-group"><input id="qty-'+xid+'" class="form-control" type="number" placeholder="Qty" min="1" step="0.1" value="1" required></div></td>';
@@ -636,9 +989,10 @@ switch($opc):
     	}
 
     	function deleteProjectItem(){
-    		var row = $(this).attr('row');
-    		var xid = $('#'+row).attr('xid');
-    		var btn = $('#inventory-item-list').find('#list-item-'+xid);
+    		var row = $(this).attr('row'),
+    				xid = $('#'+row).attr('xid'),
+    				btn = $('#inventory-item-list').find('#list-item-'+xid);
+
     		btn.attr('class','list-group-item');
     		$('#'+row).remove();
     		fixItemsCount();
@@ -652,6 +1006,7 @@ switch($opc):
     			$(v).attr('id','item-'+(k+1));
     			$(v).find('button').attr('row','item-'+(k+1));
     		});
+
 	    	toggleSaveButtons();
     	}//FixItemsCount
 
@@ -665,15 +1020,16 @@ switch($opc):
     		var templates = $('#tbody-project-template-list tr[type="2"]');
 
     		$.each(templates, function(k,v){
-    			var xid   = $(this).attr('xid');
-    			var id    = this.id;
-    			var newid = 'template-'+xid+(k+1);
+    			var xid   = $(this).attr('xid'),
+  						id    = this.id,
+  						newid = 'template-'+xid+(k+1);
 
     			$(v).find('td').first().text(k+1);
     			$(v).attr('id',newid);
     			$(v).find('button').attr('row',newid);
     			$('#tbody-project-template-list tr.'+id).attr('class',newid);
     		});
+
     		toggleSaveButtons();
     	}//fixTemplatesCount
 
@@ -689,14 +1045,17 @@ switch($opc):
     	//Para enviar por el formulario
     	//Esta funcion guarda para los Templates y para los Proyectos
 			function storeItems(form){
-				var items     = [];
+				var items = [];
+
 				$('#tbody-project-items-list tr[type="1"]').each(function(k,v){
 					var tr   = $(this);//tr del item
 					var id   = tr.attr('xid');//ID del Item (Inventory)
 					var qty  = tr.find('#qty-'+id).val();//Cantidad
 					var prod = {id:id,qty:qty};
-						items[k] = prod;
+
+					items[k] = prod;
 				});
+
 				$('#'+form+' input[name="project-items"]').val(JSON.stringify(items));
 			}
 
@@ -718,18 +1077,18 @@ switch($opc):
 			function save(e){
         e.preventDefault();
 
-        var id   = this.id;
+        var id = this.id;
 
         storeItems(id);
         storeTemplates();
 
-        var form = $(this);
-        var url  = form.attr('action');
-        var formdata = new FormData(form[0]);
-        var alert = form.find('.alert');
-        var progress = form.find('.progress');
-        var btn  = form.find('input[type="submit"]');
-        var errors = 0;
+        var form = $(this),
+        		url  = form.attr('action'),
+        		formdata = new FormData(form[0]),
+        		alert = form.find('.alert'),
+        		progress = form.find('.progress'),
+        		btn  = form.find('#save-new-project'),
+        		errors = 0;
 
         btn.button('loading');
 
@@ -787,15 +1146,15 @@ switch($opc):
       function saveTemplate(e){
       	e.preventDefault();
 
-      	var id      = this.id;
+      	var id = this.id;
      
         storeItems(id);
 
-      	var form    = $(this);
-      	var alert   = form.find('.alert');
-      	var loading = form.find('#box-template .overlay');
-      	var url     = form.attr('action');
-      	var btn     = form.find('input[type="submit"]');
+      	var form    = $(this),
+      			alert   = form.find('.alert'),
+      			loading = form.find('#box-template .overlay'),
+      			url     = form.attr('action'),
+      			btn     = form.find('input[type="submit"]');
 
       	btn.button('loading');
       	loading.show();

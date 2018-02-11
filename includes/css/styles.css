@@ -287,7 +287,6 @@ input[type="file"]{
   box-shadow: 0 0 4px 2px #367FA9;
 }
 
-
 /* Contenedor de imagen*/
 .imageUploadWidget {
   background-color: #fff;
@@ -330,6 +329,10 @@ input[type="file"]{
   background-color: #dd4b39 !important;
 }
 /*======================*/
+
+.form-edit-products img{
+	margin: 0 auto;
+}
 
 /*=================================*/
 .box-product{
@@ -404,6 +407,116 @@ td.success.item-active{
 .direct-chat-poison .right > .direct-chat-text:before {
   border-left-color: #605CA8;
 }
+
+/*==========================|| Drop zone ||=========================================*/
+
+.dropzone{
+	width: 100%;
+	min-height: 100px;
+	background-color: #fff;
+	padding: 10px;
+}
+.dropzone h2{
+	color: #777;
+}
+.dropzone-drag,
+.btn-remove-gallery,
+.btn-main-gallery,
+.dropzone.is-uploading #btn-select-files{
+	display: none;
+}
+.dropzone.has-advanced-upload {
+  background-color: #fff;
+  border: 3px dashed #ccc;
+}
+.dropzone.has-advanced-upload .dropzone-drag{
+  display: inline;
+}
+.dropzone.is-dragover{
+	background-color: #7AA9D0;
+	border: 3px dashed #367FA9;
+}
+.dropzone-thumbs-container{
+	position: relative;
+	margin: 10px 0;
+}
+.dropzone-thumbs{
+	position: relative;
+	min-height: 150px;
+	max-height: 150px;
+	border: 2px solid #ccc;
+	overflow: hidden;
+}
+.dropzone-thumbs img{
+  max-height: 146px;
+  vertical-align: middle;
+  display: inline-block;
+  margin: 0 auto;
+}
+.dropzone-thumbs .progress{
+	border: 1px solid #367FA9;	
+}
+.dropzone-thumbs.thumb-uploading img{
+	opacity: .3;
+}
+.dropzone-thumbs .dropzone-thumbs-progress{
+	position: absolute;
+	top: 50%;
+	width: 100%;
+	padding: 0 5px;
+	margin-top: -7px;
+	z-index: 5;
+	display: none;
+}
+.dropzone-thumbs.thumb-uploading .dropzone-thumbs-progress,
+.dropzone-thumbs.thumb-error .dropzone-thumbs-progress{
+  display: block;
+}
+
+.gallery-item{
+	position: relative;
+	padding: 2px;
+	border: 2px solid #ccc;
+}
+.gallery-item img{
+	margin: 0 auto;
+	max-height: 120px;
+}
+.gallery-item:hover{
+  border-color: #3C8DBC;
+}
+
+.gallery-item.gallery-item-main{
+	border-color: #e08e0b;
+}
+.btn-remove-gallery,
+.btn-main-gallery{
+	width: 25px;
+	height: 25px;
+	position: absolute;
+	top: -12px;
+	right: -12px;
+	padding: 0 !important;
+	z-index: 5;
+}
+.btn-main-gallery{
+	right: 14px;
+}
+.dropzone-thumbs:hover{
+	border: 2px solid #367FA9;
+}
+.dropzone-thumbs.thumb-error{
+	border: 2px solid #D9534F;
+}
+.gallery-item:hover .btn-remove-gallery,
+.gallery-item:not(.gallery-item-main):hover .btn-main-gallery{
+	display: block;
+}
+#gallery-body+.col-md-12 .alert{
+	padding:20px;
+	background-color: red;
+}
+/*==================================================================================*/
 
 .hide{
   display: none;

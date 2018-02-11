@@ -40,7 +40,7 @@ switch($opc):
         </div>
         <div id="areaForm" class="col-md-3">
           <span id="backup" class="hide"></span>
-          <form id="fproducto" class="" action="funciones/class.products.php" enctype="multipart/form-data">
+          <form id="fproducto" class="form-edit-products" action="funciones/class.products.php" enctype="multipart/form-data">
             <input type="hidden" name="action" value="edit">
             <input type="hidden" name="gabinete" value="<?=$id?>">
 
@@ -521,7 +521,7 @@ switch($opc):
           <div class="clearfix"></div>
         </div>
         <div class="col-md-12">
-          <form id="fregEdit" class="form-horizontal" method="post" action="funciones/class.products.php">
+          <form id="fregEdit" class="form-horizontal form-edit-products" method="post" action="funciones/class.products.php">
             <input id="action" type="hidden" name="action" value="edit_sink">
             <input type="hidden" name="sink" value="<?=$id?>">
             <div id="areaForm" class="col-md-3">
@@ -794,7 +794,7 @@ switch($opc):
           <div class="clearfix"></div>
         </div>
         <div class="col-md-12">
-          <form id="topEdit" class="form-horizontal" method="post" action="funciones/class.products.php">
+          <form id="topEdit" class="form-horizontal form-edit-products" method="post" action="funciones/class.products.php">
             <input id="action" type="hidden" name="action" value="edit_top">
             <input type="hidden" name="top" value="<?=$id?>">
             <div id="areaForm" class="col-md-3">
@@ -1060,7 +1060,7 @@ switch($opc):
           <div class="clearfix"></div>
         </div>
         <div class="col-md-12">
-          <form id="acceEdit" class="form-horizontal" method="post" action="funciones/class.products.php">
+          <form id="acceEdit" class="form-horizontal form-edit-products" method="post" action="funciones/class.products.php">
             <input id="action" type="hidden" name="action" value="edit_acce">
             <input type="hidden" name="accessory" value="<?=$id?>">
             <div id="areaForm" class="col-md-3">

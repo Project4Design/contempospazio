@@ -8,15 +8,14 @@ class Projects{
 	private $user;
 	private $nivel;
 	private $fecha;
-	private $comments;
+	public  $gallery;
 	private $project_id = NULL;
 
 	public function __CONSTRUCT()
 	{
-		$this->rh       = new ResponseHelper();
-		$this->comments = new projects_comments();
-		$this->user     = isset($_SESSION['id']) ? $_SESSION['id'] : 0;
-		$this->nivel    = isset($_SESSION['nivel']) ? $_SESSION['nivel'] : "X";
+		$this->rh     = new ResponseHelper();
+		$this->user   = isset($_SESSION['id']) ? $_SESSION['id'] : 0;
+		$this->nivel  = isset($_SESSION['nivel']) ? $_SESSION['nivel'] : 'X';
 	}
 
 	/*
@@ -24,7 +23,7 @@ class Projects{
 	*/
 	public function consulta()
 	{
-    $query = Query::run("SELECT * FROM projects");
+    $query = Query::run('SELECT * FROM projects');
     $data  = [];
 
     while($registro = $query->fetch_array(MYSQLI_ASSOC)){
@@ -39,13 +38,14 @@ class Projects{
 	*/
 	public function obtener($id)
 	{
-		$query = Query::prun("SELECT p.*,u.user_nombres,u.user_apellidos FROM projects AS p
+		$query = Query::prun('SELECT p.*,u.user_nombres,u.user_apellidos FROM projects AS p
 																	INNER JOIN usuarios AS u ON u.id_user = p.id_user
-    															WHERE p.id_project = ? LIMIT 1",['i',$id]);
+    															WHERE p.id_project = ? LIMIT 1',['i',$id]);
 
 		if($query->result->num_rows>0){
 			$data = (object) $query->result->fetch_array(MYSQLI_ASSOC);
 			$this->project_id = $id;
+			$this->gallery  = new projects_gallery($this->project_id);
 		}else{
 			$data = NULL;
 		}
@@ -53,29 +53,28 @@ class Projects{
 		return $data;
 	}
 
-
 	/*
 		Add Projects
 	*/
   public function add($title,$foto,$items,$templates)
   {
-		if($foto){
-			$img = new img();
-			$tmp = $img->load($foto['foto'],true);
-			$foto = $tmp->name;
-			$thumb = $tmp->thumbname;
-		}else{ $foto = NULL; }
-
-  	$query = Query::prun("INSERT INTO projects (id_user,title,photo,photo_thumb,status) VALUES (?,?,?,?,?)",["isssi",$this->user,$title,$foto,$thumb,1]);
+  	$query = Query::prun('INSERT INTO projects (id_user,title,status) VALUES (?,?,?)',['isi',$this->user,$title,1]);
 
   	if($query->response){
   		//ID of the new project
   		$id = $query->id;
   		//An Array for the Items and the Templates of the project
 			$content = ['items' => [],'templates' =>[] ];
-
 			//Errors
 			$errors = 0;
+
+			//Save image
+			if($foto){
+				$img = new img();
+				$tmp = $img->load($foto['foto'],true);
+
+				$query == Query::prun('INSERT INTO projects_gallery (id_project,id_user,photo,thumb,main) VALUES (?,?,?,?,?)',['iissi',$id,$this->user,$tmp->name,$tmp->thumb,1]);
+			}
 
   		$items = json_decode($items);
 
@@ -166,17 +165,17 @@ class Projects{
   		//Convert the $content array in JSON to store it in the Database...
   		$content = json_encode($content);
   		//Store the items
-  		$query = Query::prun("INSERT INTO projects_items (id_project,content) VALUES (?,?)",['is',$id,$content]);
+  		$query = Query::prun('INSERT INTO projects_items (id_project,content) VALUES (?,?)',['is',$id,$content]);
 
   		if($query->response){
-	  		$this->rh->setResponse(true,"Project added.",true,"?ver=projects&opc=ver&id={$id}");
+	  		$this->rh->setResponse(true,'Project added.',true,'?ver=projects&opc=ver&id='.$id);
 	  		$this->rh->data = $id;
   		}else{
   			$this->delete($id,false);
-  			$this->rh->setResponse(false,"An error has ocurred with the data.");
+  			$this->rh->setResponse(false,'An error has ocurred with the data.');
   		}
   	}else{
-  		$this->rh->setResponse(false,"An error has ocurred with the data.");
+  		$this->rh->setResponse(false,'An error has ocurred with the data.');
   	}
 
   	echo json_encode($this->rh);
@@ -187,7 +186,7 @@ class Projects{
 	*/
   public function edit($id,$title,$foto,$items,$templates)
   {
-  	$query = Query::prun("SELECT id_project FROM projects WHERE id_project = ? LIMIT 1",['i',$id]);
+  	$query = Query::prun('SELECT id_project FROM projects WHERE id_project = ? LIMIT 1',['i',$id]);
 
   	if($query->result->num_rows>0){
   		/*
@@ -195,12 +194,12 @@ class Projects{
   		*/
 
 	  	if($query->response){
-	  		$this->rh->setResponse(true,"Item added to the Project.",true,"inicio.php?ver=project&opc=ver&id={$id}");
+	  		$this->rh->setResponse(true,'Item added to the Project.',true,'inicio.php?ver=project&opc=ver&id='.$id);
 	  	}else{
-	  		$this->rh->setResponse(false,"An error has ocurred with the data.");
+	  		$this->rh->setResponse(false,'An error has ocurred with the data.');
 	  	}
 	  }else{
-	  	$this->rh->setResponse(false,"Item not found.");
+	  	$this->rh->setResponse(false,'Item not found.');
 	  }
 
   	echo json_encode($this->rh);
@@ -211,22 +210,22 @@ class Projects{
 	*/
   public function delete($project,$echo = true)
   {
-  	if($this->nivel=="A"){
-	  	$query = Query::prun("SELECT id_project FROM projects WHERE id_project = ? LIMIT 1",['i',$project]);
+  	if($this->nivel=='A'){
+	  	$query = Query::prun('SELECT id_project FROM projects WHERE id_project = ? LIMIT 1',['i',$project]);
 
 	  	if($query->result->num_rows>0){
-	  		$query = Query::prun("DELETE FROM projects WHERE id_project = ? LIMIT 1",['i',$project]);
+	  		$query = Query::prun('DELETE FROM projects WHERE id_project = ? LIMIT 1',['i',$project]);
 
 	  		if($query->response){
-	  			$this->rh->setResponse(true,"Project deleted.",true,"inicio.php?ver=projects");
+	  			$this->rh->setResponse(true,'Project deleted.',true,'inicio.php?ver=projects');
 	  		}else{
-	  			$this->rh->setResponse(false,"An error has ocurred.");
+	  			$this->rh->setResponse(false,'An error has ocurred.');
 	  		}
 	  	}else{
-	  		$this->rh->setResponse(false,"Item not found.");
+	  		$this->rh->setResponse(false,'Item not found.');
 	  	}
 	  }else{
-	  	$this->sh->setResponse(false,"You don't have permission to make this accion.");
+	  	$this->sh->setResponse(false,'You don\'t have permission to make this accion.');
 	  }
 
 	  if($echo){
@@ -239,34 +238,27 @@ class Projects{
   //Status of the project
   public function status($status)
   {
-  	switch ($status) {
-  		case 1:
-  			$label = '<span class="label label-info">Started</span>';
-  		break;
-  		case 2:
-  			$label = '<span class="label label-warning">Demolished</span>';
-  		break;
-  		case 3:
-  			$label = '<span class="label label-primary">Installed</span>';
-  		break;
-  		case 4:
-  			$label = '<span class="label label-success">Completed</span>';
-  		break;
-  		case 5:
-  			$label = '<span class="label label-danger">Canceled</span>';
-  		break;
-  		default:
-  			$label = '<span class="label label-default">Error</span>';
-  		break;
-  	}
+		if($status == 1){
+			return '<span class="label label-info">Started</span>';
+		}
 
-  	return $label;
-  }
+		if($status == 2){
+			return '<span class="label label-warning">Demolished</span>';
+		}
 
-  //Conexion con comentarios
-  public function comments()
-  {
-  	return $this->comments->consulta($this->project_id);
+		if($status == 3){
+			return '<span class="label label-primary">Installed</span>';
+		}
+
+		if($status == 4){
+			return '<span class="label label-success">Completed</span>';
+		}
+
+		if($status == 5){
+			return '<span class="label label-danger">Canceled</span>';
+		}
+
+		return '<span class="label label-default">Error</span>';
   }
 
 	/*
@@ -292,7 +284,7 @@ class Projects{
   }
 
 
-  public function checkItemStock($item,$template = "")
+  public function checkItemStock($item,$template = '')
   {
   	if($item->stock_needed>$item->stock){
   		$data   = "{$item->stock_needed}/<span style='color:red'>{$item->stock}</span>";
@@ -309,14 +301,14 @@ class Projects{
 		Update the project Items and Templates (Content).
   */
   public function update_project_content($project,$content){
-  	$query = Query::prun("UPDATE projects_items SET
+  	$query = Query::prun('UPDATE projects_items SET
   																						content = ?
-  																				WHERE id_project = ?",
+  																				WHERE id_project = ?',
   																				['si',$content,$project]);
   }
 
   public function add_item_stock($project,$template = NULL,$item,$newStock){
-  	$query = Query::prun("SELECT * FROM projects_items WHERE id_project = ? LIMIT 1",['i',$project]);
+  	$query = Query::prun('SELECT * FROM projects_items WHERE id_project = ? LIMIT 1',['i',$project]);
 
   	if($query->result->num_rows){
   		$info = (object) $query->result->fetch_array(MYSQLI_ASSOC);
@@ -410,7 +402,6 @@ class Projects{
   	echo json_encode($this->rh);
   }//add_item_stock
 
-
 	//===================NULL RESPONSE ========
 	public function fdefault(){
 		echo json_encode($this->rh);
@@ -450,6 +441,12 @@ if(Base::IsAjax()):
 	  		$newStock    = $_POST['stock'];
 
 	  		$modelProject->add_item_stock($project,$template,$item,$newStock);
+	  	break;
+	  	case 'add_project_photo':
+	  		$project = $_POST['project'];
+	  		$photo  = ($_FILES['photo']['name'])?$_FILES:NULL;
+
+	  		$modelProject->add_photo($project,$photo);
 	  	break;
 	  	default:
 	  	$modelProject->fdefault();

@@ -1,5 +1,6 @@
 <?
-require_once 'abeautifulsite/SimpleImage.php';
+require '../vendor/autoload.php';
+use Intervention\Image\ImageManager;
 
 class Img{
 	public $name;
@@ -30,6 +31,35 @@ class Img{
 		$this->thumb = $name.'_thumb.png';
 	}
 
+	//Load image with original dimensions
+	public function loadSmall($input)
+	{
+		$temp = $input['tmp_name'];
+		$name = $input['name'];
+
+		//Verifica si es archivo es una imagen valida
+		if($this->check($temp)){
+			// create an image manager instance with favored driver
+			$manager = new ImageManager();
+
+			$image = $manager->make($temp);
+
+			$this->rename();
+
+			$image->resize(250, 250, function ($constrain){
+				$constrain->aspectRatio();
+			});
+
+			$image->save('../images/'.$this->name);
+			$image->destroy();
+		}else{
+			return false;
+		}
+	
+		return $this;
+	}
+
+	//Load image and create a new square image based on the highest dimension Widht or Height
 	public function load($input,$thumb = false)
 	{
 		$temp = $input['tmp_name'];
@@ -37,36 +67,24 @@ class Img{
 
 		//Verifica si es archivo es una imagen valida
 		if($this->check($temp)){
-			$img = new abeautifulsite\SimpleImage($temp);
 
-			$width  = $img->get_width();
-			$height = $img->get_height();
-
-			if($width > $height){
-				$height = $width;
-			}else{
-				$width = $height;
-			}
-
-			$img->best_fit($width,$height);
-			
-			$final = new abeautifulsite\SimpleImage(null, $width, $height, '#fff');
-
-			//Se le coloca el fondo blanco a la imagen cargada
-			$final->overlay($img);
+			$manager = new ImageManager();
+			$image = $manager->make($temp);
 
 			//Se genera un nombre aleatorio
 			$this->rename();
 
-			$final->save('../images/uploads/'.$this->name);
+			$image->save('../images/uploads/'.$this->name);
 
 			if($thumb){
-				$thumbnail = $final;
-				unset($final);
-				$thumbnail->thumbnail(250);
-				$thumbnail->save('../images/thumbs/'.$this->thumb);
-				unset($thumbnail);
+				$image->resize(250, 250, function ($constrain){
+					$constrain->aspectRatio();
+				});
+
+				$image->save('../images/thumbs/'.$this->thumb);
 			}
+			
+			$image->destroy();
 		}else{
 			return false;
 		}

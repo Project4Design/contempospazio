@@ -552,9 +552,5 @@ endswitch;
 </div>
 <script type="text/javascript">
   $(document).ready(function(){
-    $('.btn-print').click(function(){
-      console.log("xhef");
-      window.location.href = $(this).attr('xhref');
-    });
   });
 </script>

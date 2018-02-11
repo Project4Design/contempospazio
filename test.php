@@ -3,34 +3,42 @@
 require_once 'config/config.php';
 require_once 'funciones/abeautifulsite/SimpleImage.php';
 
+// include composer autoload
+require 'vendor/autoload.php';
+
+// import the Intervention Image Manager Class
+use Intervention\Image\ImageManager;
+
 if(isset($_FILES['photo'])){
-	$img   = new abeautifulsite\SimpleImage($_FILES['photo']['tmp_name']);
-	//$tmp = $img->load($_FILES['photo'],true)
-	$name = sha1(mt_rand().time());
-	$name = $name.".png"; #.$ext;
-	$thumbname = $name."_thumb.png"; #.$ext;
+	// create an image manager instance with favored driver
+	$manager = new ImageManager();
 
-	$width = $img->get_width();
-	$height = $img->get_height();
+	// to finally create image instances
+	$image = $manager->make($_FILES['photo']['tmp_name']);
+	// resize image to fixed size
 
-	if($width > $height ){
-		$height = $width;
-	}else{
-		$width = $height;
-	}
+	$image->resize($width, $height, function ($constrain){
+		$constrain->aspectRatio();
+	});
+/*
+	// resize only the width of the image
+	$image->resize(300, null);
 
-	$img->best_fit($width,$height);
+	// resize only the height of the image
+	$image->resize(null, 200);
 
-	$final = new abeautifulsite\SimpleImage(null, $width, $height, '#fff');
+	// resize the image to a width of 300 and constrain aspect ratio (auto height)
+	$image->resize(300, null, function ($constraint) {
+	    $constraint->aspectRatio();
+	});
 
-	$o = $final->overlay($img, 'center', 1,0,0);
-
-	$final->save('images/'.$name);
-	$final = NULL;
-	$o->thumbnail(300);
-	$o->save('images/'.$thumbname);
-
-	$o = NULL;
+	// resize the image to a height of 200 and constrain aspect ratio (auto width)
+	$image->resize(null, 200, function ($constraint) {
+	    $constraint->aspectRatio();
+	});
+	*/
+	$image->save('images/xxx.png');
+	$image->destroy();
 }
 ?>
 
