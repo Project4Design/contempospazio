@@ -30,12 +30,14 @@ $id     = isset($_GET['id'])?$_GET['id']:0;
         folder instead of downloading all of them to reduce the load. -->
     <?=Base::Css("includes/css/_all-skins.min.css")?>
     <!-- Select 2 -->
-    <?=Base::Css("plugins/select2/select2.min.css")?>
+    <?=Base::Css("includes/plugins/select2/select2.min.css")?>
     <!-- Theme style -->
     <?=Base::Css("includes/css/AdminLTE.min.css")?>
-
     <!-- Datatable -->
     <?=Base::Css("includes/css/datatables.min.css")?>
+    <!-- Fancybox -->
+    <?=Base::Css("includes/plugins/fancybox/dist/jquery.fancybox.min.css")?>
+
 
     <?=Base::Js("includes/js/jquery-2.2.1.min.js")?>
     <?=Base::Js("includes/js/bootstrap.js")?>
@@ -50,8 +52,10 @@ $id     = isset($_GET['id'])?$_GET['id']:0;
 
     <!-- Funciones -->
     <?=Base::Js("includes/js/funciones.js")?>
-    
-    <?=Base::Js("plugins/select2/select2.min.js")?>
+    <!-- Select 2-->
+    <?=Base::Js("includes/plugins/select2/select2.min.js")?>
+    <!-- Fancybox -->
+    <?=Base::Js("includes/plugins/fancybox/dist/jquery.fancybox.min.js")?>
     <style type="text/css">
     	.bg-grey{
     		background-color: #808080;

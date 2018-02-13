@@ -74,7 +74,7 @@ class Projects_gallery{
 
 			if($query->response){
 				$this->rh->setResponse(true,'Image saved.');
-				$this->rh->data = ['id'=>$query->id,'thumb'=>'images/thumbs/'.$tmp->thumb];
+				$this->rh->data = ['id'=>$query->id,'photo'=>'images/uploads/'.$tmp->name,'thumb'=>'images/thumbs/'.$tmp->thumb];
 			}else{
 				unlink('../images/thumbs/'.$tmp->thumb);
 				unlink('../images/uploads/'.$tmp->name);

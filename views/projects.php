@@ -191,7 +191,9 @@ switch($opc):
 								<div class="gallery-item <?=(!$gallery->main)?:'gallery-item-main'?>">
 									<button type="button" title="Remove photo" data-photo="<?=$gallery->id_gallery?>" class="btn btn-flat btn-danger btn-remove-gallery" data-action="remove_photo" data-toggle="modal" data-target="#optionsPhotoModal"><i class="fa fa-times"></i></button>
 									<button type="button" title="Set as main" data-photo="<?=$gallery->id_gallery?>" class="btn btn-flat btn-warning btn-main-gallery" data-action="set_main" data-toggle="modal" data-target="#optionsPhotoModal"><i class="fa fa-star"></i></button>
-									<img class="img-responsive" src="<?=Base::Img("images/thumbs/{$gallery->thumb}")?>" alt="<?=$gallery->thumb?>">
+									<a href="<?=Base::Img("images/uploads/{$gallery->photo}")?>" data-fancybox="fancy-images">
+										<img class="img-responsive" src="<?=Base::Img("images/thumbs/{$gallery->thumb}")?>" alt="<?=$gallery->thumb?>">
+									</a>
 								</div>
 							</div>
 						<?}?>
@@ -352,23 +354,25 @@ switch($opc):
 				working   = false,
 				uploading = false;
 		//Create preview image thumbs markup in dropzone
-		var thumbs =	function(id,img){
-  		return	'<div class="col-md-2 col-sm-3 col-xs-6" style="margin-bottom:5px">'+
-  						'<div id="thumb-'+id+'" class="dropzone-thumbs thumb-uploading">'+
-							'<img src="'+img+'">'+
-  						'<div class="dropzone-thumbs-progress">'+
-	            '<div class="progress">'+
-						  '<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">'+
-						  '<span class="progress-loaded"></span>'+
-						  '</div></div></div></div></div>';
+		var thumbs =	function(id,thumb){
+  			return	'<div class="col-md-2 col-sm-3 col-xs-6" style="margin-bottom:5px">'+
+	  						'<div id="thumb-'+id+'" class="dropzone-thumbs thumb-uploading">'+
+								'<img src="'+thumb+'">'+
+	  						'<div class="dropzone-thumbs-progress">'+
+		            '<div class="progress">'+
+							  '<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">'+
+							  '<span class="progress-loaded"></span>'+
+							  '</div></div></div></div></div>';
 			};
 
 		//Create image thumbs markup in gallery
-		var gallery =	function(id,img){
+		var gallery =	function(id,img,thumb){
 				return  '<div id="gallery-'+id+'" class="col-md-2 col-xs-12" style="margin-bottom: 5px"><div class="gallery-item">'+
 		      			'<button type="button" title="Remove photo" data-photo="'+id+'" class="btn btn-flat btn-danger btn-remove-gallery" data-action="remove_photo" data-toggle="modal" data-target="#optionsPhotoModal"><i class="fa fa-times"></i></button>'+
 		      			'<button type="button" title="Set as main" data-photo="'+id+'" class="btn btn-flat btn-warning btn-main-gallery" data-action="set_main" data-toggle="modal" data-target="#optionsPhotoModal"><i class="fa fa-star"></i></button>'+
-		      			'<img class="img-responsive" src="'+img+'" alt="'+img+'">'+
+								'<a href="'+img+'" data-fancybox="fancy-images">'+
+		      			'<img class="img-responsive" src="'+thumb+'" alt="'+thumb+'">'+
+		      			'</a>'+
 								'</div></div>';
 			};
 
@@ -381,7 +385,7 @@ switch($opc):
 		//=========================================== Page fully load.
   	$(document).ready(function(){
   		//Get comments every 1seg
-  		//setInterval(getComments,1000);
+  		setInterval(getComments,1000);
 
   		$('#btn-select-files').click(function(){
   			$('#dropzone-input').click();
@@ -536,6 +540,19 @@ switch($opc):
   			$('.dropzone-thumbs-container').empty();
   		});
 
+  		//Fancy box
+  		$().fancybox({
+  			selector: '[data-fancybox="fancy-images"]',
+  			loop: true,
+  			  buttons : [
+			      'slideShow',
+			      'fullScreen',
+			      'thumbs',
+			      'download',
+		        'close'
+		    ],
+  		});
+
   	});//=============================================================================READY
 
 		function uploadSinglePhoto(photo,i){
@@ -590,7 +607,7 @@ switch($opc):
         },
 		    success: function(r) {
 		      if(r.response){
-		      	thumb_img = gallery(r.data.id,r.data.thumb);
+		      	thumb_img = gallery(r.data.id,r.data.photo,r.data.thumb);
 		      	$('#gallery-body').append(thumb_img);
 		      }else{
         		photoThumb.addClass('thumb-error');
