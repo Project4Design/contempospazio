@@ -25,7 +25,6 @@ $id     = isset($_GET['id'])?$_GET['id']:0;
     <?=Base::Css("includes/css/font-awesome.min.css")?>
     <?=Base::Css("includes/css/glyphicons.css")?>
     <?=Base::Css("includes/css/styles.css")?>
-    <?=Base::Css("plugins/daterangepicker/daterangepicker.css")?>
 
     <!-- AdminLTE Skins. Choose a skin from the css/skins
         folder instead of downloading all of them to reduce the load. -->
@@ -49,13 +48,8 @@ $id     = isset($_GET['id'])?$_GET['id']:0;
     <!-- AdminLTE App -->
     <?=Base::Js("includes/js/app.min.js")?>
 
-    <?=Base::Js("plugins/daterangepicker/moment.min.js")?>
-    <?=Base::Js("plugins/daterangepicker/daterangepicker.js")?>
-
     <!-- Funciones -->
     <?=Base::Js("includes/js/funciones.js")?>
-
-    <?=Base::Js("includes/js/jquery.easing.min.js")?>
     
     <?=Base::Js("plugins/select2/select2.min.js")?>
     <style type="text/css">
