@@ -7,22 +7,23 @@ class projects_comments{
 	private $rh;
 	private $user;
 	private $nivel;
-
+	private $log;
 
 	public function __CONSTRUCT()
 	{
 		$this->rh     = new ResponseHelper();
+		$this->log    = new Projects_logs();
 		$this->user   = isset($_SESSION['id']) ? $_SESSION['id'] : 0;
-		$this->nivel  = isset($_SESSION['nivel']) ? $_SESSION['nivel'] : 'X';
+		$this->nivel  = isset($_SESSION['nivel']) ? $_SESSION['nivel'] : "X";
 	}
 
 	//Buscar todos los items en Project
 	public function consulta($project,$lastcomment = 0)
 	{
-    $query =  Query::prun('SELECT pc.*,u.user_nombres,u.user_apellidos FROM projects_comments AS pc
+    $query =  Query::prun("SELECT pc.*,u.user_nombres,u.user_apellidos FROM projects_comments AS pc
 																					INNER JOIN usuarios AS u ON u.id_user = pc.id_user
     																	WHERE pc.id_project = ? AND pc.id_comment > ?
-    																	ORDER BY pc.id_comment ASC',['ii',$project,$lastcomment]);
+    																	ORDER BY pc.id_comment ASC",['ii',$project,$lastcomment]);
     $data  = [];
 
     while($registro = $query->result->fetch_array(MYSQLI_ASSOC)){
@@ -34,14 +35,14 @@ class projects_comments{
 
   public function add($comment,$project)
   {
-  	$query = Query::prun('INSERT INTO projects_comments (id_project,id_user,comment) VALUES (?,?,?)',['iis',$project,$this->user,$comment]);
+  	$query = Query::prun("INSERT INTO projects_comments (id_project,id_user,comment) VALUES (?,?,?)",["iis",$project,$this->user,$comment]);
 
   	if($query->response){
 			//Save event to logs
-			$this->log->add($project,1,'Comment');
+			$this->log->add($project,1,2);
   		$this->rh->setResponse(true);
   	}else{
-  		$this->rh->setResponse(false,'An error has ocurred with the data.');
+  		$this->rh->setResponse(false,"An error has ocurred with the data.");
   	}
 
   	echo json_encode($this->rh);
@@ -73,7 +74,6 @@ class projects_comments{
 
 		echo json_encode(['new'=>$new,'comments'=>$data,'last'=>$last]);
   }
-  
 	//===================NULL RESPONSE ========
 	public function fdefault(){
 		echo json_encode($this->rh);

@@ -88,7 +88,14 @@ switch($opc):
           </div><!-- /.tab-pane -->
           <!--=====================|| HISTORY ||====================-->
           <div class="tab-pane" id="tab_2">
-          	
+          	<div class="timeline-history">
+	          	<ul id="timeline-logs" class="timeline timeline-inverse">
+	              <!-- END timeline item -->
+	              <li>
+	                <i class="fa fa-clock-o bg-gray"></i>
+	              </li>
+	            </ul>
+	          </div>
           </div><!-- /.tab-pane -->
         </div>
         <!-- /.tab-content -->
@@ -185,7 +192,7 @@ switch($opc):
 	        </div>
 				</div>
 				<div class="box-body">
-					<div id="gallery-body" class="col-md-12" style="padding:0">
+					<div id="gallery-body" class="col-xs-12 col-md-12" style="padding:0">
 						<?foreach($projects->gallery->all() AS $gallery){?>
 							<div id="gallery-<?=$gallery->id_gallery?>" class="col-md-2 col-xs-12" style="margin-bottom: 5px">
 								<div class="gallery-item <?=(!$gallery->main)?:'gallery-item-main'?>">
@@ -198,7 +205,7 @@ switch($opc):
 							</div>
 						<?}?>
 					</div>
-					<div class="col-md-12 margin">
+					<div class="col-xs-12 col-md-12 margin">
             <div class="alert alert-danger" style="display:none" role="alert">
         			<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;<span class="msj">An error has ocurred.</span>
         		</div>
@@ -349,10 +356,13 @@ switch($opc):
 		var $form = $('#add-project-photos'),
 				$photos = $('#dropzone-input'),
 				uploadFilesList = null,
-				lastcomment = 0,
 				project_id  = <?=$id?>,
-				working   = false,
-				uploading = false;
+				lastComment = 0,
+				lastLog     = 0,
+				workingComments = false,
+				workingLogs = false,
+				uploading   = false;
+
 		//Create preview image thumbs markup in dropzone
 		var thumbs =	function(id,thumb){
   			return	'<div class="col-md-2 col-sm-3 col-xs-6" style="margin-bottom:5px">'+
@@ -384,8 +394,10 @@ switch($opc):
 
 		//=========================================== Page fully load.
   	$(document).ready(function(){
-  		//Get comments every 1seg
-  		setInterval(getComments,1000);
+  		//Get comments every 2seg
+  		setInterval(getComments,2000);
+  		//Get Logs every 5seg
+  		setInterval(getLogs,5000);
 
   		$('#btn-select-files').click(function(){
   			$('#dropzone-input').click();
@@ -456,7 +468,7 @@ switch($opc):
         submit.attr({'xid':photo,'xaction':action}).text(text);
       });
 
-      //Send Ajax request to Delete poto or Set as Main
+      //Send Ajax request to Delete photo or Set as Main
       $('.options-gallery').on('click',function(){
       	var btn    = $(this),
       	    id     = btn.attr('xid'),
@@ -507,9 +519,8 @@ switch($opc):
 			//Save new comments to database  		
   		$('#form-new-comment').submit(function(e){
   			e.preventDefault();
-  			if(working) return false;
 
-  			working = true;
+  			workingComments = true;
 
   			var form = $(this),
   					alert = form.find('.alert');
@@ -531,7 +542,7 @@ switch($opc):
   					alert.show().delay(5000).hide();
   				},
   				complete: function(){
-  					working = false;
+  					workingComments = false;
   				}
   			})
   		});
@@ -670,20 +681,47 @@ switch($opc):
 
 		//Get comments from database
   	function getComments(){
-  		if(working) return false;
+  		if(workingComments || uploading) return false;
+  		workingComments = true;
 
   		$.ajax({
   			type: 'POST',
   			cache: false,
-  			data: {action:'getComments',project:project_id,lastcomment:lastcomment},
+  			data: {action:'getComments',project:project_id,lastcomment:lastComment},
   			url: 'funciones/class.projects_comments.php',
   			dataType: 'json',
   			success: function(r){
   				if(r.new){
 						$('#direct-chat-messages').append(r.comments);
-						lastcomment = r.last;
+						lastComment = r.last;
 						scrollDown();
 					}
+  			},
+  			complete: function(){
+  				workingComments = false;
+  			}
+  		})
+  	}//getComments
+
+		//Get logs from database
+  	function getLogs(){
+  		if(workingLogs) return false;
+  		workingLogs = true;
+
+  		$.ajax({
+  			type: 'POST',
+  			cache: false,
+  			data: {action:'getLogs',project:project_id,lastLog:lastLog},
+  			url: 'funciones/class.projects_logs.php',
+  			dataType: 'json',
+  			success: function(r){
+  				if(r.new){
+						$('#timeline-logs').prepend(r.logs);
+						lastLog = r.lastLog;
+					}
+  			},
+  			complete: function(){
+  				workingLogs = false;
   			}
   		})
   	}//getComments

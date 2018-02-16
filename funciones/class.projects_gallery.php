@@ -10,10 +10,12 @@ class Projects_gallery{
 	private $fecha;
 	private $project_id;
 	private $photo;
+	private $logs;
 
 	public function __CONSTRUCT($project = NULL)
 	{
 		$this->rh         = new ResponseHelper();
+		$this->logs       = new projects_logs();
 		$this->user       = isset($_SESSION['id']) ? $_SESSION['id'] : 0;
 		$this->nivel      = isset($_SESSION['nivel']) ? $_SESSION['nivel'] : "X";
 		$this->project_id = $project ? $project : NULL;
@@ -73,6 +75,8 @@ class Projects_gallery{
 			$query = Query::prun('INSERT INTO projects_gallery (id_project,id_user,photo,thumb,main) VALUES (?,?,?,?,?)',['iissi',$project,$this->user,$tmp->name,$tmp->thumb,$main]);
 
 			if($query->response){
+				//Log this action
+				$this->logs->add($project,1,3);
 				$this->rh->setResponse(true,'Image saved.');
 				$this->rh->data = ['id'=>$query->id,'photo'=>'images/uploads/'.$tmp->name,'thumb'=>'images/thumbs/'.$tmp->thumb];
 			}else{
@@ -89,32 +93,50 @@ class Projects_gallery{
 
   public function removePhoto($id)
   {
-  	$photo = $this->obtener($id);
+  	if($this->nivel == 'A'){
+	  	$photo = $this->obtener($id);
 
-  	if($photo){
-  		$query = Query::prun('DELETE FROM projects_gallery where id_gallery = ? LIMIT 1',['i',$id]);
+	  	if($photo){
+	  		$query = Query::prun('DELETE FROM projects_gallery where id_gallery = ? LIMIT 1',['i',$id]);
 
-  		if($query){
+	  		if($query){
 
-  			$main = $this->getMain();
+	  			//Get the main photo
+	  			$main = $this->getMain();
+	  			//If there is NOT a main photo
+	  			if(!$main->photo){
+	  				$this->rh->data = $this->setFirstAsMain();
+	  			}
 
-  			//If there is NOT a main photo
-  			if(!$main->photo){
-  				$this->rh->data = $this->setFirstAsMain();
-  			}
+					//Log this action
+					$this->logs->add($this->project_id,3,3);
 
-				unlink('../images/thumbs/'.$photo->thumb);
-				unlink('../images/uploads/'.$photo->photo);
+					unlink('../images/thumbs/'.$photo->thumb);
+					unlink('../images/uploads/'.$photo->photo);
 
-				$this->rh->setResponse(true,'Photo removed.');
-  		}else{
-  			$this->rh->setResponse(false,'An error has occurred.');
-  		}
-  	}else{
-			$this->rh->setResponse(false,'Photo not found.');
-  	}
-
+					$this->rh->setResponse(true,'Photo removed.');
+	  		}else{
+	  			$this->rh->setResponse(false,'An error has occurred.');
+	  		}
+	  	}else{
+				$this->rh->setResponse(false,'Photo not found.');
+	  	}
+	  }else{
+	  	$this->rh->setResponse(false,"You don't have permission to make this action.");
+	  }
   	echo json_encode($this->rh);
+  }
+
+  public function removeAll()
+  {
+		$query = Query::prun('SELECT * FROM projects_gallery WHERE id_project = ?',['i',$this->project_id]);
+
+    while($photo = $query->result->fetch_array(MYSQLI_ASSOC)){
+			unlink('../images/thumbs/'.$photo['thumb']);
+			unlink('../images/uploads/'.$photo['photo']);
+    }
+
+    return true;
   }
 
   public function setMain($id)
@@ -132,6 +154,9 @@ class Projects_gallery{
   		$query = Query::prun('UPDATE projects_gallery SET main = ? WHERE id_gallery = ? LIMIT 1',['ii',1,$photo->id_gallery]);
 
   		if($query->response){
+				//Log this action
+				$this->logs->add($this->project_id,4,3);
+
   			$this->rh->setResponse(true,'Photo set as main photo.');
   		}else{
   			$this->rh->setResponse(false,'An error has ocurred.');
@@ -159,16 +184,14 @@ class Projects_gallery{
   																								WHERE id_gallery = ? LIMIT 1'
   																								,['ii',1,$photo->id_gallery]);
 
+			//Log this action
+			$this->logs->add($this->project_id,4,3);
+
   		return $photo;
 		}
 
 		return NULL;
   }
-
-	//===================NULL RESPONSE ========
-	public function fdefault(){
-		echo json_encode($this->rh);
-	}//=========================================x
 
 }//Class Project
 
@@ -192,9 +215,6 @@ if(Base::IsAjax()):
 	  		$id = $_POST['id'];
 
 	  		$modelProjectGallery->removePhoto($id);
-	  	break;
-	  	default:
-	  		$modelProjectGallery->fdefault();
 	  	break;
 		endswitch;
 	endif;

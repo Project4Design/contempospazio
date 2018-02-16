@@ -9,13 +9,20 @@ class Projects{
 	private $nivel;
 	private $fecha;
 	public  $gallery;
+	public  $logs;
 	private $project_id = NULL;
 
 	public function __CONSTRUCT()
 	{
 		$this->rh     = new ResponseHelper();
+		$this->logs   = new projects_logs();
 		$this->user   = isset($_SESSION['id']) ? $_SESSION['id'] : 0;
 		$this->nivel  = isset($_SESSION['nivel']) ? $_SESSION['nivel'] : 'X';
+	}
+
+	public function logs()
+	{
+		return $this->logs = new projects_logs($this->project_id);
 	}
 
 	/*
@@ -211,9 +218,11 @@ class Projects{
   public function delete($project,$echo = true)
   {
   	if($this->nivel=='A'){
-	  	$query = Query::prun('SELECT id_project FROM projects WHERE id_project = ? LIMIT 1',['i',$project]);
+	  	$query = $this->obtener($project);
 
-	  	if($query->result->num_rows>0){
+	  	if($query){
+	  		//Remove all photos
+	  		$this->gallery->removeAll();
 	  		$query = Query::prun('DELETE FROM projects WHERE id_project = ? LIMIT 1',['i',$project]);
 
 	  		if($query->response){
@@ -287,10 +296,10 @@ class Projects{
   public function checkItemStock($item,$template = '')
   {
   	if($item->stock_needed>$item->stock){
-  		$data   = "{$item->stock_needed}/<span style='color:red'>{$item->stock}</span>";
+  		$data   = "<span style='color:red'>{$item->stock}</span>/{$item->stock_needed}";
   		$button = "<button type=\"button\" data-item=\"{$item->id}\" data-template=\"{$template}\" class=\"btn btn-success btn-sm btn-flat\" data-toggle=\"modal\" data-target=\"#addModal\"><i class=\"fa fa-plus-square\" aria-hidden=\"true\"></i></button>";
   	}else{
-  		$data   = "{$item->stock_needed}/{$item->stock}";
+  		$data   = "{$item->stock}/{$item->stock_needed}";
   		$button = "";
   	}
 
@@ -330,6 +339,12 @@ class Projects{
 						//Stock available
 						$stock = $templates[$template]['items']['id_'.$item]['stock'];
 
+						//============|| LOGS ||==================
+						$log_content  ='<p class="text-center"><b>'.$templates[$template]['name'].'</b></p>';
+						$log_content .= '<b>Item:</b> '.$templates[$template]['items']['id_'.$item]['name'].'<br>';
+						$log_content .= '<b>Stock added:</b> '.$newStock;
+						//========================================
+
 						//If the new Stock to be added + the actual Stock is greater than the 
 						//stock needed for the project. The exceeded amount will be added
 						//to the Inventory of that Item.
@@ -337,6 +352,10 @@ class Projects{
 							$item_stock = $newStock - ($stock_needed - $stock);
 							$stock = $stock_needed;
 							$templates[$template]['items']['id_'.$item]['stock'] = $stock;
+
+							//============|| LOGS ||==================
+							$log_content .= '<br><small><i>'.$item_stock.' send to Inventory</i></small>';
+							//========================================
 
 							$inventory = new Inventory();
 							//ID of the Item
@@ -350,6 +369,11 @@ class Projects{
 						//Update the content of the project
 						$content = json_encode(['items'=>$items,'templates'=>$templates]);
 						$this->update_project_content($project,$content);
+
+						//Log this action
+						//============|| LOGS ||==================
+						$this->logs->add($project,2,4,$log_content);
+						//========================================
 
 						//Set the response as true.
 						$this->rh->setResponse(true,'Stock added.',true);
@@ -368,6 +392,11 @@ class Projects{
 					//Stock available
 					$stock = $items['id_'.$item]['stock'];
 
+					//============|| LOGS ||==================
+					$log_content  = '<b>Item:</b> '.$items['id_'.$item]['name'].'<br>';
+					$log_content .= '<b>Stock added:</b> '.$newStock;
+					//========================================
+
 					//If the new Stock to be added + the actual Stock is greater than the 
 					//stock needed for the project. The exceeded amount will be added
 					//to the Inventory of that Item.
@@ -375,6 +404,10 @@ class Projects{
 						$item_stock = $newStock - ($stock_needed - $stock);
 						$stock = $stock_needed;
 						$items['id_'.$item]['stock'] = $stock;
+
+						//============|| LOGS ||==================
+						$log_content .= '<br><small><i>'.$item_stock.' send to Inventory</i></small>';
+						//========================================
 
 						$inventory = new Inventory();
 						//ID of the Item
@@ -388,6 +421,11 @@ class Projects{
 					//Update the content of the project
 					$content = json_encode(['items'=>$items,'templates'=>$templates]);
 					$this->update_project_content($project,$content);
+
+					//Log this action
+					//============|| LOGS ||==================
+					$this->logs->add($project,2,4,$log_content);
+					//========================================
 
 					//Set the response as true.
 					$this->rh->setResponse(true,'Stock added.',true);
