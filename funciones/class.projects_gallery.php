@@ -37,9 +37,9 @@ class Projects_gallery{
 	}
 
 	//Get all photos from 1 project
-	public function all()
+	public function all($status)
 	{
-		$query = Query::prun('SELECT * FROM projects_gallery WHERE id_project = ?',['i',$this->project_id]);
+		$query = Query::prun('SELECT * FROM projects_gallery WHERE id_project = ? AND status = ?',['ii',$this->project_id,$status]);
 
 		$data = [];
 
@@ -59,7 +59,7 @@ class Projects_gallery{
 		return $this->photo;
 	}
 
-  public function addPhoto($project,$photo)
+  public function addPhoto($project,$status,$photo)
   {
   	$this->project_id= $project;
 
@@ -72,7 +72,7 @@ class Projects_gallery{
 
 			$main = $main->photo ? '0':1;
 
-			$query = Query::prun('INSERT INTO projects_gallery (id_project,id_user,photo,thumb,main) VALUES (?,?,?,?,?)',['iissi',$project,$this->user,$tmp->name,$tmp->thumb,$main]);
+			$query = Query::prun('INSERT INTO projects_gallery (id_project,id_user,status,photo,thumb,main) VALUES (?,?,?,?,?,?)',['iiissi',$project,$this->user,$status,$tmp->name,$tmp->thumb,$main]);
 
 			if($query->response){
 				//Log this action
@@ -147,8 +147,8 @@ class Projects_gallery{
   		//Set all other pics of the project as main = 0
   		$query = Query::prun('UPDATE projects_gallery SET
   																								main = ?
-  																								WHERE id_project = ? LIMIT 1'
-  																								,['ii','0',$photo->id_project]);
+  																								WHERE id_project = ?'
+  																								,['ii',0,$photo->id_project]);
 
   		//Set as main = 1
   		$query = Query::prun('UPDATE projects_gallery SET main = ? WHERE id_gallery = ? LIMIT 1',['ii',1,$photo->id_gallery]);
@@ -202,9 +202,10 @@ if(Base::IsAjax()):
 	  switch ($_POST['action']):
 	  	case 'add_project_photo':
 	  		$project = $_POST['project'];
-	  		$photo  = ($_FILES['photo']['name'])?$_FILES:NULL;
+	  		$status  = $_POST['status'];
+	  		$photo   = ($_FILES['photo']['name'])?$_FILES:NULL;
 
-	  		$modelProjectGallery->addPhoto($project,$photo);
+	  		$modelProjectGallery->addPhoto($project,$status,$photo);
 	  	break;
 	  	case 'set_main':
 	  		$id = $_POST['id'];

@@ -19,12 +19,13 @@ class Projects_logs{
 	protected function consulta($project,$date)
 	{
 		$data = '';
-		$query = Query::prun('SELECT l.*,CAST(registered AS TIME) AS registered,u.id_user,u.user_nombres,u.user_apellidos
+		$query = Query::prun('SELECT l.*,CAST(registered AS TIME) AS registered,u.id_user,u.user_nombres,u.user_apellidos,
+																															(SELECT MAX(id_log) FROM projects_logs WHERE id_project = ?) AS last_log
   																															FROM projects_logs AS l
   																															INNER JOIN usuarios AS u ON u.id_user = l.id_user
   																												 			WHERE (l.id_project = ? AND registered BETWEEN ? AND ? + INTERVAL 1 DAY)
   																												 			ORDER BY registered DESC',
-  																												 			['iss',$project,$date,$date]);
+  																												 			['iiss',$project,$project,$date,$date]);
 
     while($registro = $query->result->fetch_array(MYSQLI_ASSOC)){
     	$data .= $this->buildLog((object)$registro);
@@ -36,12 +37,13 @@ class Projects_logs{
   protected function getAfterId($project,$lastLog)
   {
 		$data = '';
-		$query = Query::prun('SELECT l.*,CAST(registered AS TIME) AS registered,u.id_user,u.user_nombres,u.user_apellidos
+		$query = Query::prun('SELECT l.*,CAST(registered AS TIME) AS registered,u.id_user,u.user_nombres,u.user_apellidos,
+																															(SELECT MAX(id_log) FROM projects_logs WHERE id_project = ?) AS last_log
   																															FROM projects_logs AS l
   																															INNER JOIN usuarios AS u ON u.id_user = l.id_user
   																												 			WHERE (l.id_project = ? AND l.id_log > ?)
   																												 			ORDER BY registered DESC',
-  																												 			['ii',$project,$lastLog]);
+  																												 			['iii',$project,$project,$lastLog]);
 
     while($registro = $query->result->fetch_array(MYSQLI_ASSOC)){
     	$data .= $this->buildLog((object)$registro);
@@ -96,7 +98,7 @@ class Projects_logs{
   	$action  = $this->logAction($log->action);
   	$message = $this->logMessage($log->type);
   	$icon    = $this->logIcon($log->type);
-		$this->lastLog = $log->id_log;
+		$this->lastLog = $log->last_log;
 
   	$data = '<li>
                 <i class="fa fa-'.$icon.' bg-purple"></i>
@@ -128,7 +130,11 @@ class Projects_logs{
 
   	if($action == 4){
   		return 'Set a new main ';
-  	} 
+  	}
+
+  	if($action == 5){
+  		return 'Changed the ';
+  	}
   }
 
   protected function logMessage($type)
@@ -149,8 +155,8 @@ class Projects_logs{
   		return 'Item/Template';
   	}
 
-  	if($type == 5){
-  		return 'Item\'s stock';
+  	if($type == 5 || $type == 6){
+  		return 'Status';
   	}
   }
 

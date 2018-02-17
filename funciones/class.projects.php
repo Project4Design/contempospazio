@@ -234,7 +234,7 @@ class Projects{
 	  		$this->rh->setResponse(false,'Item not found.');
 	  	}
 	  }else{
-	  	$this->sh->setResponse(false,'You don\'t have permission to make this accion.');
+	  	$this->rh->setResponse(false,'You don\'t have permission to make this action.');
 	  }
 
 	  if($echo){
@@ -245,29 +245,29 @@ class Projects{
   }
 
   //Status of the project
-  public function status($status)
+  public function status($status, $label = true)
   {
 		if($status == 1){
-			return '<span class="label label-info">Started</span>';
+			return $label?'<span class="label label-info">Started</span>':'Started';
 		}
 
 		if($status == 2){
-			return '<span class="label label-warning">Demolished</span>';
+			return $label?'<span class="label label-warning">Demolished</span>':'Demolished';
 		}
 
 		if($status == 3){
-			return '<span class="label label-primary">Installed</span>';
+			return $label?'<span class="label label-primary">Installed</span>':'Installed';
 		}
 
 		if($status == 4){
-			return '<span class="label label-success">Completed</span>';
+			return $label?'<span class="label label-success">Completed</span>':'Completed';
 		}
 
 		if($status == 5){
-			return '<span class="label label-danger">Canceled</span>';
+			return $label?'<span class="label label-danger">Canceled</span>':'Canceled';
 		}
 
-		return '<span class="label label-default">Error</span>';
+		return $label?'<span class="label label-default">Error</span>':'Error';
   }
 
 	/*
@@ -372,7 +372,7 @@ class Projects{
 
 						//Log this action
 						//============|| LOGS ||==================
-						$this->logs->add($project,2,4,$log_content);
+						$this->logs->add($project,2,5,$log_content);
 						//========================================
 
 						//Set the response as true.
@@ -424,7 +424,7 @@ class Projects{
 
 					//Log this action
 					//============|| LOGS ||==================
-					$this->logs->add($project,2,4,$log_content);
+					$this->logs->add($project,2,5,$log_content);
 					//========================================
 
 					//Set the response as true.
@@ -439,6 +439,37 @@ class Projects{
 
   	echo json_encode($this->rh);
   }//add_item_stock
+
+  public function changeStatus($project_id,$status)
+  {
+  	if($this->nivel == 'A'){
+  		$project = $this->obtener($project_id);
+
+  		if($project){
+  			$query = Query::prun('UPDATE projects SET status = ? WHERE id_project = ?',['ii',$status,$project_id]);
+
+  			$icon = ($project->status > $status) ? 6:5;
+
+				$log_content = 'From <b>'.$this->status($project->status,false).'</b> to <b>'.$this->status($status,false).'</b>';
+				//Log this action
+				//============|| LOGS ||==================
+				$this->logs->add($project_id,5,$icon,$log_content);
+				//========================================
+
+  			if($query){
+  				$this->rh->setResponse(true,'Status changed.',true);
+  			}else{
+	  			$this->rh->setResponse(false,'An error has ocurred.');
+  			}
+  		}else{
+	  		$this->rh->setResponse(false,'Project not found.');	
+  		}
+	  }else{
+	  	$this->rh->setResponse(false,'You don\'t have permission to make this action.');
+	  }
+
+	  echo json_encode($this->rh);
+  }
 
 	//===================NULL RESPONSE ========
 	public function fdefault(){
@@ -472,6 +503,12 @@ if(Base::IsAjax()):
 	  	case 'delete_project':
 	  		$modelProject->delete($_POST['project']);
 	  	break;
+	  	case 'changeStatus':
+	  		$project = $_POST['project'];
+	  		$status  = $_POST['status'];
+
+	  		$modelProject->changeStatus($project,$status);
+	  	break;
 	  	case 'add_item_stock':
 	  		$project  = $_POST['project'];
 	  		$template = $_POST['template'];
@@ -479,12 +516,6 @@ if(Base::IsAjax()):
 	  		$newStock    = $_POST['stock'];
 
 	  		$modelProject->add_item_stock($project,$template,$item,$newStock);
-	  	break;
-	  	case 'add_project_photo':
-	  		$project = $_POST['project'];
-	  		$photo  = ($_FILES['photo']['name'])?$_FILES:NULL;
-
-	  		$modelProject->add_photo($project,$photo);
 	  	break;
 	  	default:
 	  	$modelProject->fdefault();
