@@ -103,7 +103,7 @@ class Projects_templates{
 				//Save the item's information in the content array
 				$data[] = ['id'            => ($key+1),
 										'item'         => $item_inv->id_inventory,
-										'stock_needed' => $item->qty
+										'stock_needed' => $item->stock_needed
 									];
 			}else{
 				return false;

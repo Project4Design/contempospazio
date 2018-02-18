@@ -72,110 +72,37 @@ class Projects{
   		$id = $query->id;
   		//An Array for the Items and the Templates of the project
 			$content = ['items' => [],'templates' =>[] ];
-			//Errors
-			$errors = 0;
 
 			//Save image
 			if($foto){
 				$img = new img();
 				$tmp = $img->load($foto['foto'],true);
 
-				$query == Query::prun('INSERT INTO projects_gallery (id_project,id_user,photo,thumb,main) VALUES (?,?,?,?,?)',['iissi',$id,$this->user,$tmp->name,$tmp->thumb,1]);
+				$query == Query::prun('INSERT INTO projects_gallery (id_project,id_user,status,photo,thumb,main) VALUES (?,?,?,?,?,?)',['iiissi',$id,$this->user,1,$tmp->name,$tmp->thumb,1]);
 			}
 
+			//Get items
   		$items = json_decode($items);
 
-  		$inventory = new Inventory();
-
   		if(count($items)>0){
-	  		//Go through the items
-	  		foreach ($items as $key => $item){
-	  			//Get the iformation of each item in the Inventory table
-	  			$item_inv = $inventory->obtener($item->id);
-	  			//If Item exist. Else, skip...
-	  			if($item_inv){
-	  				//Lo que queda en stock para Inventory.
-	  				//Si lo que se necesita para el projecto es mayor lo disponible en inventario
-	  				//Inventario se guarda en 0
-	  				$item_stock = (($item_inv->inv_stock - $item->qty)<0)?0:($item_inv->inv_stock - $item->qty);
-
-	  				//if the stock minus the quantity needed for the project is lower than 0.
-	  				//The Stock for this project's item will be saved as all the stock available.
-	  				//ELse, the stock for this project's item will be the qty needed. It means, there is enough Stock for this Item.
-	  				$stock = (($item_inv->inv_stock - $item->qty)<0)?$item_inv->inv_stock:$item->qty;
-	  				
-	  				//Update the Stock for this items in the inventory
-	  				$inventory->replace($item_inv->id_inventory,$item_stock,false);
-
-	  				//Save the item's information in the content array
-	  				$content['items']['id_'.($key+1)] = ['id' => ($key+1),
-	  														'item'         => $item_inv->id_inventory,
-	  														'category'     => $item_inv->icat_category,
-	  														'name'         => $item_inv->inv_name,
-	  														'stock_needed' => $item->qty,
-	  														'stock'        => $stock,
-	  														'registered'   => date('Y-m-d h:i:s')];
-	  			}//If
-	  		}//Foreach
+  			//Save items as array
+	  		$content['items'] = $this->itemsToArray($items);
 	  	}
 
+	  	//Get Templates
   		$templates = json_decode($templates);
 
 	  	if(count($templates)>0){
-
-	  		$projects_templates = new Projects_templates();
-
-	  		foreach ($templates as $tempKey => $template){
-	  			//Template in DB
-	  			$temp = $projects_templates->obtener($template->id);
-	  			//If Template exist. Else, skip...
-	  			if($temp){
-	  				//Items in template
-	  				$temp_items = json_decode($temp->content);
-	  				//Template content
-	  				$array_template = ['name'=>$temp->name,'items'=>[]];
-
-	  				//Items in Template
-	  				foreach ($temp_items as $key => $item){
-			  			//Get the iformation of each item in the Inventory table
-			  			$item_inv = $inventory->obtener($item->item);
-			  			//If Item exist. Else, skip...
-			  			if($item_inv){
-			  				//Lo que queda en stock para Inventory.
-			  				//Si lo que se necesita para el projecto es mayor lo disponible en inventario
-			  				//Inventario se guarda en 0
-			  				$item_stock = (($item_inv->inv_stock - $item->stock_needed)<0)?0:($item_inv->inv_stock - $item->stock_needed);
-
-			  				//if the stock minus the quantity needed for the project is lower than 0.
-			  				//The Stock for this project's item will be saved as all the stock available.
-			  				//ELse, the stock for this project's item will be the qty needed. It means, there is enough Stock for this Item.
-			  				$stock = (($item_inv->inv_stock - $item->stock_needed)<0)?$item_inv->inv_stock:$item->stock_needed;
-			  				
-			  				//Update the Stock for this item in the inventory
-			  				$inventory->replace($item_inv->id_inventory,$item_stock,false);
-
-			  				//Save the item's information in the content array for the template
-			  				$array_template['items']['id_'.($key+1)] = ['id' => ($key+1),
-								  														'item'         => $item_inv->id_inventory,
-								  														'category'     => $item_inv->icat_category,
-								  														'name'         => $item_inv->inv_name,
-								  														'stock_needed' => $item->stock_needed,
-								  														'stock'        => $stock,
-								  														'registered'   => date('Y-m-d h:i:s')];
-			  			}//If item exits
-			  		}//Foreach Items in Template
-
-			  		$content['templates']['id_'.($tempKey+1)] = $array_template;
-	  			}//If template exist
-	  		}//foreach Templates
+	  		$content['templates'] = $this->templatesToArray($templates);
 	  	}
+
   		//Convert the $content array in JSON to store it in the Database...
   		$content = json_encode($content);
   		//Store the items
-  		$query = Query::prun('INSERT INTO projects_items (id_project,content) VALUES (?,?)',['is',$id,$content]);
+  		$query = Query::prun('INSERT INTO projects_content (id_project,content) VALUES (?,?)',['is',$id,$content]);
 
   		if($query->response){
-	  		$this->rh->setResponse(true,'Project added.',true,'?ver=projects&opc=ver&id='.$id);
+	  		$this->rh->setResponse(true,'Project added.');
 	  		$this->rh->data = $id;
   		}else{
   			$this->delete($id,false);
@@ -191,22 +118,51 @@ class Projects{
 	/*
 		Edit the information of 1 specific project
 	*/
-  public function edit($id,$title,$foto,$items,$templates)
+  public function edit($id,$title,$items,$templates)
   {
-  	$query = Query::prun('SELECT id_project FROM projects WHERE id_project = ? LIMIT 1',['i',$id]);
+  	if($this->nivel == 'A'){
+	  	$project = $this->obtener($id);
 
-  	if($query->result->num_rows>0){
-  		/*
-  			EDIT
-  		*/
+	  	if($project){
+	  		//An Array for the Items and the Templates of the project
+				$content = ['items' => [],'templates' =>[] ];
 
-	  	if($query->response){
-	  		$this->rh->setResponse(true,'Item added to the Project.',true,'inicio.php?ver=project&opc=ver&id='.$id);
-	  	}else{
-	  		$this->rh->setResponse(false,'An error has ocurred with the data.');
-	  	}
+				//Get items
+	  		$items = json_decode($items);
+
+	  		if(count($items)>0){
+	  			//Save items as array
+		  		$content['items'] = $this->itemsToArray($items);
+		  	}
+
+		  	//Get Templates
+	  		$templates = json_decode($templates);
+
+		  	if(count($templates)>0){
+		  		$content['templates'] = $this->templatesToArray($templates);
+		  	}
+	  		//Convert the $content array in JSON to store it in the Database...
+	  		$content = json_encode($content);
+	  		//Store the items
+	  		$query = Query::prun('UPDATE projects SET title = ? WHERE id_project = ? LIMIT 1',['si',$title,$id]);
+	  		if($query->response){
+	  			$this->update_project_content($id,$content);
+					//Log this action
+					//============|| LOGS ||==================
+					$this->logs->add($id,2,1);
+					//========================================
+
+		  		$this->rh->setResponse(true,'Project Updated.');
+	  			$this->rh->data = $id;
+	  		}else{
+	  			$this->delete($id,false);
+	  			$this->rh->setResponse(false,'An error has ocurred with the data.');
+	  		}
+		  }else{
+		  	$this->rh->setResponse(false,'Project not found.');
+		  }
 	  }else{
-	  	$this->rh->setResponse(false,'Item not found.');
+	  	$this->rh->setResponse(false,'You don\'t have permission to make this action.');
 	  }
 
   	echo json_encode($this->rh);
@@ -241,7 +197,74 @@ class Projects{
 	  	echo json_encode($this->rh);
 	  }else{
 	  	return $this->rh;
-	  }  	
+	  }
+  }
+  /*
+  	Check each item in Inventory
+  	return as array
+  */
+  protected function itemsToArray($items)
+  {
+  	$inventory = new Inventory();
+  	$content = [];
+
+  	//Go through the items
+		foreach ($items as $key => $item){
+			//Get the iformation of each item in the Inventory table
+			$item_inv = $inventory->obtener($item->item);
+			//If Item exist. Else, skip...
+			if($item_inv){
+				//Lo que queda en stock para Inventory.
+				//Si lo que se necesita para el projecto es mayor lo disponible en inventario
+				//Inventario se guarda en 0
+				$item_stock = (($item_inv->inv_stock - $item->stock_needed)<0)?0:($item_inv->inv_stock - $item->stock_needed);
+
+				//if the stock minus the stock_needed for the project is lower than 0.
+				//The Stock for this project's item will be saved as all the stock available.
+				//ELse, the stock for this project's item will be the stock_needed . It means, there is enough Stock for this Item.
+				$stock = (($item_inv->inv_stock - $item->stock_needed)<0)?$item_inv->inv_stock:$item->stock_needed;
+				
+				//Update the Stock for this items in the inventory
+				$inventory->replace($item_inv->id_inventory,$item_stock,false);
+
+				//Save the item's information in the content array
+				$content['id_'.($key+1)] = ['id' => ($key+1),
+									'item'         => $item_inv->id_inventory,
+									'category'     => $item_inv->icat_category,
+									'name'         => $item_inv->inv_name,
+									'stock_needed' => $item->stock_needed,
+									'stock'        => $stock,
+									'registered'   => date('Y-m-d h:i:s')];
+			}//If
+		}//Foreach
+
+		return $content;
+  }
+
+  protected function templatesToArray($templates)
+  {
+  	$projects_templates = new Projects_templates();
+  	$content = [];
+
+		foreach ($templates as $tempKey => $template){
+			//Template in DB
+			$temp = $projects_templates->obtener($template->id);
+			//If Template exist. Else, skip...
+			if($temp){
+				//Items in template
+				$temp_items = json_decode($temp->content);
+				//Template content
+				$array_template = ['template'=>$template->id,'name'=>$temp->name,'items'=>[]];
+
+				//Items in Template
+				//Save items as array
+				$array_template['items'] = $this->itemsToArray($temp_items);
+
+	  		$content['id_'.($tempKey+1)] = $array_template;
+			}//If template exist
+		}//foreach Templates
+
+		return $content;
   }
 
   //Status of the project
@@ -275,10 +298,25 @@ class Projects{
 	*/
   public function items()
   {
-  	$query = Query::run("SELECT content FROM projects_items WHERE id_project = $this->project_id LIMIT 1");
+  	$query = Query::run("SELECT content FROM projects_content WHERE id_project = $this->project_id LIMIT 1");
   	$data  = (object)$query->fetch_array(MYSQLI_ASSOC);
   	$content = json_decode($data->content);
 		return $content->items;
+  }
+
+  /*
+  	Return an array with only the ID of the items.
+  	Used in the Edit view
+  */
+  public function itemsArrayIds($items)
+  {
+  	$data = [];
+
+  	foreach ($items as $item) {
+  		$data[] = $item->item;
+  	}
+
+  	return $data;
   }
 
 	/*
@@ -286,7 +324,7 @@ class Projects{
 	*/
   public function templates()
   {
-  	$query = Query::run("SELECT content FROM projects_items WHERE id_project = $this->project_id LIMIT 1");
+  	$query = Query::run("SELECT content FROM projects_content WHERE id_project = $this->project_id LIMIT 1");
   	$data  = (object)$query->fetch_array(MYSQLI_ASSOC);
   	$content = json_decode($data->content);
 		return $content->templates;
@@ -310,14 +348,14 @@ class Projects{
 		Update the project Items and Templates (Content).
   */
   public function update_project_content($project,$content){
-  	$query = Query::prun('UPDATE projects_items SET
+  	$query = Query::prun('UPDATE projects_content SET
   																						content = ?
   																				WHERE id_project = ?',
   																				['si',$content,$project]);
   }
 
   public function add_item_stock($project,$template = NULL,$item,$newStock){
-  	$query = Query::prun('SELECT * FROM projects_items WHERE id_project = ? LIMIT 1',['i',$project]);
+  	$query = Query::prun('SELECT * FROM projects_content WHERE id_project = ? LIMIT 1',['i',$project]);
 
   	if($query->result->num_rows){
   		$info = (object) $query->result->fetch_array(MYSQLI_ASSOC);
@@ -492,13 +530,12 @@ if(Base::IsAjax()):
 	  		$modelProject->add($title,$foto,$items,$templates);
 	  	break;
 	  	case 'edit_project':
-	  		$id          = $_POST['id'];
+	  		$id    = $_POST['project'];
 	  		$title = ucfirst($_POST['project-title']);
-	  		$foto  = ($_FILES['foto']['name'])?$_FILES:NULL;
 	  		$items = $_POST['project-items'];
 	  		$templates = $_POST['project-templates'];
 
-	  		$modelProject->edit($id,$title,$foto,$items,$templates);
+	  		$modelProject->edit($id,$title,$items,$templates);
 	  	break;
 	  	case 'delete_project':
 	  		$modelProject->delete($_POST['project']);

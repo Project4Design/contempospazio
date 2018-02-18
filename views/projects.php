@@ -22,10 +22,14 @@ switch($opc):
   	<div class="col-md-12">
 	    <section>
 	      <a class="btn btn-flat btn-default" href="?ver=projects"><i class="fa fa-reply" aria-hidden="true"></i> Back</a>
-	      <a class="btn btn-flat btn-success" href="?ver=projects&opc=edit&id=<?=$id?>"><i class="fa fa-pencil" aria-hidden="true"></i> Edit information</a>
-	      <?if($_SESSION['nivel']=="A"){?>
-	      <button class="btn btn-flat btn-danger" data-toggle="modal" data-target="#delModal"><i class="fa fa-times" aria-hidden="true"></i> Delete</button>
-	      <?}?>
+      <?if($_SESSION['nivel']=="A"){
+      		if($project->status<4){
+    	?>
+	      	<a class="btn btn-flat btn-success" href="?ver=projects&opc=edit&id=<?=$id?>"><i class="fa fa-pencil" aria-hidden="true"></i> Edit information</a>
+      		<button class="btn btn-flat btn-danger" data-toggle="modal" data-target="#delModal"><i class="fa fa-times" aria-hidden="true"></i> Delete</button>
+      <?	}
+    		}
+    	?>
 	    </section><br>
   	</div>
   </div>
@@ -185,6 +189,7 @@ switch($opc):
 			  					</tr>
 			  				<?
 			  					}	//foreach Items
+			  					$i++;
 		  					}//foreach Templates
 			  				?>
 		  			</tbody>
@@ -559,7 +564,6 @@ switch($opc):
 				var opc = btn.data('opc');
 				var modal = $(this);
 				var status = project_status + (opc);
-				console.log(status);
 
 				modal.find('input[name="status"]').val(status);
 			});
@@ -872,6 +876,15 @@ switch($opc):
   case 'edit':
   $inventory  = new Inventory();
   $categories = $inventory->consultaCategories();
+  $project    = $projects->obtener($id);
+  if($project){
+	  $projectItems = $projects->items();
+	  $itemsAdded   =  $projects->itemsArrayIds($projectItems);
+  	$image = $projects->gallery->getMain()->thumb?:'x';	
+  }else{
+  	$image = '';
+  	$itemsAdded = [];
+  }
   ?>
     <div class="row">
     	<div class="col-md-9 col-sm-9 col-xs-12">
@@ -889,11 +902,11 @@ switch($opc):
   							<div class="col-md-4">
   								<h4><?=$category->icat_category?></h4>
   								<ul id="inventory-item-list" class="list-group">
-	  								<?foreach($inventory->category->getItemsByCategory($category->id_category) AS $items){?>
-	  									<li id="list-item-<?=$items->id_inventory?>" class="list-group-item">
-				               	<span class="inventory-item-name"><?=$items->inv_name?> <?=" (<span class='inventory-item-stock'>{$items->inv_stock}</span> {$items->mea_unit})"?></span>
+	  								<?foreach($inventory->category->getItemsByCategory($category->id_category) AS $item){?>
+	  									<li id="list-item-<?=$item->id_inventory?>" class="<?=in_array($item->id_inventory,$itemsAdded)?'bg-red disabled':''?> list-group-item">
+				               	<span class="inventory-item-name"><?=$item->inv_name?> <?=" (<span class='inventory-item-stock'>{$item->inv_stock}</span> {$item->mea_unit})"?></span>
 				               	<span class="pull-right">
-				               		<button xid="<?=$items->id_inventory?>" type="1" class="btn-link btn-box-tool btn-add-item"><i class="fa fa-plus"></i></button>
+				               		<button xid="<?=$item->id_inventory?>" type="1" class="btn-link btn-box-tool btn-add-item"><i class="fa fa-plus"></i></button>
 				               	</span>
 				              </li>
 			              <?}?>
@@ -907,18 +920,19 @@ switch($opc):
     		<div class="col-md-12">
     			<div id="box-projects" class="box box-poison">
 			      <div class="box-header with-border">
-			        <h3 class="box-title"><i class="fa fa-wrench"></i> New Project</h3>
+			        <h3 class="box-title"><i class="fa fa-wrench"></i> <?=$id>0?'Edit':'New'?> Project</h3>
 			      </div>
 			      <div class="box-body">
 			      	<form id="form-new-project" action="funciones/class.projects.php" method="POST" enctype="multipart/form-data">
-			      		<input type="hidden" name="action" value="add_project">
+			      		<input type="hidden" name="project" value="<?=$id?>">
+			      		<input type="hidden" name="action" value="<?=$project?'edit_project':'add_project'?>">
 			      		<input type="hidden" name="project-items" value="">
 			      		<input id="project-templates" type="hidden" name="project-templates" value="">
 			      		<div class="row">
 			      			<div class="col-md-6">
 			      				<div class="form-group">
 					      			<label class="control-label" for="project-title">Project title: *</label>
-					      			<input id="project-title" class="form-control" type="text" name="project-title" placeholder="Project title" required>
+					      			<input id="project-title" class="form-control" type="text" name="project-title" placeholder="Project title" value="<?=($project)?$project->title:''?>" required>
 					      		</div>
 			      			</div>
 			      			<div class="col-md-6" style="border-left: 2px solid #eee;">
@@ -926,11 +940,13 @@ switch($opc):
 			      					<label for="file-img">Project image:</label>
                       <div class="imageUploadWidget">
                         <div class="imageArea">
-                          <img id="project-img" src="" alt="" prev="">
+                          <img id="project-img" src="<?=Base::Img('images/thumbs/'.$image);?>" alt="" prev="">
                           <img class="spinner-image" src="images/spinner.gif">
                         </div>
                         <div class="btnArea">
-                          <input id="file-img" name="foto" accept="image/jpeg,image/png" type="file">
+                        	<?if(!$project){?>
+                          <input id="file-img" name="foto" accept="image/jpeg,image/png" type="file" >
+                          <?}?>
                         </div>
                       </div>
                     </div>
@@ -949,7 +965,31 @@ switch($opc):
 			      						</tr>
 			      					</thead>
 			      					<tbody id="tbody-project-items-list">
-			      					</tbody>			      					
+			      						<?
+			      							if($project){
+				      							$i=1;
+								  					foreach ($projectItems as $k => $d){
+								  				?>
+								  					<tr id="item-<?=$i?>" xid="<?=$d->item?>" type="1">
+								  						<td class="text-center"><?=$i?></td>
+								  						<td><?=$d->name?></td>
+								  						<td>
+								  							<div class="form-group">
+								  								<input id="qty-<?=$d->item?>" class="form-control" placeholder="Qty" min="1" step="0.1" value="<?=$d->stock_needed?>" required="" type="number">
+								  							</div>
+								  						</td>
+								  						<td class="text-center">
+								  							<button row="item-<?=$id?>" class="btn-link btn-box-tool btn-delete-item" type="button">
+								  								<i class="fa fa-times" aria-hidden="true" style="color:red"></i>
+								  							</button>
+								  						</td>
+								  					</tr>
+								  				<?
+								  					$i++;
+								  					}
+							  					}
+							  				?>
+			      					</tbody>
 			      				</table>
 			      			</div>
 			      			<div class="col-md-12">
@@ -964,6 +1004,37 @@ switch($opc):
 			      						</tr>
 			      					</thead>			      					
 			      					<tbody id="tbody-project-template-list">
+			      						<?
+			      							if($project){
+				      							$i=1;
+								  					foreach ($projects->templates() as $tempID => $template){
+								  				?>
+				      						<tr id="template-<?=$template->template.$i?>" class="active" xid="<?=$template->template?>" type="2">
+														<td class="text-center"><?=$i?></td>
+														<th class="text-center" colspan="2"><?=$template->name?></th>
+														<td class="text-center">
+															<button row="template-<?=$template->template.$i?>" class="btn-link btn-box-tool btn-delete-template" type="button">
+																<i class="fa fa-times" aria-hidden="true" style="color:red"></i>
+															</button>
+														</td>
+													</tr>
+									  				<?
+									  					foreach ($template->items as $k => $d){
+									  				?>
+															<tr class="template-<?=$template->template.$i?>">
+																<td></td>
+									    					<td><?=$d->name?></td>
+									    					<td class="text-center"><?=$d->stock_needed?></td>
+									    					<td></td>
+									    				</tr>
+									  				<?
+									  					}	//foreach Items
+									  				?>
+							    				<?
+								  					}//foreach Templates
+								  					$i++;
+								  				}
+							  				?>
 			      					</tbody>
 			      				</table>
 			      			</div>
@@ -980,7 +1051,7 @@ switch($opc):
 	                  </div>
 
 			      				<div class="form-group">
-			      					<button id="save-new-project" class="btn btn-flat btn-block btn-danger" type="submit" disabled><i class="fa fa-send" aria-hidden="true"></i> Save project</button>
+			      					<button id="save-new-project" class="btn btn-flat btn-block btn-danger" type="submit" <?=$project?'':'disabled'?>><i class="fa fa-send" aria-hidden="true"></i> Save project</button>
 			      				</div>
 			      			</div>
 			      		</div>
@@ -1237,7 +1308,7 @@ switch($opc):
 					var tr   = $(this);//tr del item
 					var id   = tr.attr('xid');//ID del Item (Inventory)
 					var qty  = tr.find('#qty-'+id).val();//Cantidad
-					var prod = {id:id,qty:qty};
+					var prod = {item:id,stock_needed:qty};
 
 					items[k] = prod;
 				});
