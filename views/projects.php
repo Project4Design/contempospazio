@@ -120,6 +120,9 @@ switch($opc):
   		<div class="box box-solid">
 	      <div class="box-header with-border">
 	        <h3 class="box-title"> Items in this project</h3>
+	        <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+          </div>
 	      </div>
 	      <div class="box-body">
 	      	<table class="table table-striped">
@@ -156,6 +159,9 @@ switch($opc):
   		<div class="box box-solid">
 	      <div class="box-header with-border">
 	        <h3 class="box-title"> Templates in this project</h3>
+	        <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+          </div>
 	      </div>
 	      <div class="box-body">
 	      	<table class="table table-striped">
@@ -793,7 +799,7 @@ switch($opc):
 		    var type  = file.type;
 
 		    if(file){
-		      if(file.size<2000000){
+		      if(file.size<20000000){
 		        if(type == 'image/jpeg' || type == 'image/png' || type == 'image/jpg'){
 		          var reader = new FileReader();
 		          reader.onload = function (e) {
@@ -897,8 +903,8 @@ switch($opc):
 	            </div>
     				</div>
     				<div class="box-body">
-  						<?foreach($categories AS $category){?>
   						<div class="row">
+  						<?foreach($categories AS $category){?>
   							<div class="col-md-4">
   								<h4><?=$category->icat_category?></h4>
   								<ul id="inventory-item-list" class="list-group">
@@ -912,8 +918,8 @@ switch($opc):
 			              <?}?>
   								</ul>
   							</div>
-  						</div>
   						<?}?>
+  						</div>
     				</div>
     			</div>
     		</div>
@@ -1102,7 +1108,7 @@ switch($opc):
     <div id="delModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
-          <form action="funciones/class.projects_templates.php" method="POST">
+          <form id="delModalTemplateForm" action="funciones/class.projects_templates.php" method="POST">
             <input type="hidden" name="action" value="delete_template">
             <input id="template" type="hidden" name="template" value="<?=$id?>">
             <div class="modal-header">
@@ -1125,7 +1131,7 @@ switch($opc):
               </div>
             </div>
             <div class="modal-footer">
-              <button id="b-del" type="submit" class="btn btn-flat btn-danger pull-left b-submit">Delete</button>
+              <button id="b-del" type="submit" class="btn btn-flat btn-danger pull-left">Delete</button>
               <button type="button" class="btn btn-flat btn-default" data-dismiss="modal">Close</button>
             </div>
           </form>
@@ -1145,6 +1151,8 @@ switch($opc):
     		$('#form-new-project').submit(save);
     		//Save Template
     		$('#form-add-template').submit(saveTemplate);
+    		//Delete Template
+    		$('#delModalTemplateForm').submit(deleteTemplate);
 
     		loadTemplates();
 
@@ -1192,33 +1200,6 @@ switch($opc):
     			complete: function(){
     				loading_box.hide();
     				loading_temp.hide();
-    			}
-    		})
-    	}
-
-    	function loadTemplates(){
-    		var loading = $('#box-template .overlay'),
-    		    alert   = $('#form-add-template .alert');
-
-    		loading.show();
-
-    		$.ajax({
-    			type: 'POST',
-    			url: 'funciones/class.projects_templates.php',
-    			data: {action:'loadTemplates'},
-    			dataType: 'json',
-    			success: function(r){
-    				if(r.response){
-    					$('#projects-template-list').html(r.data);
-    				}else{
-    					alert.show().delay(7000).hide('slow');
-    				}
-    			},
-    			error: function(){
-    				alert.show().delay(7000).hide('slow');
-    			},
-    			complete: function(){
-    				loading.hide();
     			}
     		})
     	}
@@ -1399,6 +1380,36 @@ switch($opc):
         }
       }//Save project
 
+      //Load templates
+    	function loadTemplates(){
+    		var loading = $('#box-template .overlay'),
+    		    alert   = $('#form-add-template .alert'),
+    		    itemList = $('#projects-template-list');
+
+    		loading.show();
+
+    		$.ajax({
+    			type: 'POST',
+    			url: 'funciones/class.projects_templates.php',
+    			data: {action:'loadTemplates'},
+    			dataType: 'json',
+    			success: function(r){
+    				if(r.response){
+    					itemList.empty();
+    					itemList.html(r.data);
+    				}else{
+    					alert.show().delay(7000).hide('slow');
+    				}
+    			},
+    			error: function(){
+    				alert.show().delay(7000).hide('slow');
+    			},
+    			complete: function(){
+    				loading.hide();
+    			}
+    		})
+    	}
+
       //Save Template
       function saveTemplate(e){
       	e.preventDefault();
@@ -1424,6 +1435,7 @@ switch($opc):
       		dataType: 'json',
       		success: function(r){
       			if(r.response){
+      				form[0].reset();
       				loadTemplates();
       			}else{
       				alert.show().delay(7000).hide('slow');
@@ -1438,6 +1450,42 @@ switch($opc):
       		}
       	})
       }//SaveTemplate
+
+      //Delete Template
+    	function deleteTemplate(e){
+    		e.preventDefault();
+    		var form = $(this),
+    				alert = form.find('.alert'),
+    				loading = form.find('.progress');
+
+    		loading.show();
+    		alert.hide();
+
+    		$.ajax({
+    			type: 'POST',
+    			url: 'funciones/class.projects_templates.php',
+    			data: form.serialize(),
+    			dataType: 'JSON',
+    			success: function(r){
+    				if(r.response){
+              alert.removeClass('alert-danger').addClass('alert-success');
+	    				loadTemplates();
+	    			}else{
+	    				alert.removeClass('alert-success').addClass('alert-danger');
+	    			}
+
+    				alert.find('#msj').text(r.msj);
+    			},
+    			error: function(){
+    				alert.find('#msj').text('An error has ocurred.');
+    				alert.removeClass('alert-success').addClass('alert-danger');
+    			},
+    			complete: function(){
+    				loading.hide();
+    				alert.show().delay(7000).hide('slow');
+    			}
+    		})
+    	}//Delete Template
 
 		  //Preview IMG
 		  function preview(){

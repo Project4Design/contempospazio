@@ -75,7 +75,7 @@ class Projects_templates{
 	  		$query = Query::prun("DELETE FROM projects_templates WHERE id_pt = ? LIMIT 1",['i',$template]);
 
 	  		if($query->response){
-	  			$this->rh->setResponse(true,"Template deleted.",true);
+	  			$this->rh->setResponse(true,"Template deleted.");
 	  		}else{
 	  			$this->rh->setResponse(false,"An error has ocurred.");
 	  		}
@@ -97,7 +97,7 @@ class Projects_templates{
   	//Go through the items
 		foreach ($items as $key => $item){
 			//Get the iformation of each item in the Inventory table
-			$item_inv = $inventory->obtener($item->id);
+			$item_inv = $inventory->obtener($item->item);
 			//If Item exist, continue. Else, cancel...
 			if($item_inv){
 				//Save the item's information in the content array
