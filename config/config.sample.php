@@ -12,7 +12,7 @@ if (!defined('DS')) {
 if (!defined('ROOT')) {
   define('ROOT', dirname(dirname(dirname(__FILE__))).DS);
 }
-//Directorio de la aplicacion p4dweb.com.ve/
+//Directorio de la aplicacion/
 if (!defined('APP_DIR')) {
   define('APP_DIR', basename(dirname(dirname(__FILE__))).DS);
 }
@@ -56,26 +56,11 @@ if (!defined('DB_PASS')) {
 }
 //Definir tabla de la BD
 if (!defined('DB_TABLE')) {
-  define('DB_TABLE', "contempo");
+  define('DB_TABLE', "");
 }
 
 //Definir zona horaria por defecto
-date_default_timezone_set("America/Caracas");
-
-/*set_error_handler("errors",E_WARNING);
-set_error_handler("errors",E_ERROR);
-if(!function_exists('errors')){
-  function errors($errno, $errstr, $errfile, $errline, array $errcontext) {
-    // error was suppressed with the @-operator
-    if (0 === error_reporting()) {
-        return false;
-    }
-
-    throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
-  }
-}
-/*set_error_handler("errors",E_NOTICE);*/
-
+//date_default_timezone_set("America/Caracas");
 
 //Helper de resupestas.
 require_once ROOT.APP_DIR."helper/responsehelper.php";
