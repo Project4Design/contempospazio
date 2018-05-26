@@ -907,7 +907,7 @@ switch($opc):
   						<?foreach($categories AS $category){?>
   							<div class="col-md-4">
   								<h4><?=$category->icat_category?></h4>
-  								<ul id="inventory-item-list" class="list-group">
+  								<ul class="list-group inventory-item-list">
 	  								<?foreach($inventory->category->getItemsByCategory($category->id_category) AS $item){?>
 	  									<li id="list-item-<?=$item->id_inventory?>" class="<?=in_array($item->id_inventory,$itemsAdded)?'bg-red disabled':''?> list-group-item">
 				               	<span class="inventory-item-name"><?=$item->inv_name?> <?=" (<span class='inventory-item-stock'>{$item->inv_stock}</span> {$item->mea_unit})"?></span>
@@ -1144,8 +1144,8 @@ switch($opc):
     		$('#file-img').change(preview);
 
     		//Add items from inventory to the project
-    		$('#inventory-item-list .btn-add-item').on('click',addProjectItem);
-    		//Delete Templates added to project
+    		$('.inventory-item-list .btn-add-item').on('click',addProjectItem);
+    		//Delete Items added to the project
     		$('#tbody-project-items-list').on('click','.btn-delete-item',deleteProjectItem);
     		//Save Project
     		$('#form-new-project').submit(save);
@@ -1229,9 +1229,9 @@ switch($opc):
     	function deleteProjectItem(){
     		var row = $(this).attr('row'),
     				xid = $('#'+row).attr('xid'),
-    				btn = $('#inventory-item-list').find('#list-item-'+xid);
-
-    		btn.attr('class','list-group-item');
+    				li = $('.inventory-item-list').find('#list-item-'+xid);
+    				
+    		li.attr('class','list-group-item');
     		$('#'+row).remove();
     		fixItemsCount();
     	}

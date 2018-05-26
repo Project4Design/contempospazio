@@ -1,6 +1,5 @@
 <?
 
-require_once 'config/config.php';
 $a = ['id'=>1,'x'=>222,'c'=>[]];
 $c = ['item1'=>['id'=>'ascasc','name'=>'2wwd','sme'=>'casc'],'item2'=>['id'=>'ascasc','name'=>'2wwd','sme'=>'casc'],'item3'=>['id'=>'ascasc','name'=>'2wwd','sme'=>'casc']];
 $a['c'] = $c;
