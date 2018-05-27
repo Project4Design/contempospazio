@@ -517,6 +517,25 @@ td.success.item-active{
 	background-color: red;
 }
 /*==================================================================================*/
+.inventory-item-list .btn-add-item{
+  position: absolute;
+  margin-top: -13px;
+  top: 50%;
+  right: 5px;
+  padding: 0;
+}
+
+.list-template-container{
+  padding: 0px;
+}
+
+.list-template-item{
+  position: relative;
+  padding: 10px 15px;
+  margin: 5px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+}
 
 .hide{
   display: none;

@@ -44,14 +44,16 @@ class Projects_templates{
 	  	$query = Query::prun("INSERT INTO projects_templates (id_user,name,content) VALUES (?,?,?)",["iss",$this->user,$name,$content]);
 
 	  	if($query->response){
-	  		$data = "<li class='list-group-item'>
+	  		$data = "<div class='col-md-4 list-template-container'>
+  								<div class='list-template-item'>
 	               	<b class='list-unit-name'>{$name}</b>";
 								if($this->nivel=="A"){
 	              	$data .="<span class='pull-right'>
 		                <button class='btn-link btn-box-tool' data-id='{$query->id}' data-toggle='modal' data-target='#delModal'><i class='fa fa-times'></i></button>
 	              	</span>";
 	              }
-	      $data .= "</li>";
+	      $data .= "</div>
+	      				</div>";
 
 	  		$this->rh->setResponse(true);
 	  		$this->rh->data = $data;
@@ -117,14 +119,16 @@ class Projects_templates{
   public function load(){
   	$data = "";
   	foreach ($this->consulta() AS $template){
-  		$data .= "<li class='list-group-item'>
-	               	<button xid='{$template->id_pt}' class='btn-link btn-add-template'><b>{$template->name}</b></button>";
-								if($this->nivel=="A"){
-	              	$data .="<span class='pull-right'>
-		                <button class='btn-link btn-box-tool' data-id='{$template->id_pt}' data-toggle='modal' data-target='#delModal'><i class='fa fa-times'></i></button>
-	              	</span>";
-	              }
-      $data .= "</li>";
+  		$data .= "<div class='col-md-4 list-template-container'>
+  								<div class='list-template-item'>
+		               	<button xid='{$template->id_pt}' class='btn-link btn-add-template'><b>{$template->name}</b></button>";
+									if($this->nivel=="A"){
+		              	$data .="<span class='pull-right'>
+			                <button class='btn-link btn-box-tool' data-id='{$template->id_pt}' data-toggle='modal' data-target='#delModal'><i class='fa fa-times'></i></button>
+		              	</span>";
+		              }
+		  $data .=  	"</div>
+		            </div>";
   	}
 
   	$this->rh->setResponse(true);

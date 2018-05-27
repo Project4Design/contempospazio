@@ -895,33 +895,52 @@ switch($opc):
     <div class="row">
     	<div class="col-md-9 col-sm-9 col-xs-12">
     		<div class="col-md-12">
-    			<div class="box box-solid">
-    				<div class="box-header with-border">
-    					<h3 class="box-title">Inventory Items</h3>
-			        <div class="box-tools pull-right">
-	              <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-	            </div>
-    				</div>
-    				<div class="box-body">
-  						<div class="row">
-  						<?foreach($categories AS $category){?>
-  							<div class="col-md-4">
-  								<h4><?=$category->icat_category?></h4>
-  								<ul class="list-group inventory-item-list">
-	  								<?foreach($inventory->category->getItemsByCategory($category->id_category) AS $item){?>
-	  									<li id="list-item-<?=$item->id_inventory?>" class="<?=in_array($item->id_inventory,$itemsAdded)?'bg-red disabled':''?> list-group-item">
-				               	<span class="inventory-item-name"><?=$item->inv_name?> <?=" (<span class='inventory-item-stock'>{$item->inv_stock}</span> {$item->mea_unit})"?></span>
-				               	<span class="pull-right">
-				               		<button xid="<?=$item->id_inventory?>" type="1" class="btn-link btn-box-tool btn-add-item"><i class="fa fa-plus"></i></button>
-				               	</span>
-				              </li>
-			              <?}?>
-  								</ul>
-  							</div>
-  						<?}?>
-  						</div>
-    				</div>
-    			</div>
+          <!-- Custom Tabs -->
+          <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+              <li class="active"><a href="#tab_1" data-toggle="tab">Inventory Items</a></li>
+              <li><a href="#tab_2" data-toggle="tab">Templates</a></li>
+              <li class="pull-right">
+              	<button class="btn btn-box-tool btn-template-toogle"><i class="fa fa-minus"></i></button>
+              </li>
+            </ul>
+            <div class="tab-content">
+              <div class="tab-pane active" id="tab_1">
+              	<div class="row">
+	  						<?foreach($categories AS $category){?>
+	  							<div class="col-md-4">
+	  								<h4><?=$category->icat_category?></h4>
+	  								<ul class="list-group inventory-item-list">
+		  								<?foreach($inventory->category->getItemsByCategory($category->id_category) AS $item){?>
+		  									<li id="list-item-<?=$item->id_inventory?>" class="<?=in_array($item->id_inventory,$itemsAdded)?'bg-red disabled':''?> list-group-item">
+					               	<span class="inventory-item-name"><?=$item->inv_name?> <?=" (<span class='inventory-item-stock'>{$item->inv_stock}</span> {$item->mea_unit})"?></span>
+
+					               		<button xid="<?=$item->id_inventory?>" type="1" class="btn-link btn-box-tool btn-add-item"><i class="fa fa-plus"></i></button>
+					               		
+					              </li>
+				              <?}?>
+	  								</ul>
+	  							</div>
+	  						<?}?>
+	  						</div>
+              </div>
+              <!-- /.tab-pane -->
+              <div class="tab-pane" id="tab_2">
+              	<div class="row">
+              		<div class="col-md-4 col-md-offset-4 text-center">
+              			<label for="search-template">Search template</label>
+              			<input id="search-template"class="form-control" placeholder="Template name" type="text">
+              		</div>  		
+              	</div>
+              	<hr>
+			      		<div id="projects-template-list" class="row" style="margin:0">
+		            </div>
+              </div>
+              <!-- /.tab-pane -->
+            </div>
+            <!-- /.tab-content -->
+          </div>
+          <!-- nav-tabs-custom -->
     		</div>
     		<div class="col-md-12">
     			<div id="box-projects" class="box box-poison">
@@ -1073,15 +1092,13 @@ switch($opc):
       <div class="col-md-3 col-sm-3 col-xs-12">
         <div id="box-template" class="box box-poison">
 		      <div class="box-header with-border">
-		        <h3 class="box-title">Templates</h3>
+		        <h3 class="box-title">New Templates</h3>
 		        <div class="box-tools pull-right">
               <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
               </button>
             </div>
 		      </div>
 		      <div class="box-body">
-	      		<ul id="projects-template-list" class="list-group list-group-unbordered">
-            </ul>
 	        	<form id="form-add-template" action="funciones/class.projects_templates.php" method="POST">
 	        		<input type="hidden" name="action"  value="add_template">
 	        		<input type="hidden" name="project-items">
@@ -1167,6 +1184,33 @@ switch($opc):
 
     			modal.find('#template').val(id);
     		});
+
+    		//Show and hide Inventory and Template panel
+    		$('.btn-template-toogle').on('click',function(){
+    			$('.tab-content').slideToggle();
+    			$(this).find('.fa').toggleClass('fa-minus fa-plus')
+    		})
+
+    		//Seach template
+    		$('#search-template').on('keyup',function(){
+    			var keyword = $(this).val(),
+    					$templates = $('.list-template-container');
+
+    			if(keyword.length > 1){
+    				$templates.hide();
+    				$.each($templates,function(i,element){
+    					var text = $(element).find('b').text().toLowerCase()
+    					if(text.indexOf(keyword) >= 0){
+    						$(element).show()
+    					}
+    				})
+    			}
+
+    			//If no search term, show all templates
+    			if(keyword.length == 0){
+    				$templates.show();
+    			}
+    		})
     	});//Ready
 
     	function addProjectTemplate(){
@@ -1230,7 +1274,7 @@ switch($opc):
     		var row = $(this).attr('row'),
     				xid = $('#'+row).attr('xid'),
     				li = $('.inventory-item-list').find('#list-item-'+xid);
-    				
+
     		li.attr('class','list-group-item');
     		$('#'+row).remove();
     		fixItemsCount();
