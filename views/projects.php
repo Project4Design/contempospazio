@@ -914,9 +914,7 @@ switch($opc):
 		  								<?foreach($inventory->category->getItemsByCategory($category->id_category) AS $item){?>
 		  									<li id="list-item-<?=$item->id_inventory?>" class="<?=in_array($item->id_inventory,$itemsAdded)?'bg-red disabled':''?> list-group-item">
 					               	<span class="inventory-item-name"><?=$item->inv_name?> <?=" (<span class='inventory-item-stock'>{$item->inv_stock}</span> {$item->mea_unit})"?></span>
-
-					               		<button xid="<?=$item->id_inventory?>" type="1" class="btn-link btn-box-tool btn-add-item"><i class="fa fa-plus"></i></button>
-					               		
+					               	<button xid="<?=$item->id_inventory?>" type="1" class="btn-link btn-box-tool btn-add-item"><i class="fa fa-plus"></i></button>
 					              </li>
 				              <?}?>
 	  								</ul>
@@ -1249,7 +1247,7 @@ switch($opc):
     	}
 
     	function addProjectItem(){
-    		var parent = $(this).parent().parent(),
+    		var parent = $(this).parent(),
     				name   = parent.text().trim(),
     				//Inventory ID
     				xid    = $(this).attr('xid'), 
@@ -1554,13 +1552,13 @@ switch($opc):
 		    //Mostar cargando
 		    load.show();
 		    if(file){
-		      if(file.size<2000000){
+		      if(file.size<20000000){
 		        if(type == 'image/jpeg' || type == 'image/png' || type == 'image/jpg'){
 		          var reader = new FileReader();
 		          reader.onload = function (e) {
 		            img.attr('src', e.target.result);
 		            load.hide();
-		          img.show('slow');
+		          	img.show('slow');
 		          }
 		          reader.readAsDataURL(file);
 		        }else{ $('#msj').html('Archivo no admitido.'); error++; }
