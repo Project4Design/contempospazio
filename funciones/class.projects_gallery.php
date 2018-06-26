@@ -37,7 +37,21 @@ class Projects_gallery{
 	}
 
 	//Get all photos from 1 project
-	public function all($status)
+	public function all()
+	{
+		$query = Query::run("SELECT * FROM projects_gallery WHERE id_project = {$this->project_id}");
+
+		$data = [];
+
+    while($registro = $query->fetch_array(MYSQLI_ASSOC)){
+    	$data[] = (object)$registro;
+    }
+
+    return $data;
+	}
+
+	//Get all photos from 1 project by its status
+	public function allByStatus($status)
 	{
 		$query = Query::prun('SELECT * FROM projects_gallery WHERE id_project = ? AND status = ?',['ii',$this->project_id,$status]);
 
@@ -111,8 +125,10 @@ class Projects_gallery{
 					//Log this action
 					$this->logs->add($this->project_id,3,3);
 
-					unlink('../images/thumbs/'.$photo->thumb);
-					unlink('../images/uploads/'.$photo->photo);
+					if(file_exists('../images/uploads/'.$photo->photo)){
+						unlink('../images/thumbs/'.$photo->thumb);
+						unlink('../images/uploads/'.$photo->photo);	
+					}
 
 					$this->rh->setResponse(true,'Photo removed.');
 	  		}else{
@@ -127,13 +143,13 @@ class Projects_gallery{
   	echo json_encode($this->rh);
   }
 
-  public function removeAll()
+  public function removeAll($gallery)
   {
-		$query = Query::prun('SELECT * FROM projects_gallery WHERE id_project = ?',['i',$this->project_id]);
-
-    while($photo = $query->result->fetch_array(MYSQLI_ASSOC)){
-			unlink('../images/thumbs/'.$photo['thumb']);
-			unlink('../images/uploads/'.$photo['photo']);
+    foreach ($gallery as $photo){
+    	if(file_exists('../images/uploads/'.$photo->photo)){
+				unlink('../images/thumbs/'.$photo->thumb);
+				unlink('../images/uploads/'.$photo->photo);	
+    	}
     }
 
     return true;

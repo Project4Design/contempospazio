@@ -170,18 +170,36 @@ class Projects{
 
 	/*
 		Delete 1 specific Project
+		$echo = Echo the response, if not, return
+		$return = Return items to Inventory
 	*/
-  public function delete($project,$echo = true)
+  public function delete($project,$echo = true,$return = false)
   {
   	if($this->nivel=='A'){
 	  	$query = $this->obtener($project);
 
 	  	if($query){
-	  		//Remove all photos
-	  		$this->gallery->removeAll();
+
+	  		//Grab Photos, Items and Template before deleting the project
+	  		$gallery   = $this->gallery->all();
+	  		$templates = $this->templates();
+	  		$items     = $this->items();
+
 	  		$query = Query::prun('DELETE FROM projects WHERE id_project = ? LIMIT 1',['i',$project]);
 
-	  		if($query->response){
+	  		if($query){
+	  			//Remove all photos of this project
+	  			$this->gallery->removeAll($gallery);
+
+	  			//Return items stock to Inventory if the project if deleted
+	  			if($return){
+		  			$this->returnItemsToInventory($items);
+
+		  			foreach ($templates as $key => $template){
+		  				$this->returnItemsToInventory($template->items);
+		  			}
+	  			}
+
 	  			$this->rh->setResponse(true,'Project deleted.',true,'inicio.php?ver=projects');
 	  		}else{
 	  			$this->rh->setResponse(false,'An error has ocurred.');
@@ -509,6 +527,20 @@ class Projects{
 	  echo json_encode($this->rh);
   }
 
+  //Return items stock to Inventory when the project is deleted
+  public function returnItemsToInventory($items)
+  {
+  	$inventory = new Inventory();
+
+  	foreach ($items as $key => $projectItem){
+  		$item = $inventory->obtener($projectItem->item);
+
+  		if($item){
+  			$inventory->restock($projectItem->item, $projectItem->stock, false);
+  		}
+  	}
+  }
+
 	//===================NULL RESPONSE ========
 	public function fdefault(){
 		echo json_encode($this->rh);
@@ -538,7 +570,10 @@ if(Base::IsAjax()):
 	  		$modelProject->edit($id,$title,$items,$templates);
 	  	break;
 	  	case 'delete_project':
-	  		$modelProject->delete($_POST['project']);
+	  		$project = $_POST['project'];
+	  		$return  = isset($_POST['return']);
+
+	  		$modelProject->delete($project,true,$return);
 	  	break;
 	  	case 'changeStatus':
 	  		$project = $_POST['project'];

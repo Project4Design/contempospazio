@@ -226,7 +226,7 @@ switch($opc):
 		          <div class="tab-pane <?=$project->status == 1 ?'active':''?>" id="tab_1_started">
 		          	<div class="row">
 			          	<div id="gallery-body-1" class="col-xs-12 col-md-12" style="padding:0">
-										<?foreach($projects->gallery->all(1) AS $gallery){?>
+										<?foreach($projects->gallery->allByStatus(1) AS $gallery){?>
 											<div id="gallery-<?=$gallery->id_gallery?>" class="col-md-2 col-xs-12" style="margin-bottom: 5px">
 												<div class="gallery-item <?=(!$gallery->main)?:'gallery-item-main'?>">
 													<button type="button" title="Remove photo" data-photo="<?=$gallery->id_gallery?>" class="btn btn-flat btn-danger btn-remove-gallery" data-action="remove_photo" data-toggle="modal" data-target="#optionsPhotoModal"><i class="fa fa-times"></i></button>
@@ -244,7 +244,7 @@ switch($opc):
 		          <div class="tab-pane <?=$project->status == 2 ?'active':''?>" id="tab_2_demolished">
 		          	<div class="row">
 			          	<div id="gallery-body-2" class="col-xs-12 col-md-12" style="padding:0">
-										<?foreach($projects->gallery->all(2) AS $gallery){?>
+										<?foreach($projects->gallery->allByStatus(2) AS $gallery){?>
 											<div id="gallery-<?=$gallery->id_gallery?>" class="col-md-2 col-xs-12" style="margin-bottom: 5px">
 												<div class="gallery-item <?=(!$gallery->main)?:'gallery-item-main'?>">
 													<button type="button" title="Remove photo" data-photo="<?=$gallery->id_gallery?>" class="btn btn-flat btn-danger btn-remove-gallery" data-action="remove_photo" data-toggle="modal" data-target="#optionsPhotoModal"><i class="fa fa-times"></i></button>
@@ -262,7 +262,7 @@ switch($opc):
 		          <div class="tab-pane <?=$project->status == 3 ?'active':''?>" id="tab_3_installed">
 		          	<div class="row">
 			          	<div id="gallery-body-3" class="col-xs-12 col-md-12" style="padding:0">
-										<?foreach($projects->gallery->all(3) AS $gallery){?>
+										<?foreach($projects->gallery->allByStatus(3) AS $gallery){?>
 											<div id="gallery-<?=$gallery->id_gallery?>" class="col-md-2 col-xs-12" style="margin-bottom: 5px">
 												<div class="gallery-item <?=(!$gallery->main)?:'gallery-item-main'?>">
 													<button type="button" title="Remove photo" data-photo="<?=$gallery->id_gallery?>" class="btn btn-flat btn-danger btn-remove-gallery" data-action="remove_photo" data-toggle="modal" data-target="#optionsPhotoModal"><i class="fa fa-times"></i></button>
@@ -280,7 +280,7 @@ switch($opc):
 		          <div class="tab-pane <?=$project->status == 4 ?'active':''?>" id="tab_4_completed">
 		          	<div class="row">
 			          	<div id="gallery-body-4" class="col-xs-12 col-md-12" style="padding:0">
-										<?foreach($projects->gallery->all(4) AS $gallery){?>
+										<?foreach($projects->gallery->allByStatus(4) AS $gallery){?>
 											<div id="gallery-<?=$gallery->id_gallery?>" class="col-md-2 col-xs-12" style="margin-bottom: 5px">
 												<div class="gallery-item <?=(!$gallery->main)?:'gallery-item-main'?>">
 													<button type="button" title="Remove photo" data-photo="<?=$gallery->id_gallery?>" class="btn btn-flat btn-danger btn-remove-gallery" data-action="remove_photo" data-toggle="modal" data-target="#optionsPhotoModal"><i class="fa fa-times"></i></button>
@@ -322,6 +322,13 @@ switch($opc):
           <div class="modal-body">
             <h4 class="text-center">Are you sure you want to <b>delete</b> this Project?</h4>
             <p class="text-center">This action cannot be undone.</p>
+
+          	<div class="form-group text-center">
+              <label for="filtro">Return items to inventory?</label>
+              <label class="radio">
+                <input id="switch" class="switch" type="checkbox" name="return" checked>
+              </label>
+            </div>
 
             <div class="alert alert-dismissible" role="alert" style="display:none">
               <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
@@ -531,6 +538,13 @@ switch($opc):
   		setInterval(getComments,2000);
   		//Get Logs every 5seg
   		setInterval(getLogs,5000);
+
+      $(".switch").bootstrapSwitch({
+        state: true,
+        size: 'small',
+        onText: 'Yes',
+        offText: 'No'
+      });
 
   		$('#btn-select-files').click(function(){
   			$('#dropzone-input').click();
