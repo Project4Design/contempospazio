@@ -132,7 +132,7 @@ class Projects{
 
 	  		if(count($items)>0){
 	  			//Save items as array
-		  		$content['items'] = $this->itemsToArray($items);
+		  		$content['items'] = $this->itemsToArray($items,true);
 		  	}
 
 		  	//Get Templates
@@ -218,10 +218,59 @@ class Projects{
 	  }
   }
   /*
-  	Check each item in Inventory
+  	get items from Invetory
+  */
+
+  protected function getItemFromInventory($item,$item_inv)
+  {
+  	$inventory = new Inventory();
+
+  	//Lo que queda en stock para Inventory.
+		//Si lo que se necesita para el projecto es mayor lo disponible en inventario
+		//Inventario se guarda en 0
+		$item_stock = (($item_inv->inv_stock - $item->stock_needed)<0)?0:($item_inv->inv_stock - $item->stock_needed);
+
+		//if the stock minus the stock_needed for the project is lower than 0.
+		//The Stock for this project's item will be saved as all the stock available.
+		//ELse, the stock for this project's item will be the stock_needed . It means, there is enough Stock for this Item.
+		$stock = (($item_inv->inv_stock - $item->stock_needed)<0)?$item_inv->inv_stock:$item->stock_needed;
+		
+		//Update the Stock for this items in the inventory
+		$inventory->replace($item_inv->id_inventory,$item_stock,false);
+
+		return $stock;
+  }
+
+  /*
+  	Check if the $Item is allready added to the project
+  	return int $stock
+  */
+  	protected function checkIfIsNew($itemToCheck,$item_inv)
+  	{
+  		$itemsInProject = $this->items();
+  		$found = false;
+
+  		foreach($itemsInProject as $i => $item){
+  			if($item->item == $itemToCheck->item){
+  				$found = true;
+  				$stock = $item->stock;
+
+  				break;
+  			}
+  		}
+
+  		if(!$found){
+  			$stock = $this->getItemFromInventory($itemToCheck,$item_inv);
+  		}	
+
+  		return $stock;
+  	}
+
+  /*
+  	Check each item exists in Inventory
   	return as array
   */
-  protected function itemsToArray($items)
+  protected function itemsToArray($items,$edit = false)
   {
   	$inventory = new Inventory();
   	$content = [];
@@ -232,18 +281,8 @@ class Projects{
 			$item_inv = $inventory->obtener($item->item);
 			//If Item exist. Else, skip...
 			if($item_inv){
-				//Lo que queda en stock para Inventory.
-				//Si lo que se necesita para el projecto es mayor lo disponible en inventario
-				//Inventario se guarda en 0
-				$item_stock = (($item_inv->inv_stock - $item->stock_needed)<0)?0:($item_inv->inv_stock - $item->stock_needed);
 
-				//if the stock minus the stock_needed for the project is lower than 0.
-				//The Stock for this project's item will be saved as all the stock available.
-				//ELse, the stock for this project's item will be the stock_needed . It means, there is enough Stock for this Item.
-				$stock = (($item_inv->inv_stock - $item->stock_needed)<0)?$item_inv->inv_stock:$item->stock_needed;
-				
-				//Update the Stock for this items in the inventory
-				$inventory->replace($item_inv->id_inventory,$item_stock,false);
+				$stock = $edit ? $this->checkIfIsNew($item,$item_inv) : $this->getItemFromInventory($item,$item_inv);
 
 				//Save the item's information in the content array
 				$content['id_'.($key+1)] = ['id' => ($key+1),
