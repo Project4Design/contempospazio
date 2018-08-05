@@ -129,6 +129,7 @@ class Projects{
 
 				//Get items
 	  		$items = json_decode($items);
+        $this->checkAndReturnDeletedItems($items);
 
 	  		if(count($items)>0){
 	  			//Save items as array
@@ -137,16 +138,17 @@ class Projects{
 
 		  	//Get Templates
 	  		$templates = json_decode($templates);
+        $this->checkAndReturnDeletedTemplates($templates);
 
 		  	if(count($templates)>0){
-		  		$content['templates'] = $this->templatesToArray($templates);
+		  		$content['templates'] = $this->templatesToArray($templates,true);
 		  	}
 	  		//Convert the $content array in JSON to store it in the Database...
 	  		$content = json_encode($content);
 	  		//Store the items
 	  		$query = Query::prun('UPDATE projects SET title = ? WHERE id_project = ? LIMIT 1',['si',$title,$id]);
 	  		if($query->response){
-	  			$this->update_project_content($id,$content);
+	  			$this->updateProjectContent($id,$content);
 					//Log this action
 					//============|| LOGS ||==================
 					$this->logs->add($id,2,1);
@@ -242,18 +244,64 @@ class Projects{
   }
 
   /*
+    
+  */
+  protected function checkAndReturnDeletedItems($newItems)
+  {
+    $oldItems = $this->items();
+    $newItemsIds = $this->getItemsId($newItems);
+    $deletedItems = [];
+
+    foreach ($oldItems as $item){
+      if( !in_array($item->item, $newItemsIds) ){
+        $deletedItems[] = $item;
+      }
+    }
+
+    $this->returnItemsToInventory($deletedItems);
+  }
+
+  /*
+    
+  */
+  protected function checkAndReturnDeletedTemplates($newTemplates)
+  {
+    $oldTemplates = $this->templates();
+
+    $newTemplatesIds = array_column($newTemplates, 'id');
+
+    foreach ($oldTemplates as $template){
+      if( !in_array($template->template, $newTemplatesIds) ){
+        $this->returnItemsToInventory($template->items);
+      }
+    }
+  }
+
+  /*
   	Check if the $Item is allready added to the project
   	return int $stock
   */
-  	protected function checkIfIsNew($itemToCheck,$item_inv)
+  	protected function checkIfItemIsNew($itemToCheck,$item_inv)
   	{
+      $inventory = new Inventory();
   		$itemsInProject = $this->items();
   		$found = false;
 
   		foreach($itemsInProject as $i => $item){
   			if($item->item == $itemToCheck->item){
   				$found = true;
-  				$stock = $item->stock;
+
+          //If the stock_needed of the current Item edited is lower,
+          //The rest will be sent back to Inventory
+  				if($item->stock_needed > $itemToCheck->stock_needed){
+            $stock = $itemToCheck->stock_needed;
+
+            $excess = $item->stock_needed - $itemToCheck->stock_needed;
+
+            $inventory->restock($item->item, $excess, false);
+          }else{
+            $stock = $item->stock_needed;
+          }
 
   				break;
   			}
@@ -265,6 +313,33 @@ class Projects{
 
   		return $stock;
   	}
+
+    /*
+      Check if the $template is allready added to the project.
+      If is new, get the Items from the Inventory.
+    */
+    protected function checkIfTemplateIsNew($template)
+    {
+      $oldTemplates = $this->templates();
+      $found = false;
+
+      foreach ($oldTemplates as $oldTemplate){
+
+        if( $oldTemplate->template == $template->id_pt ){
+
+          $items = $oldTemplate->items;
+          $found = true;
+
+          break;
+        }
+      }
+
+      if(!$found){
+        $items = $this->itemsToArray( json_decode($template->content) );
+      }
+
+      return $items;
+    }
 
   /*
   	Check each item exists in Inventory
@@ -282,7 +357,7 @@ class Projects{
 			//If Item exist. Else, skip...
 			if($item_inv){
 
-				$stock = $edit ? $this->checkIfIsNew($item,$item_inv) : $this->getItemFromInventory($item,$item_inv);
+				$stock = $edit ? $this->checkIfItemIsNew($item,$item_inv) : $this->getItemFromInventory($item,$item_inv);
 
 				//Save the item's information in the content array
 				$content['id_'.($key+1)] = ['id' => ($key+1),
@@ -298,24 +373,24 @@ class Projects{
 		return $content;
   }
 
-  protected function templatesToArray($templates)
+  protected function templatesToArray($templates,$edit = false)
   {
   	$projects_templates = new Projects_templates();
   	$content = [];
 
-		foreach ($templates as $tempKey => $template){
+		foreach ($templates as $tempKey => $temp){
 			//Template in DB
-			$temp = $projects_templates->obtener($template->id);
+			$template = $projects_templates->obtener($temp->id);
 			//If Template exist. Else, skip...
-			if($temp){
-				//Items in template
-				$temp_items = json_decode($temp->content);
-				//Template content
-				$array_template = ['template'=>$template->id,'name'=>$temp->name,'items'=>[]];
+			if($template){
 
-				//Items in Template
+        //Template content
+        $array_template = ['template'=>$temp->id,'name'=>$template->name,'items'=>[]];
+
+        $items = $this->checkIfTemplateIsNew($template);
+
 				//Save items as array
-				$array_template['items'] = $this->itemsToArray($temp_items);
+				$array_template['items'] = $items;
 
 	  		$content['id_'.($tempKey+1)] = $array_template;
 			}//If template exist
@@ -365,12 +440,12 @@ class Projects{
   	Return an array with only the ID of the items.
   	Used in the Edit view
   */
-  public function itemsArrayIds($items)
+  public function getItemsId($items)
   {
   	$data = [];
 
   	foreach ($items as $item) {
-  		$data[] = $item->item;
+  		$data[] = (int)$item->item;
   	}
 
   	return $data;
@@ -388,152 +463,28 @@ class Projects{
   }
 
 
-  public function checkItemStock($item,$template = '')
+  public function checkItemStock($item)
   {
-  	if($item->stock_needed>$item->stock){
+  	if($item->stock_needed > $item->stock){
   		$data   = "<span style='color:red'>{$item->stock}</span>/{$item->stock_needed}";
-  		$button = "<button type=\"button\" data-item=\"{$item->id}\" data-template=\"{$template}\" class=\"btn btn-success btn-sm btn-flat\" data-toggle=\"modal\" data-target=\"#addModal\"><i class=\"fa fa-plus-square\" aria-hidden=\"true\"></i></button>";
   	}else{
   		$data   = "{$item->stock}/{$item->stock_needed}";
-  		$button = "";
   	}
 
-  	return (object)['stock'=>$data,'button'=>$button];
+  	return $data;
   }
 
   /*
 		Update the project Items and Templates (Content).
   */
-  public function update_project_content($project,$content){
+  protected function updateProjectContent($project,$content){
   	$query = Query::prun('UPDATE projects_content SET
   																						content = ?
   																				WHERE id_project = ?',
   																				['si',$content,$project]);
+
+    return $query->response;
   }
-
-  public function add_item_stock($project,$template = NULL,$item,$newStock){
-  	$query = Query::prun('SELECT * FROM projects_content WHERE id_project = ? LIMIT 1',['i',$project]);
-
-  	if($query->result->num_rows){
-  		$info = (object) $query->result->fetch_array(MYSQLI_ASSOC);
-  		//Decode the items as arrays
-  		$content   = json_decode($info->content,true);
-  		$items     = $content['items'];
-  		$templates = $content['templates'];
-  		
-  		//If there is no template specified, go for the individual items
-  		if($template){
-  			//Search the template by its ID
-  			//If does not exists, return Error
-  			if(array_key_exists($template,$templates)){
-  				//Search the item by its ID
-	  			//If does not exists, return Error
-	  			if(array_key_exists('id_'.$item,$templates[$template]['items'])){
-	  				//Stock needed for the project
-						$stock_needed = $templates[$template]['items']['id_'.$item]['stock_needed'];
-						//Stock available
-						$stock = $templates[$template]['items']['id_'.$item]['stock'];
-
-						//============|| LOGS ||==================
-						$log_content  ='<p class="text-center"><b>'.$templates[$template]['name'].'</b></p>';
-						$log_content .= '<b>Item:</b> '.$templates[$template]['items']['id_'.$item]['name'].'<br>';
-						$log_content .= '<b>Stock added:</b> '.$newStock;
-						//========================================
-
-						//If the new Stock to be added + the actual Stock is greater than the 
-						//stock needed for the project. The exceeded amount will be added
-						//to the Inventory of that Item.
-						if(($stock + $newStock) > $stock_needed){
-							$item_stock = $newStock - ($stock_needed - $stock);
-							$stock = $stock_needed;
-							$templates[$template]['items']['id_'.$item]['stock'] = $stock;
-
-							//============|| LOGS ||==================
-							$log_content .= '<br><small><i>'.$item_stock.' send to Inventory</i></small>';
-							//========================================
-
-							$inventory = new Inventory();
-							//ID of the Item
-							$item_id = $templates[$template]['items']['id_'.$item]['item'];
-
-							$inventory->restock($item_id,$item_stock,false);
-						}else{
-							$templates[$template]['items']['id_'.$item]['stock'] = $stock + $newStock;
-						}//
-
-						//Update the content of the project
-						$content = json_encode(['items'=>$items,'templates'=>$templates]);
-						$this->update_project_content($project,$content);
-
-						//Log this action
-						//============|| LOGS ||==================
-						$this->logs->add($project,2,5,$log_content);
-						//========================================
-
-						//Set the response as true.
-						$this->rh->setResponse(true,'Stock added.',true);
-					}else{
-						$this->rh->setResponse(false,'Item not found.');
-					}//If item exists
-  			}else{
-  				$this->rh->setResponse(false,'Template not found.');
-  			}
-  		}else{
-  			//Search the item by its ID
-  			//If does not exists, return Error
-  			if(array_key_exists('id_'.$item,$items)){
-  				//Stock needed for the project
-					$stock_needed = $items['id_'.$item]['stock_needed'];
-					//Stock available
-					$stock = $items['id_'.$item]['stock'];
-
-					//============|| LOGS ||==================
-					$log_content  = '<b>Item:</b> '.$items['id_'.$item]['name'].'<br>';
-					$log_content .= '<b>Stock added:</b> '.$newStock;
-					//========================================
-
-					//If the new Stock to be added + the actual Stock is greater than the 
-					//stock needed for the project. The exceeded amount will be added
-					//to the Inventory of that Item.
-					if(($stock + $newStock) > $stock_needed){
-						$item_stock = $newStock - ($stock_needed - $stock);
-						$stock = $stock_needed;
-						$items['id_'.$item]['stock'] = $stock;
-
-						//============|| LOGS ||==================
-						$log_content .= '<br><small><i>'.$item_stock.' send to Inventory</i></small>';
-						//========================================
-
-						$inventory = new Inventory();
-						//ID of the Item
-						$item_id = $items['id_'.$item]['item'];
-
-						$inventory->restock($item_id,$item_stock,false);
-					}else{
-						$items['id_'.$item]['stock'] = $stock + $newStock;
-					}//
-
-					//Update the content of the project
-					$content = json_encode(['items'=>$items,'templates'=>$templates]);
-					$this->update_project_content($project,$content);
-
-					//Log this action
-					//============|| LOGS ||==================
-					$this->logs->add($project,2,5,$log_content);
-					//========================================
-
-					//Set the response as true.
-					$this->rh->setResponse(true,'Stock added.',true);
-				}else{
-					$this->rh->setResponse(false,'Item not found.');
-				}//If item exists
-			}//If template
-  	}else{
-  		$this->rh->setResponse(false,'Project not found.');
-  	}//If num_rows->0
-
-  	echo json_encode($this->rh);
-  }//add_item_stock
 
   public function changeStatus($project_id,$status)
   {
@@ -566,8 +517,8 @@ class Projects{
 	  echo json_encode($this->rh);
   }
 
-  //Return items stock to Inventory when the project is deleted
-  public function returnItemsToInventory($items)
+  //Return items stock to Inventory
+  protected function returnItemsToInventory($items)
   {
   	$inventory = new Inventory();
 
@@ -578,6 +529,108 @@ class Projects{
   			$inventory->restock($projectItem->item, $projectItem->stock, false);
   		}
   	}
+  }
+
+  /*
+    Get the sotck fot the Items
+  */
+  protected function addItemStock($projectItems,$template = false)
+  {
+    $newItems = [];
+    $log_content  = '';
+
+  	foreach ($projectItems as $key => $item){
+
+  		if($item->stock < $item->stock_needed){
+
+        $stock_needed = $item->stock_needed - $item->stock;
+
+	  		$inventory = new Inventory();
+		  	$item_inventory = $inventory->obtener($item->item);
+
+		  	if($item_inventory && $item_inventory->inv_stock > 0){
+
+          if( ($item_inventory->inv_stock - $stock_needed) < 0){
+            $inventory_stock = 0;
+            $newStock       = $item_inventory->inv_stock;
+          }else{
+            $inventory_stock = $item_inventory->inv_stock - $stock_needed;
+            $newStock       = $stock_needed;
+          }
+
+          //============|| LOGS ||==================
+          if($template){
+            $log_content  .='<p class="text-center"><b>'.$template.'</b></p>';  
+          }
+
+          $log_content .= '<b>Item:</b> '.$item->name.'<br>';
+          $log_content .= '<b>Stock added:</b> '.$newStock;
+
+          //============|| LOGS ||==================
+          $this->logs->add($this->project_id,2,5,$log_content);
+          //========================================
+          
+          //Update the Stock for this items in the inventory
+          $inventory->replace($item_inventory->id_inventory,$inventory_stock,false);
+
+          $item->stock = $item->stock + $newStock;
+
+		  	}//If item_inventory
+	  	}
+
+      $newItems[$key] = $item;
+  	}//foreach
+	  
+    return $newItems;
+  }
+
+  /*
+    Get the stock for the Templates
+  */
+  protected function addTemplatesStock($templates)
+  {
+    $newTemplates = [];
+
+    foreach ($templates as $tempKey => $template){ 
+      $template->items = $this->addItemStock($template->items,$template->name);
+
+      $newTemplates [$tempKey] = $template;
+    }
+
+    return $newTemplates;
+  }
+
+  /*
+    Get Items and Template in a projects, and get the stock for the Items from the Inventory if there is available.
+  */
+  public function fillItemsStock($project){
+  	if($this->nivel == 'A'){
+  		$project = $this->obtener($project);
+
+  		if($project){
+  			$items = $this->items();
+  			$templates = $this->templates();
+
+        $newItems = $this->addItemStock($items);
+        $newTemplates = $this->addTemplatesStock($templates);
+
+        $content = json_encode(['items'=>$newItems,'templates'=>$newTemplates]);
+
+        $result = $this->updateProjectContent($this->project_id,$content);
+
+        if($result){
+          $this->rh->setResponse(true,'Content updated.');
+        }else{
+          $this->rh->setResponse(false,'An error has ocurred.');
+        }  			
+  		}else{
+	  		$this->rh->setResponse(false,'Project not found.');
+  		}
+	  }else{
+	  	$this->rh->setResponse(false,'You don\'t have permission to make this action.');
+	  }
+
+	  echo json_encode($this->rh);
   }
 
 	//===================NULL RESPONSE ========
@@ -620,13 +673,10 @@ if(Base::IsAjax()):
 
 	  		$modelProject->changeStatus($project,$status);
 	  	break;
-	  	case 'add_item_stock':
+	  	case 'fillItemsStock':
 	  		$project  = $_POST['project'];
-	  		$template = $_POST['template'];
-	  		$item     = $_POST['item'];
-	  		$newStock    = $_POST['stock'];
 
-	  		$modelProject->add_item_stock($project,$template,$item,$newStock);
+	  		$modelProject->fillItemsStock($project);
 	  	break;
 	  	default:
 	  	$modelProject->fdefault();

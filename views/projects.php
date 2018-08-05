@@ -115,6 +115,27 @@ switch($opc):
       </div>
   	</div>
   </div>
+	<?
+		if($project->status < 4){
+	?>
+	<div id="content-stock" class="row">
+		<div class="col-md-12" style="padding:5px 15px">
+			<center><button class="btn btn-success btn-stock btn-flat">Add Stock</button></center>
+			<p></p>
+			<div class="alert alert-danger alert-gallery" style="display:none" role="alert">
+  			<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;<span class="msj">An error has ocurred.</span>
+  		</div>
+  		<div class="progress progress-sm active" style="display:none">
+        <div class="progress-bar progress-bar-primary progress-bar-striped" role="progressbar" aria-valuenow="100" aria-valuemin="100" aria-valuemax="100" style="width:100%">
+          <span class="sr-only">100% Complete</span>
+        </div>
+      </div>
+		</div>
+	</div>
+	<?
+		}
+	?>
+
   <div class="row">
   	<div class="col-md-12">
   		<div class="box box-solid">
@@ -132,7 +153,6 @@ switch($opc):
 		  					<th>Category</th>
 		  					<th>Name</th>
 		  					<th>Quantity</th>
-		  					<th>Action</th>
 		  				</tr>
 		  			</thead>
 		  			<tbody>
@@ -144,8 +164,7 @@ switch($opc):
   							<td class="text-center"><?=$i?></td>
   							<td><?=$d->category?></td>
   							<td><?=$d->name?></td>
-  							<td><?=$data->stock?></td>
-  							<td class="text-center"><?=$data->button?></td>
+  							<td><?=$data?></td>
 	  					</tr>
 	  				<?
 	  					$i++;
@@ -171,7 +190,6 @@ switch($opc):
 		  					<th>Category</th>
 		  					<th>Name</th>
 		  					<th>Quantity</th>
-		  					<th>Action</th>
 		  				</tr>
 		  			</thead>
 		  			<tbody>
@@ -184,14 +202,13 @@ switch($opc):
 		  				</tr>
 			  				<?
 			  					foreach ($template->items as $k => $d){
-			  						$data = $projects->checkItemStock($d,$tempID);
+			  						$data = $projects->checkItemStock($d);
 			  				?>
 			  					<tr>
 		  							<td></td>
 		  							<td><?=$d->category?></td>
 		  							<td><?=$d->name?></td>
-		  							<td><?=$data->stock?></td>
-		  							<td class="text-center"><?=$data->button?></td>
+		  							<td><?=$data?></td>
 			  					</tr>
 			  				<?
 			  					}	//foreach Items
@@ -216,22 +233,24 @@ switch($opc):
 	  		<div class="box-body" style="padding:0">
 	  			<div class="nav-tabs-custom" style="margin:0">
 		        <ul class="nav nav-tabs">
-		          <li class="<?=$project->status == 1 ?'active':''?>"><a href="#tab_1_started" data-toggle="tab" aria-expanded="false">Started </a></li>
-		          <li class="<?=$project->status == 2 ?'active':''?>"><a href="#tab_2_demolished" data-toggle="tab" aria-expanded="false">Demolished </a></li>
-		          <li class="<?=$project->status == 3 ?'active':''?>"><a href="#tab_3_installed" data-toggle="tab" aria-expanded="false">Installed </a></li>
-		          <li class="<?=$project->status == 4 ?'active':''?>"><a href="#tab_4_completed" data-toggle="tab" aria-expanded="false">Completed </a></li>
+		          <li class="<?=$project->status == 1 ?'active':''?>"><a href="#tab_gallery_1" data-toggle="tab" aria-expanded="false">Started </a></li>
+		          <li class="<?=$project->status == 2 ?'active':''?>"><a href="#tab_gallery_2" data-toggle="tab" aria-expanded="false">Demolished </a></li>
+		          <li class="<?=$project->status == 3 ?'active':''?>"><a href="#tab_gallery_3" data-toggle="tab" aria-expanded="false">Installed </a></li>
+		          <li class="<?=$project->status == 4 ?'active':''?>"><a href="#tab_gallery_4" data-toggle="tab" aria-expanded="false">Completed </a></li>
 		        </ul>
 		        <div class="tab-content">
-		          <!--=====================|| Started ||====================-->
-		          <div class="tab-pane <?=$project->status == 1 ?'active':''?>" id="tab_1_started">
+		        	<?
+		        	for($i = 1;$i < 5;$i++){
+							?>
+							<div class="tab-pane <?=$project->status == $i ?'active':''?>" id="tab_gallery_<?=$i?>">
 		          	<div class="row">
-			          	<div id="gallery-body-1" class="col-xs-12 col-md-12" style="padding:0">
-										<?foreach($projects->gallery->allByStatus(1) AS $gallery){?>
+			          	<div id="gallery-body-<?=$i?>" class="col-xs-12 col-md-12" style="padding:0">
+										<?foreach($projects->gallery->allByStatus($i) AS $gallery){?>
 											<div id="gallery-<?=$gallery->id_gallery?>" class="col-md-2 col-xs-12" style="margin-bottom: 5px">
 												<div class="gallery-item <?=(!$gallery->main)?:'gallery-item-main'?>">
 													<button type="button" title="Remove photo" data-photo="<?=$gallery->id_gallery?>" class="btn btn-flat btn-danger btn-remove-gallery" data-action="remove_photo" data-toggle="modal" data-target="#optionsPhotoModal"><i class="fa fa-times"></i></button>
 													<button type="button" title="Set as main" data-photo="<?=$gallery->id_gallery?>" class="btn btn-flat btn-warning btn-main-gallery" data-action="set_main" data-toggle="modal" data-target="#optionsPhotoModal"><i class="fa fa-star"></i></button>
-													<a href="<?=Base::Img("images/uploads/{$gallery->photo}")?>" data-fancybox="fancy-images-1">
+													<a href="<?=Base::Img("images/uploads/{$gallery->photo}")?>" data-fancybox="fancy-images-<?=$i?>">
 														<img class="img-responsive" src="<?=Base::Img("images/thumbs/{$gallery->thumb}")?>" alt="<?=$gallery->thumb?>">
 													</a>
 												</div>
@@ -240,60 +259,9 @@ switch($opc):
 									</div>
 								</div>
 		          </div><!-- /.tab-pane -->
-		          <!--=====================|| Demolished ||====================-->
-		          <div class="tab-pane <?=$project->status == 2 ?'active':''?>" id="tab_2_demolished">
-		          	<div class="row">
-			          	<div id="gallery-body-2" class="col-xs-12 col-md-12" style="padding:0">
-										<?foreach($projects->gallery->allByStatus(2) AS $gallery){?>
-											<div id="gallery-<?=$gallery->id_gallery?>" class="col-md-2 col-xs-12" style="margin-bottom: 5px">
-												<div class="gallery-item <?=(!$gallery->main)?:'gallery-item-main'?>">
-													<button type="button" title="Remove photo" data-photo="<?=$gallery->id_gallery?>" class="btn btn-flat btn-danger btn-remove-gallery" data-action="remove_photo" data-toggle="modal" data-target="#optionsPhotoModal"><i class="fa fa-times"></i></button>
-													<button type="button" title="Set as main" data-photo="<?=$gallery->id_gallery?>" class="btn btn-flat btn-warning btn-main-gallery" data-action="set_main" data-toggle="modal" data-target="#optionsPhotoModal"><i class="fa fa-star"></i></button>
-													<a href="<?=Base::Img("images/uploads/{$gallery->photo}")?>" data-fancybox="fancy-images-2">
-														<img class="img-responsive" src="<?=Base::Img("images/thumbs/{$gallery->thumb}")?>" alt="<?=$gallery->thumb?>">
-													</a>
-												</div>
-											</div>
-										<?}?>
-									</div>
-								</div>
-		          </div><!-- /.tab-pane -->
-		          <!--=====================|| Installed ||====================-->
-		          <div class="tab-pane <?=$project->status == 3 ?'active':''?>" id="tab_3_installed">
-		          	<div class="row">
-			          	<div id="gallery-body-3" class="col-xs-12 col-md-12" style="padding:0">
-										<?foreach($projects->gallery->allByStatus(3) AS $gallery){?>
-											<div id="gallery-<?=$gallery->id_gallery?>" class="col-md-2 col-xs-12" style="margin-bottom: 5px">
-												<div class="gallery-item <?=(!$gallery->main)?:'gallery-item-main'?>">
-													<button type="button" title="Remove photo" data-photo="<?=$gallery->id_gallery?>" class="btn btn-flat btn-danger btn-remove-gallery" data-action="remove_photo" data-toggle="modal" data-target="#optionsPhotoModal"><i class="fa fa-times"></i></button>
-													<button type="button" title="Set as main" data-photo="<?=$gallery->id_gallery?>" class="btn btn-flat btn-warning btn-main-gallery" data-action="set_main" data-toggle="modal" data-target="#optionsPhotoModal"><i class="fa fa-star"></i></button>
-													<a href="<?=Base::Img("images/uploads/{$gallery->photo}")?>" data-fancybox="fancy-images-3">
-														<img class="img-responsive" src="<?=Base::Img("images/thumbs/{$gallery->thumb}")?>" alt="<?=$gallery->thumb?>">
-													</a>
-												</div>
-											</div>
-										<?}?>
-									</div>
-								</div>
-		          </div><!-- /.tab-pane -->
-		          <!--=====================|| Completed ||====================-->
-		          <div class="tab-pane <?=$project->status == 4 ?'active':''?>" id="tab_4_completed">
-		          	<div class="row">
-			          	<div id="gallery-body-4" class="col-xs-12 col-md-12" style="padding:0">
-										<?foreach($projects->gallery->allByStatus(4) AS $gallery){?>
-											<div id="gallery-<?=$gallery->id_gallery?>" class="col-md-2 col-xs-12" style="margin-bottom: 5px">
-												<div class="gallery-item <?=(!$gallery->main)?:'gallery-item-main'?>">
-													<button type="button" title="Remove photo" data-photo="<?=$gallery->id_gallery?>" class="btn btn-flat btn-danger btn-remove-gallery" data-action="remove_photo" data-toggle="modal" data-target="#optionsPhotoModal"><i class="fa fa-times"></i></button>
-													<button type="button" title="Set as main" data-photo="<?=$gallery->id_gallery?>" class="btn btn-flat btn-warning btn-main-gallery" data-action="set_main" data-toggle="modal" data-target="#optionsPhotoModal"><i class="fa fa-star"></i></button>
-													<a href="<?=Base::Img("images/uploads/{$gallery->photo}")?>" data-fancybox="fancy-images-4">
-														<img class="img-responsive" src="<?=Base::Img("images/thumbs/{$gallery->thumb}")?>" alt="<?=$gallery->thumb?>">
-													</a>
-												</div>
-											</div>
-										<?}?>
-									</div>
-								</div>
-		          </div><!-- /.tab-pane -->
+							<?
+							}//for
+		        	?>
 		        </div>
 		        <!-- /.tab-content -->
 		      </div>	
@@ -344,53 +312,6 @@ switch($opc):
           <div class="modal-footer">
             <button id="b-del" type="submit" class="btn btn-flat btn-outline pull-left b-submit">Delete</button>
             <button type="button" class="btn btn-flat btn-outline" data-dismiss="modal">Close</button>
-          </div>
-        </form>
-      </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-  </div>
-
-  <div id="addModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addModalLabel">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <form action="funciones/class.projects.php" method="POST">
-          <input type="hidden" name="action" value="add_item_stock">
-          <input id="project" type="hidden" name="project" value="<?=$id?>">
-          <input id="template" type="hidden" name="template" value="">
-          <input id="item" type="hidden" name="item" value="">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-            <h4 class="modal-title">Add Stock</h4>
-          </div>
-          <div class="modal-body">
-          	<div class="row">
-	          	<div class="col-md-12">
-		            <h4 class="text-center">Add stock for this Item</h4>
-		            <p class="text-center">The excess amount will be added to the inventory.</p>
-		          </div>
-		          <div class="col-md-6 col-md-offset-3">
-		            <div class="form-group">
-		            	<label for="stock">Stock: *</label>
-		            	<input id="stock" class="form-control" type="number" name="stock" placeholder="Quantity" required>
-		            </div>
-							</div>
-							<div class="col-md-12">
-		            <div class="alert alert-dismissible" role="alert" style="display:none">
-		              <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-		              <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;<span id="msj"></span>
-		            </div>
-
-		            <div class="progress progress-sm active" style="display:none">
-		              <div class="progress-bar progress-bar-primary progress-bar-striped" role="progressbar" aria-valuenow="100" aria-valuemin="100" aria-valuemax="100" style="width:100%">
-		                <span class="sr-only">100% Complete</span>
-		              </div>
-		            </div>
-		          </div>
-	          </div>
-          </div>
-          <div class="modal-footer">
-            <button id="b-del" type="submit" class="btn btn-flat btn-success b-submit">Save</button>
-            <button type="button" class="btn btn-flat btn-default" data-dismiss="modal">Close</button>
           </div>
         </form>
       </div><!-- /.modal-content -->
@@ -588,18 +509,6 @@ switch($opc):
 				modal.find('input[name="status"]').val(status);
 			});
 
-			//Add stock for Items or Templates
-  		$('#addModal').on('show.bs.modal',function(event){
-        var btn  = $(event.relatedTarget);
-        var item = btn.data('item');
-        var template = btn.data('template');
-
-        var modal   = $(this);
-
-        modal.find('#item').val(item);
-        modal.find('#template').val(template);
-      });
-			
   		//Modal for 'Set photo as Main' or 'Delete photo'
   		//When modal opens, chance the options
   		$('#optionsPhotoModal').on('show.bs.modal',function(event){
@@ -721,6 +630,43 @@ switch($opc):
 	    	],
   		});
   		//=============================================
+
+  		//
+  		$('.btn-stock').on('click',function(){
+  			var btn = $(this),
+  					alert = $('#content-stock .alert'),
+  					loading = $('.progress');
+
+  			btn.button('loading');
+  			alert.hide();
+  			loading.show();
+
+  			$.ajax({
+  				type: 'POST',
+  				url: 'funciones/class.projects.php',
+  				data: {action:'fillItemsStock',project:project_id},
+  				dataType: 'json'
+  			})
+  			.done(function(data){
+  				if(data.response){
+  					alert.removeClass('alert-danger').addClass('alert-success');
+  					location.reload();
+  				}else{
+  					alert.removeClass('alert-success').addClass('alert-danger');
+  				}
+  				alert.find('.msj').text(data.msj);
+  			})
+  			.fail(function(){
+  				alert.removeClass('alert-success').addClass('alert-danger');
+  				alert.find('.msj').text('An error has ocurred.');
+  			})
+  			.always(function(){
+  				alert.show().delay(7000).hide('slow');
+  				loading.hide();
+  				btn.button('reset');
+  			})
+
+  		});
 
   	});//=============================================================================READY
 
@@ -899,7 +845,7 @@ switch($opc):
   $project    = $projects->obtener($id);
   if($project){
 	  $projectItems = $projects->items();
-	  $itemsAdded   =  $projects->itemsArrayIds($projectItems);
+	  $itemsAdded   =  $projects->getItemsId($projectItems);
   	$image = $projects->gallery->getMain()->thumb?:'x';	
   }else{
   	$image = '';
