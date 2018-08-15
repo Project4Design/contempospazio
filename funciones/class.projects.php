@@ -387,7 +387,7 @@ class Projects{
         //Template content
         $array_template = ['template'=>$temp->id,'name'=>$template->name,'items'=>[]];
 
-        $items = $this->checkIfTemplateIsNew($template);
+        $items = $edit ? $this->checkIfTemplateIsNew($template) : $this->itemsToArray( json_decode($template->content) );
 
 				//Save items as array
 				$array_template['items'] = $items;
